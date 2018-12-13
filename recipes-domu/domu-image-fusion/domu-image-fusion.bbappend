@@ -12,20 +12,13 @@ XT_QUIRK_UNPACK_SRC_URI += " \
 "
 
 XT_QUIRK_BB_ADD_LAYER_append = " \
-    meta-golang \
-    meta-aos \
     meta-xt-prod-extra \
 "
 ################################################################################
 # Generic ARMv8
 ################################################################################
 SRC_URI += " \
-    repo://github.com/xen-troops/manifests;protocol=https;branch=master;manifest=prod_devel/domf.xml;scmdata=keep \
-"
-
-SRC_URI += " \
-    git://github.com/madisongh/meta-golang.git;protocol=https;destsuffix=repo/meta-golang;branch=rocko;name=metago \
-    git://git@gitpct.epam.com/epmd-aepr/meta-aos.git;protocol=ssh;branch=master;destsuffix=repo/meta-aos \
+    repo://github.com/xen-troops/manifests;protocol=https;branch=master;manifest=prod_aos/domf.xml;scmdata=keep \
 "
 
 SRCREV_metago = "${AUTOREV}"

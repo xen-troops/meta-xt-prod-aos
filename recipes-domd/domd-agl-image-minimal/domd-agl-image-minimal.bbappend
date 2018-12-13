@@ -1,7 +1,7 @@
 require ../agl/inc/domd-agl-image.inc
 
-SRC_URI_remove_rcar = " \
-    git://git@gitpct.epam.com/epmd-aepr/img-proprietary;protocol=ssh;branch=master;name=img-proprietary;destsuffix=repo/proprietary \
+SRC_URI_rcar_append = " \
+    repo://github.com/xen-troops/manifests;protocol=https;branch=master;manifest=prod_aos/domd.xml;scmdata=keep \
 "
 
 configure_versions_rcar() {
