@@ -5,7 +5,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/../../recipes-domx:"
 do_configure[depends] += "domd-image-weston:do_domd_install_machine_overrides"
 
 SRC_URI = " \
-    repo://github.com/xen-troops/manifests;protocol=https;branch=master;manifest=prod_devel/domu.xml;scmdata=keep \
+    repo://github.com/xen-troops/manifests;protocol=https;branch=master;manifest=${XT_MANIFEST_FOLDER}/domu.xml;scmdata=keep \
 "
 
 XT_QUIRK_UNPACK_SRC_URI += " \
