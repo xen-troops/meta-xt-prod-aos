@@ -2,15 +2,10 @@
 
 MOUNT_POINT="/tmp/mntpoint"
 CUR_STEP=1
-DOMA_PART_N=p3
 
 usage()
 {
-	echo "###############################################################################"
-	echo "SD card image builder script for current development product."
-	echo "###############################################################################"
-	echo "Usage:"
-	echo "`basename "$0"` <-p image-folder> <-d image-file> [-s image-size-gb] [-u dom0|domd|doma]"
+	echo "`basename "$0"` <-p image-folder> <-d image-file> [-s image-size-gb] [-u dom0|domd|domf]"
 	echo "	-p image-folder	Base daily build folder where artifacts live"
 	echo "	-d image-file	Output image file or physical device"
 	echo "	-s image-size	Optional, image size in GB"
@@ -37,7 +32,7 @@ inflate_image()
 	local size_gb=$2
 
 	print_step "Inflate image"
-	echo "DEV -" $dev
+
 	if  [ -b "$dev" ] ; then
 		echo "Using physical block device $dev"
 		return 0
@@ -60,7 +55,7 @@ inflate_image()
 		esac
 	fi
 	if [[ $inflate == 1 ]] ; then
-		sudo dd if=/dev/zero of=$dev bs=1M count=0 seek=$(($size_gb*1024)) || exit 1
+		sudo dd if=/dev/zero of=$dev bs=1M count=$(($size_gb*1024)) || exit 1
 	fi
 }
 
@@ -71,41 +66,13 @@ partition_image()
 {
 	print_step "Make partitions"
 
-	sudo parted -s $1 mklabel msdos || true
+	sudo parted -s $1 mklabel msdos
 
-	sudo parted -s $1 mkpart primary ext4 1MiB 257MiB || true
-	sudo parted -s $1 mkpart primary ext4 257MiB 2257MiB || true
-	sudo parted -s $1 mkpart primary 3415MiB 7838MiB || true
-	sudo parted $1 print
+	sudo parted -s $1 mkpart primary ext4 1MiB 257MiB
+	sudo parted -s $1 mkpart primary ext4 257MiB 4257MiB
+	sudo parted -s $1 mkpart primary ext4 4257MiB 8257MiB
+
 	sudo partprobe $1
-
-	local android_disk=$1$DOMA_PART_N
-
-	print_step "Make Android partitions on "$android_disk
-
-	# parted gerates error on all operation with "nested" disk, guard it with || true
-
-	sudo parted $android_disk -s mklabel gpt || true
-	sudo parted $android_disk -s mkpart xvda1 ext4 1MB  3148MB || true
-	sudo parted $android_disk -s mkpart xvda2 ext4 3149MB  3418MB || true
-	sudo parted $android_disk -s mkpart xvda3 ext4 3419MB  3420MB || true
-	sudo parted $android_disk -s mkpart xvda4 ext4 3421MB  4421MB || true
-	sudo parted $android_disk -s print
-	sudo partprobe $android_disk || true
-}
-
-###############################################################################
-# Label partition
-###############################################################################
-
-label_one()
-{
-	local loop_base=$1
-	local part=$2
-	local label=$3
-	local loop_dev="${loop_base}p${part}"
-
-	sudo e2label $loop_dev $label
 }
 
 ###############################################################################
@@ -141,28 +108,23 @@ mkfs_domd()
 	mkfs_one $img_output_file $loop_dev 2 domd
 }
 
-mkfs_doma()
+mkfs_domf()
 {
 	local img_output_file=$1
 	local loop_dev=$2
 
-	mkfs_one $img_output_file $loop_dev 4 doma_user
+	mkfs_one $img_output_file $loop_dev 3 domf
 }
 
 mkfs_image()
 {
 	local img_output_file=$1
 	local loop_dev=$2
+	sudo losetup -P $loop_dev $img_output_file
 
 	mkfs_boot $img_output_file $loop_dev
 	mkfs_domd $img_output_file $loop_dev
-
-	local out_adev=$img_output_file$DOMA_PART_N
-	sudo losetup -d $loop_dev
-	sudo losetup -P -f $out_adev
-	loop_dev=`sudo losetup -j $out_adev | cut -d":" -f1`
-	mkfs_doma $img_output_file $loop_dev
-	sudo losetup -d $loop_dev
+	mkfs_domf $img_output_file $loop_dev
 }
 
 ###############################################################################
@@ -212,7 +174,7 @@ unpack_dom_from_tar()
 
 	mount_part $loop_base $img_output_file $part $MOUNT_POINT
 
-	sudo tar --extract --bzip2 --numeric-owner --preserve-permissions --preserve-order --totals \
+	sudo tar -xj --numeric-owner --preserve-permissions --preserve-order --totals \
 		--xattrs-include='*' --directory="${MOUNT_POINT}" --file=$rootfs
 
 	umount_part $loop_base $part
@@ -228,7 +190,7 @@ unpack_dom0()
 
 	print_step "Unpacking Dom0"
 
-	local dom0_name=`ls $db_base_folder | grep dom0-image-thin`
+	local dom0_name=`ls $db_base_folder | grep dom0`
 	local dom0_root=$db_base_folder/$dom0_name
 
 	local domd_name=`ls $db_base_folder | grep domd`
@@ -268,39 +230,15 @@ unpack_domd()
 	unpack_dom_from_tar $db_base_folder $loop_dev $img_output_file 2 domd
 }
 
-unpack_doma()
+unpack_domf()
 {
 	local db_base_folder=$1
-	local loop_base=$2
+	local loop_dev=$2
 	local img_output_file=$3
 
-	local part_system=1
-	local part_vendor=2
-	local part_misc=3
+	print_step  "Unpacking DomF"
 
-	local raw_system="/tmp/system.raw"
-	local raw_vendor="/tmp/vendor.raw"
-
-	print_step "Unpacking DomA"
-
-	local doma_name=`ls $db_base_folder | grep android`
-	local doma_root=$db_base_folder/$doma_name
-	local system=`find $doma_root -name "system.img"`
-	local vendor=`find $doma_root -name "vendor.img"`
-
-	echo "DomA system image is at $system"
-	echo "DomA vendor image is at $vendor"
-
-	simg2img $system $raw_system
-	simg2img $vendor $raw_vendor
-
-	sudo dd if=$raw_system of=${loop_base}p${part_system} bs=1M status=progress
-	sudo dd if=$raw_vendor of=${loop_base}p${part_vendor} bs=1M status=progress
-
-	echo "Wipe out DomA/misc"
-	sudo dd if=/dev/zero of=${loop_base}p${part_misc} bs=1M count=1 || true
-
-	rm -f $raw_system $raw_vendor
+	unpack_dom_from_tar $db_base_folder $loop_dev $img_output_file 3 domu
 }
 
 unpack_image()
@@ -311,17 +249,7 @@ unpack_image()
 
 	unpack_dom0 $db_base_folder $loop_dev $img_output_file
 	unpack_domd $db_base_folder $loop_dev $img_output_file
-
-	local out_adev=$img_output_file$DOMA_PART_N
-	sudo umount $out_adev || true
-	sudo losetup -d $loop_dev
-	while [[ ! (-b $out_adev) ]]; do
-		: # wait for $out_adev to appear
-	done
-	sudo losetup -P -f $out_adev
-	loop_dev=`sudo losetup -j $out_adev | cut -d":" -f1`
-	unpack_doma $db_base_folder $loop_dev $img_output_file
-	sudo losetup -d $loop_dev
+	unpack_domf $db_base_folder $loop_dev $img_output_file
 }
 
 ###############################################################################
@@ -332,24 +260,21 @@ make_image()
 {
 	local db_base_folder=$1
 	local img_output_file=$2
+	local image_sg_gb=${3:-5}
+	local loop_dev="/dev/loop0"
 
 	print_step "Preparing image at ${img_output_file}"
+
+	sudo umount -f ${MOUNT_POINT} || true
 	ls ${img_output_file}?* | xargs -n1 sudo umount -l -f || true
 
-	sudo umount -f ${img_output_file}* || true
-
+	inflate_image $img_output_file $image_sg_gb
 	partition_image $img_output_file
-
-	sudo losetup -P -f $img_output_file
-	loop_dev=`sudo losetup -j $img_output_file | cut -d":" -f1`
 	mkfs_image $img_output_file $loop_dev
-	# $loop_dev closed by mkfs_image
-
-	sudo losetup -P -f $img_output_file
-	loop_dev=`sudo losetup -j $img_output_file | cut -d":" -f1`
 	unpack_image $db_base_folder $loop_dev $img_output_file
-	# $loop_dev closed by unpack_image
 
+	sync
+	sudo losetup -d $loop_dev || true
 	print_step "Done"
 }
 
@@ -358,47 +283,36 @@ unpack_domain()
 	local db_base_folder=$1
 	local img_output_file=$2
 	local domain=$3
-
+	local loop_dev="/dev/loop0"
 
 	print_step "Unpacking single domain: $domain"
 
 	sudo umount -f ${img_output_file}* || true
+	sudo losetup -d $loop_dev || true
+
 	case $domain in
 		dom0)
-			sudo losetup -P -f $img_output_file
-			loop_dev=`sudo losetup -j $img_output_file | cut -d":" -f1`
 			mkfs_boot $img_output_file $loop_dev
 			unpack_dom0 $db_base_folder $loop_dev $img_output_file
 		;;
 		domd)
-			sudo losetup -P -f $img_output_file
-			loop_dev=`sudo losetup -j $img_output_file | cut -d":" -f1`
 			mkfs_domd $img_output_file $loop_dev
 			unpack_domd $db_base_folder $loop_dev $img_output_file
 		;;
-		doma)
-			sudo losetup -P -f $img_output_file$DOMA_PART_N
-			img_output_file=$img_output_file$DOMA_PART_N
-			loop_dev=`sudo losetup -j $img_output_file | cut -d":" -f1`
-			mkfs_doma $img_output_file $loop_dev
-			unpack_doma $db_base_folder $loop_dev $img_output_file
+		domf)
+			mkfs_domf $img_output_file $loop_dev
+			unpack_domf $db_base_folder $loop_dev $img_output_file
 		;;
 		\?) echo "Invalid domain -$OPTARG" >&2
 		exit 1
 		;;
 	esac
-	sudo losetup -d $loop_dev
+
 	sync
 	print_step "Done"
 }
 
-print_step "Checking for simg2img"
 
-if [ $(dpkg-query -W -f='${Status}' android-tools-fsutils 2>/dev/null | grep -c "ok installed") -eq 0 ];
-then
-   echo "Please install simg2img (in debian-based: apt-get install android-tools-fsutils). Exiting.";
-   exit;
-fi
 
 print_step "Parsing input parameters"
 
@@ -431,17 +345,9 @@ fi
 echo "Using deploy path: \"$ARG_DEPLOY_PATH\""
 echo "Using device     : \"$ARG_DEPLOY_DEV\""
 
-image_sg_gb=${ARG_IMG_SIZE_GB:-16}
-inflate_image $ARG_DEPLOY_DEV $image_sg_gb
-
-sudo losetup -P -f $ARG_DEPLOY_DEV
-loop_dev_in=`sudo losetup -j $ARG_DEPLOY_DEV | cut -d":" -f1`
-
 if [ ! -z "${ARG_UNPACK_DOM}" ]; then
-	unpack_domain $ARG_DEPLOY_PATH $loop_dev_in $ARG_UNPACK_DOM
+	unpack_domain $ARG_DEPLOY_PATH $ARG_DEPLOY_DEV $ARG_UNPACK_DOM
 else
-	make_image $ARG_DEPLOY_PATH $loop_dev_in $ARG_IMG_SIZE_GB
+	make_image $ARG_DEPLOY_PATH $ARG_DEPLOY_DEV $ARG_IMG_SIZE_GB
 fi
 
-sudo losetup -d $loop_dev_in
-echo "Done all steps"

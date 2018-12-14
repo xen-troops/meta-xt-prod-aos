@@ -13,6 +13,7 @@ XT_QUIRK_UNPACK_SRC_URI += " \
 
 XT_QUIRK_BB_ADD_LAYER_append = " \
     meta-golang \
+    meta-aos \
     meta-xt-prod-extra \
 "
 ################################################################################
@@ -24,6 +25,7 @@ SRC_URI += " \
 
 SRC_URI += " \
     git://github.com/madisongh/meta-golang.git;protocol=https;destsuffix=repo/meta-golang;branch=rocko;name=metago \
+    git://git@gitpct.epam.com/epmd-aepr/meta-aos.git;protocol=ssh;branch=master;destsuffix=repo/meta-aos \
 "
 
 SRCREV_metago = "${AUTOREV}"
@@ -54,7 +56,7 @@ configure_versions() {
     # Though systemd properly processes hvc0 advertised as serial console, and is not
     # provided with console by distro-feature xen.
     # So keep following line aligned with an init manager set for the system.
-    base_update_conf_value ${local_conf} SERIAL_CONSOLES = "115200;hvc0"
+    base_update_conf_value ${local_conf} SERIAL_CONSOLES "115200;hvc0"
 
     # set default timezone to Las Vegas
     base_update_conf_value ${local_conf} DEFAULT_TIMEZONE "US/Pacific"
