@@ -5,7 +5,6 @@ IMAGE_INSTALL_append = " \
     displaymanager \
     sndbe \
     guest-addons-displbe-service \
-    guest-addons-android-disks-service \
     guest-addons-bridge-up-notification-service \
     guest-addons-bridge-config \
     kmscube \

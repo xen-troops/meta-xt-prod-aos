@@ -10,12 +10,7 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384
 SRC_URI = " \
     file://bridge-nfsroot.sh \
     file://bridge.sh \
-    file://doma_loop_detach.sh \
-    file://doma_loop_setup.sh \
-    file://android-disks.sh \
     file://displbe.service \
-    file://android-disks.service \
-    file://android-disks.conf \
     file://bridge-up-notification.service \
     file://display-manager.service \
     file://dm-salvator-x-m3.cfg \
@@ -38,7 +33,6 @@ inherit systemd
 PACKAGES += " \
     ${PN}-bridge-config \
     ${PN}-displbe-service \
-    ${PN}-android-disks-service \
     ${PN}-bridge-up-notification-service \
 "
 
@@ -53,21 +47,12 @@ FILES_${PN}-bridge-config = " \
 
 SYSTEMD_PACKAGES = " \
     ${PN}-displbe-service \
-    ${PN}-android-disks-service \
     ${PN}-bridge-up-notification-service \
 "
 
 SYSTEMD_SERVICE_${PN}-displbe-service = " displbe.service"
 
-SYSTEMD_SERVICE_${PN}-android-disks-service = " android-disks.service"
-
 SYSTEMD_SERVICE_${PN}-bridge-up-notification-service = " bridge-up-notification.service"
-
-FILES_${PN}-android-disks-service = " \
-    ${systemd_system_unitdir}/android-disks.service \
-    ${sysconfdir}/tmpfiles.d/android-disks.conf \
-    ${base_prefix}${XT_DIR_ABS_ROOTFS_SCRIPTS}/android-disks.sh \
-"
 
 FILES_${PN}-displbe-service = " \
     ${systemd_system_unitdir}/displbe.service \
@@ -104,9 +89,6 @@ do_install() {
     install -m 0644 ${WORKDIR}/display-manager.service ${D}${systemd_user_unitdir}
     install -d ${D}${sysconfdir}/systemd/user/default.target.wants
     ln -sf ${systemd_user_unitdir}/display-manager.service ${D}${sysconfdir}/systemd/user/default.target.wants
-
-    install -d ${D}${sysconfdir}/tmpfiles.d
-    install -m 0644 ${WORKDIR}/android-disks.conf ${D}${sysconfdir}/tmpfiles.d/android-disks.conf
 
     install -d ${D}${sysconfdir}/systemd/network/
     install -m 0644 ${WORKDIR}/*.network ${D}${sysconfdir}/systemd/network
