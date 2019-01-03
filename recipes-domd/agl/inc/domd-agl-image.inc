@@ -89,7 +89,7 @@ configure_versions_rcar() {
     fi
 
     # Disable shared link for GO packages
-    base_set_conf_value ${local_conf} GO_LINKSHARED ""
+    base_set_conf_value ${local_conf} GO_LINKSHARED " "
 
     # FIXME: normally bitbake fails with error if there are bbappends w/o recipes
     # which is the case for agl-demo-platform's recipe-platform while building
