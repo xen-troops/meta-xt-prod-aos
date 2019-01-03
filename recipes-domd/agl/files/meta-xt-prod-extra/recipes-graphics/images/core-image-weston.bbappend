@@ -25,6 +25,7 @@ IMAGE_INSTALL_remove = " \
     optee-linuxdriver-armtz \
     optee-client \
     libx11-locale \
+    dhcp-client \
 "
 
 # Use only provided proprietary graphic modules
