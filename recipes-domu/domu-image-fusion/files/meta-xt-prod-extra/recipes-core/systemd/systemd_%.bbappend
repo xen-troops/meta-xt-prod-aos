@@ -1,9 +1,5 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-SRC_URI_append = " \
-    file://ip_forward.conf \
-"
-
 PACKAGECONFIG_append = " networkd"
 PACKAGECONFIG_append = " iptc"
 PACKAGECONFIG_append = " resolved"
