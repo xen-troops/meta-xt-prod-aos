@@ -1,7 +1,5 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-VISSERVER = "192.168.0.1    wwwivi"
-
 SRC_URI_append = " \
     file://aos-servicemanager.service \
     file://aos_servicemanager.cfg \
@@ -9,6 +7,7 @@ SRC_URI_append = " \
     file://root_dev.conf \
     file://first-boot.service \
     file://first_boot.sh \
+    file://rootCA.crt \
 "
 
 inherit systemd
@@ -22,6 +21,7 @@ FILES_${PN} += " \
     /var/aos/servicemanager/aos_servicemanager.cfg \
     ${sysconfdir}/sysctl.d/*.conf \
     ${sysconfdir}/tmpfiles.d/*.conf \
+    ${datadir}/ca-certificates/aos/*.crt \
 "
 
 do_install_append() {
@@ -41,11 +41,21 @@ do_install_append() {
 
     install -d ${D}${bindir}
     install -m 0755 ${WORKDIR}/first_boot.sh ${D}${bindir}
+
+    install -d ${D}${datadir}/ca-certificates/aos
+    install -m 0644 ${WORKDIR}/rootCA.crt ${D}${datadir}/ca-certificates/aos
 }
+
+VISSERVER = "192.168.0.1    wwwivi"
+AOSCERTIFICATE = "aos/rootCA.crt"
 
 pkg_postinst_${PN}() {
     if ! grep -q '${VISSERVER}' $D/etc/hosts ; then
         echo '${VISSERVER}' >> $D/etc/hosts
+    fi
+
+    if ! grep -q '${AOSCERTIFICATE}' $D/etc/ca-certificates.conf ; then
+        echo '${AOSCERTIFICATE}' >> $D/etc/ca-certificates.conf
     fi
 
     sed -ie '/^\/dev\/root/ s/defaults/defaults,usrquota/' $D/etc/fstab
