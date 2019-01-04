@@ -14,7 +14,6 @@ SRC_URI_append = " \
 inherit systemd
 
 SYSTEMD_SERVICE_${PN} = " \
-    aos-servicemanager.service \
     first-boot.service \
 "
 
