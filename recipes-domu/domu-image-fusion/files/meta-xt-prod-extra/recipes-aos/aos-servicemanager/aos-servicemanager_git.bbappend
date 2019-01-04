@@ -1,7 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-VISSERVER = "192.168.0.1    wwwivi"
-
+SRC_URI_append = " \
     file://aos-servicemanager.service \
     file://aos_servicemanager.cfg \
     file://ipforwarding.conf \
