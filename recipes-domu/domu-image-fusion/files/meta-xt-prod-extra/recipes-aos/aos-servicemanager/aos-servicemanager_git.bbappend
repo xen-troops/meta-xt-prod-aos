@@ -7,11 +7,16 @@ SRC_URI_append = " \
     file://aos_servicemanager.cfg \
     file://ipforwarding.conf \
     file://root_dev.conf \
+    file://first-boot.service \
+    file://first_boot.sh \
 "
 
 inherit systemd
 
-SYSTEMD_SERVICE_${PN} = "aos-servicemanager.service"
+SYSTEMD_SERVICE_${PN} = " \
+    aos-servicemanager.service \
+    first-boot.service \
+"
 
 FILES_${PN} += " \
     ${systemd_system_unitdir}/*.service \
@@ -34,6 +39,9 @@ do_install_append() {
 
     install -d ${D}${sysconfdir}/tmpfiles.d
     install -m 0644 ${WORKDIR}/root_dev.conf ${D}${sysconfdir}/tmpfiles.d
+
+    install -d ${D}${bindir}
+    install -m 0755 ${WORKDIR}/first_boot.sh ${D}${bindir}
 }
 
 pkg_postinst_${PN}() {
