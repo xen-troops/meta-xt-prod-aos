@@ -1,0 +1,9 @@
+[Unit]
+Description=Runs first_boot.sh once at first boot
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/first_boot.sh
+
+[Install]
+WantedBy=multi-user.target
