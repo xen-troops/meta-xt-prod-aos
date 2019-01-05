@@ -1,9 +1,7 @@
 IMAGE_INSTALL_append = " \
     tzdata \
     aos-servicemanager \
-    logrotate \
-    openssh-sshd \
-    openssh-scp \
+    ssh \
 "
 
 populate_vmlinux () {
