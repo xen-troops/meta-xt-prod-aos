@@ -28,7 +28,7 @@ do_install_append() {
     install -d ${D}/var/aos/servicemanager
     install -m 0644 ${WORKDIR}/aos_servicemanager.cfg ${D}/var/aos/servicemanager
 
-    install -d ${D}/var/aos/servicemanager/fcrypt
+    install -d ${D}/var/aos/servicemanager/data/fcrypt
 
     install -d ${D}${systemd_system_unitdir}
     install -m 0644 ${WORKDIR}/*.service ${D}${systemd_system_unitdir}
