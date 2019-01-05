@@ -1,14 +1,8 @@
 IMAGE_INSTALL_append = " \
     guest-addons \
-    libxenbe \
-    displbe \
-    displaymanager \
-    sndbe \
-    guest-addons-displbe-service \
     guest-addons-bridge-up-notification-service \
     guest-addons-bridge-config \
     kmscube \
-    alsa-utils \
     aos-vis \
     telemetry-emulator \
 "
