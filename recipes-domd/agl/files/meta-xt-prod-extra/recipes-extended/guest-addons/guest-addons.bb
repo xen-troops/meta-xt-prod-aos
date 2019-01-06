@@ -16,7 +16,6 @@ SRC_URI = " \
     file://xenbr0.network \
     file://xenbr0-systemd-networkd.conf \
     file://port-forward-systemd-networkd.conf \
-    file://sndbe.service \
     file://systemd-networkd-wait-online.conf \
 "
 
