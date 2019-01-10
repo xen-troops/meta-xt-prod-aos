@@ -1,7 +1,7 @@
 IMAGE_INSTALL_append = " \
     tzdata \
     aos-servicemanager \
-    openssg-sshd \
+    openssh-sshd \
     openssh-scp \
 "
 
