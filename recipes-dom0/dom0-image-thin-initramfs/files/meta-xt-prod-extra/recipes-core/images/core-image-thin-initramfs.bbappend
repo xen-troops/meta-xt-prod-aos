@@ -16,6 +16,7 @@ IMAGE_INSTALL_append = " \
     expect \
     openssh-scp \
     openssh-ssh \
+    provisioning \
 "
 
 XT_GUESTS_INSTALL ?= "doma domf"
