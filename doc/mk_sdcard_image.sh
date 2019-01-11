@@ -261,7 +261,7 @@ make_image()
 	local db_base_folder=$1
 	local img_output_file=$2
 	local image_sg_gb=${3:-5}
-	local loop_dev="/dev/loop0"
+	local loop_dev="$(losetup -f)"
 
 	print_step "Preparing image at ${img_output_file}"
 
@@ -283,7 +283,7 @@ unpack_domain()
 	local db_base_folder=$1
 	local img_output_file=$2
 	local domain=$3
-	local loop_dev="/dev/loop0"
+	local loop_dev="$(losetup -f)"
 
 	print_step "Unpacking single domain: $domain"
 
