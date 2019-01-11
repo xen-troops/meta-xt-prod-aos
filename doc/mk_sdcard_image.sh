@@ -5,11 +5,15 @@ CUR_STEP=1
 
 usage()
 {
+	echo "###############################################################################"
+	echo "SD card image builder script for AOS product. v0.1"
+	echo "###############################################################################"
+	echo "Usage:"
 	echo "`basename "$0"` <-p image-folder> <-d image-file> [-s image-size-gb] [-u dom0|domd|domf]"
 	echo "	-p image-folder	Base daily build folder where artifacts live"
 	echo "	-d image-file	Output image file or physical device"
-	echo "	-s image-size	Optional, image size in GB"
-	echo "  -u domain	Optional, unpack the domain specified"
+	echo "	-s image-size	Optional, image size in GiB"
+	echo "	-u domain	Optional, unpack the domain specified"
 
 	exit 1
 }
@@ -32,13 +36,13 @@ inflate_image()
 	local size_gb=$2
 
 	print_step "Inflate image"
-
+	echo "DEV -" $dev
 	if  [ -b "$dev" ] ; then
 		echo "Using physical block device $dev"
 		return 0
 	fi
 
-	echo "Inflating image file at $dev of size ${size_gb}GB"
+	echo "Inflating image file at $dev of size ${size_gb}GiB"
 
 	local inflate=1
 	if [ -e $1 ] ; then
@@ -55,7 +59,7 @@ inflate_image()
 		esac
 	fi
 	if [[ $inflate == 1 ]] ; then
-		sudo dd if=/dev/zero of=$dev bs=1M count=$(($size_gb*1024)) || exit 1
+		sudo dd if=/dev/zero of=$dev bs=1M count=0 seek=$(($size_gb*1024)) || exit 1
 	fi
 }
 
@@ -66,12 +70,12 @@ partition_image()
 {
 	print_step "Make partitions"
 
-	sudo parted -s $1 mklabel msdos
+	sudo parted -s $1 mklabel msdos || true
 
-	sudo parted -s $1 mkpart primary ext4 1MiB 257MiB
-	sudo parted -s $1 mkpart primary ext4 257MiB 4257MiB
-	sudo parted -s $1 mkpart primary ext4 4257MiB 8257MiB
-
+	sudo parted -s $1 mkpart primary ext4 1MiB 257MiB || true
+	sudo parted -s $1 mkpart primary ext4 257MiB 4257MiB || true
+	sudo parted -s $1 mkpart primary ext4 4257MiB 8257MiB || true
+	sudo parted $1 print
 	sudo partprobe $1
 }
 
@@ -174,7 +178,7 @@ unpack_dom_from_tar()
 
 	mount_part $loop_base $img_output_file $part $MOUNT_POINT
 
-	sudo tar -xj --numeric-owner --preserve-permissions --preserve-order --totals \
+	sudo tar --extract --bzip2 --numeric-owner --preserve-permissions --preserve-order --totals \
 		--xattrs-include='*' --directory="${MOUNT_POINT}" --file=$rootfs
 
 	umount_part $loop_base $part
@@ -190,7 +194,7 @@ unpack_dom0()
 
 	print_step "Unpacking Dom0"
 
-	local dom0_name=`ls $db_base_folder | grep dom0`
+	local dom0_name=`ls $db_base_folder | grep dom0-image-thin`
 	local dom0_root=$db_base_folder/$dom0_name
 
 	local domd_name=`ls $db_base_folder | grep domd`
@@ -275,7 +279,6 @@ make_image()
 
 	sync
 	sudo losetup -d $loop_dev || true
-	print_step "Done"
 }
 
 unpack_domain()
@@ -283,23 +286,27 @@ unpack_domain()
 	local db_base_folder=$1
 	local img_output_file=$2
 	local domain=$3
-	local loop_dev="$(losetup -f)"
 
 	print_step "Unpacking single domain: $domain"
 
 	sudo umount -f ${img_output_file}* || true
-	sudo losetup -d $loop_dev || true
 
 	case $domain in
 		dom0)
+			sudo losetup -P -f $img_output_file
+			loop_dev=`sudo losetup -j $img_output_file | cut -d":" -f1`
 			mkfs_boot $img_output_file $loop_dev
 			unpack_dom0 $db_base_folder $loop_dev $img_output_file
 		;;
 		domd)
+			sudo losetup -P -f $img_output_file
+			loop_dev=`sudo losetup -j $img_output_file | cut -d":" -f1`
 			mkfs_domd $img_output_file $loop_dev
 			unpack_domd $db_base_folder $loop_dev $img_output_file
 		;;
 		domf)
+			sudo losetup -P -f $img_output_file
+			loop_dev=`sudo losetup -j $img_output_file | cut -d":" -f1`
 			mkfs_domf $img_output_file $loop_dev
 			unpack_domf $db_base_folder $loop_dev $img_output_file
 		;;
@@ -307,9 +314,7 @@ unpack_domain()
 		exit 1
 		;;
 	esac
-
-	sync
-	print_step "Done"
+	sudo losetup -d $loop_dev
 }
 
 
@@ -342,12 +347,36 @@ if [ -z "${ARG_DEPLOY_DEV}" ]; then
 	usage
 fi
 
+# Check that deploy path contains dom0, domd and doma
+dom0_name=`ls ${ARG_DEPLOY_PATH} | grep dom0-image-thin` || true
+domd_name=`ls ${ARG_DEPLOY_PATH} | grep domd` || true
+domf_name=`ls ${ARG_DEPLOY_PATH} | grep domu-image-fusion` || true
+if [ -z "$dom0_name" ]; then
+	echo "Error: deploy path has no dom0."
+	exit 2
+fi
+if [ -z "$domd_name" ]; then
+	echo "Error: dploy path has no domd."
+	exit 2
+fi
+if [ -z "$domf_name" ]; then
+	echo "Error: deploy path has no domf."
+	exit 2
+fi
+
 echo "Using deploy path: \"$ARG_DEPLOY_PATH\""
 echo "Using device     : \"$ARG_DEPLOY_DEV\""
 
+sudo losetup -P -f $ARG_DEPLOY_DEV
+loop_dev_in=`sudo losetup -j $ARG_DEPLOY_DEV | cut -d":" -f1`
+
 if [ ! -z "${ARG_UNPACK_DOM}" ]; then
-	unpack_domain $ARG_DEPLOY_PATH $ARG_DEPLOY_DEV $ARG_UNPACK_DOM
+	unpack_domain $ARG_DEPLOY_PATH $loop_dev_in $ARG_UNPACK_DOM
 else
-	make_image $ARG_DEPLOY_PATH $ARG_DEPLOY_DEV $ARG_IMG_SIZE_GB
+	make_image $ARG_DEPLOY_PATH $loop_dev_in $ARG_IMG_SIZE_GB
 fi
 
+print_step "Syncing"
+sync
+sudo losetup -d $loop_dev_in
+print_step "Done"
