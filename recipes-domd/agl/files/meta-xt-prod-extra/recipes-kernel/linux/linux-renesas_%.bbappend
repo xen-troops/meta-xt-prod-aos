@@ -26,6 +26,11 @@ SRC_URI_append_rcar = " \
     file://0002-Revert-clk-renesas-r8a7796-Remove-clock-that-supplie.patch \
     file://0003-Revert-clk-renesas-r8a7795-Remove-clock-that-supplie.patch \
     file://0004-Revert-clk-renesas-r8a7796-Remove-clock-that-supplie.patch \
+    file://salvator-generic-doma.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
+"
+
+KERNEL_DEVICETREE_append_rcar = " \
+    renesas/salvator-generic-doma.dtb \
 "
 
 DEPLOYDIR="${XT_DIR_ABS_SHARED_BOOT_DOMD}"
@@ -36,14 +41,12 @@ DEPLOYDIR="${XT_DIR_ABS_SHARED_BOOT_DOMD}"
 SRC_URI_append_salvator-x-h3-4x2g-xt = " \
     file://r8a7795-salvator-x-4x2g-dom0.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
     file://r8a7795-salvator-x-4x2g-domd.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
-    file://salvator-generic-doma.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
     file://r8a7795-salvator-x-4x2g-domu.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
 "
 
 KERNEL_DEVICETREE_salvator-x-h3-4x2g-xt = " \
     renesas/r8a7795-salvator-x-4x2g-dom0.dtb \
     renesas/r8a7795-salvator-x-4x2g-domd.dtb \
-    renesas/r8a7795-salvator-x-4x2g-doma.dtb \
     renesas/r8a7795-salvator-x-4x2g-domu.dtb \
 "
 
@@ -57,7 +60,6 @@ KERNEL_DEVICETREE_salvator-x-h3-4x2g-xt = " \
 SRC_URI_append_salvator-x-h3-xt = " \
     file://r8a7795-salvator-x-4x2g-dom0.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
     file://r8a7795-salvator-x-4x2g-domd.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
-    file://salvator-generic-doma.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
     file://r8a7795-salvator-x-4x2g-domu.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
     file://r8a7795-salvator-x-dom0.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
 "
@@ -65,7 +67,6 @@ SRC_URI_append_salvator-x-h3-xt = " \
 KERNEL_DEVICETREE_salvator-x-h3-xt = " \
     renesas/r8a7795-salvator-x-dom0.dtb \
     renesas/r8a7795-salvator-x-4x2g-domd.dtb \
-    renesas/r8a7795-salvator-x-4x2g-doma.dtb \
     renesas/r8a7795-salvator-x-4x2g-domu.dtb \
 "
 
@@ -76,7 +77,6 @@ SRC_URI_append_salvator-xs-h3-4x2g-xt = " \
     file://r8a7795-salvator-xs-4x2g-dom0.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
     file://r8a7795-salvator-xs-4x2g-domd.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
     file://r8a7795-salvator-x-4x2g-domu.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
-    file://salvator-generic-doma.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
 "
 
 KERNEL_DEVICETREE_salvator-xs-h3-4x2g-xt = " \
@@ -98,7 +98,6 @@ SRC_URI_append_salvator-xs-h3-2x2g-xt = " \
     file://r8a7795-salvator-xs-4x2g-domd.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
     file://r8a7795-salvator-x-4x2g-domu.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
     file://r8a7795-salvator-xs-2x2g-dom0.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
-    file://salvator-generic-doma.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
 "
 
 KERNEL_DEVICETREE_salvator-xs-h3-2x2g-xt = " \
@@ -121,7 +120,6 @@ SRC_URI_append_salvator-xs-h3-xt = " \
     file://r8a7795-salvator-xs-4x2g-domd.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
     file://r8a7795-salvator-x-4x2g-domu.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
     file://r8a7795-salvator-xs-dom0.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
-    file://salvator-generic-doma.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
 "
 
 KERNEL_DEVICETREE_salvator-xs-h3-xt = " \
@@ -140,14 +138,12 @@ KERNEL_DEVICETREE_salvator-xs-h3-xt = " \
 SRC_URI_append_salvator-x-m3-xt = " \
     file://r8a7796-salvator-x-dom0.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
     file://r8a7796-salvator-x-domd.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
-    file://salvator-generic-doma.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
     file://r8a7796-salvator-x-domu.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
 "
 
 KERNEL_DEVICETREE_salvator-x-m3-xt = " \
     renesas/r8a7796-salvator-x-dom0.dtb \
     renesas/r8a7796-salvator-x-domd.dtb \
-    renesas/r8a7795-salvator-x-4x2g-doma.dtb \
     renesas/r8a7796-salvator-x-domu.dtb \
 "
 
