@@ -438,13 +438,14 @@ make_image()
 {
 	local db_base_folder=$1
 	local img_output_file=$2
+	local config_for_partitions=$3
 
 	print_step "Preparing image at ${img_output_file}"
 	ls ${img_output_file}?* | xargs -n1 sudo umount -l -f || true
 
 	sudo umount -f ${img_output_file}* || true
 
-	partition_image $img_output_file
+	partition_image $img_output_file $config_for_partitions
 
 	mkfs_image $img_output_file
 
@@ -576,7 +577,7 @@ loop_dev_in=`sudo losetup --find --partscan --show $ARG_DEPLOY_DEV`
 if [ ! -z "${ARG_UNPACK_DOM}" ]; then
 	unpack_domain $ARG_DEPLOY_PATH $loop_dev_in $ARG_UNPACK_DOM
 else
-	make_image $ARG_DEPLOY_PATH $loop_dev_in
+	make_image $ARG_DEPLOY_PATH $loop_dev_in $ARG_CONFIGURATION
 fi
 
 print_step "Syncing"
