@@ -438,14 +438,13 @@ make_image()
 {
 	local db_base_folder=$1
 	local img_output_file=$2
-	local config_for_partitions=$3
 
 	print_step "Preparing image at ${img_output_file}"
 	ls ${img_output_file}?* | xargs -n1 sudo umount -l -f || true
 
 	sudo umount -f ${img_output_file}* || true
 
-	partition_image $img_output_file $config_for_partitions
+	partition_image $img_output_file
 
 	mkfs_image $img_output_file
 
@@ -564,6 +563,8 @@ if [ ! -z ${DOMA_START} ]; then
 	fi
 fi
 
+define_sizes_of_partitions $ARG_CONFIGURATION
+
 echo "Using deploy path: \"$ARG_DEPLOY_PATH\""
 echo "Using device     : \"$ARG_DEPLOY_DEV\""
 
@@ -577,7 +578,7 @@ loop_dev_in=`sudo losetup --find --partscan --show $ARG_DEPLOY_DEV`
 if [ ! -z "${ARG_UNPACK_DOM}" ]; then
 	unpack_domain $ARG_DEPLOY_PATH $loop_dev_in $ARG_UNPACK_DOM
 else
-	make_image $ARG_DEPLOY_PATH $loop_dev_in $ARG_CONFIGURATION
+	make_image $ARG_DEPLOY_PATH $loop_dev_in
 fi
 
 print_step "Syncing"
