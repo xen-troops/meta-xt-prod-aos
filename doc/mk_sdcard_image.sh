@@ -221,6 +221,14 @@ mkfs_domf()
 	mkfs_one $1 $DOMF_PARTITION $DOMF_LABEL
 }
 
+mkfs_domf()
+{
+	local img_output_file=$1
+	local loop_dev=$2
+
+	mkfs_one $img_output_file $loop_dev 3 domf
+}
+
 mkfs_doma()
 {
 	# Below we use 4 as number of partition inside android's partition.
@@ -369,6 +377,17 @@ unpack_domu()
 	unpack_dom_from_tar $db_base_folder $loop_dev $DOMU_PARTITION domu
 }
 
+unpack_domf()
+{
+	local db_base_folder=$1
+	local loop_dev=$2
+	local img_output_file=$3
+
+	print_step  "Unpacking DomF"
+
+	unpack_dom_from_tar $db_base_folder $loop_dev $img_output_file 3 domu
+}
+
 unpack_doma()
 {
 	local db_base_folder=$1
@@ -478,6 +497,11 @@ unpack_domain()
 			mkfs_domu $img_output_file
 			unpack_domu $db_base_folder $img_output_file
 		;;
+		domf)
+			loop_dev=`sudo losetup --find --partscan --show $img_output_file`
+			mkfs_domf $img_output_file $loop_dev
+			unpack_domf $db_base_folder $loop_dev $img_output_file
+		;;
 		doma)
 			local loop_dev_a=`sudo losetup --find --partscan --show ${img_output_file}p$DOMA_PARTITION`
 			mkfs_doma $loop_dev_a
@@ -562,8 +586,6 @@ if [ ! -z ${DOMA_START} ]; then
 		exit 2
 	fi
 fi
-
-define_sizes_of_partitions $ARG_CONFIGURATION
 
 echo "Using deploy path: \"$ARG_DEPLOY_PATH\""
 echo "Using device     : \"$ARG_DEPLOY_DEV\""
