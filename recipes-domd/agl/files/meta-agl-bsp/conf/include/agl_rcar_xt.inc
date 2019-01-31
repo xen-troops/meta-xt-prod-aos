@@ -57,3 +57,4 @@ BBMASK .= "|meta-virtualization/recipes-containers/docker"
 BBMASK .= "|kernel-module-uvcs-drv|omx-user-module|gstreamer1.0-omx"
 
 OSTREE_BOOTLOADER ?= "u-boot"
+BB_DANGLINGAPPENDS_WARNONLY = "yes"
