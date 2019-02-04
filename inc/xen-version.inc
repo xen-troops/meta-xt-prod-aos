@@ -3,7 +3,7 @@
 # Following inc file defines XEN version and needed glue info to get it
 # built with the current yocto version
 ################################################################################
-require ../meta-xt-images-domx/recipes-extended/xen/xen-4.10-rocko.inc
+require ../meta-xt-images-domx/recipes-extended/xen/xen-4.12-rocko.inc
 
 <<<<<<< HEAD
 # N.B. - nobranch: Don't check the SHA validation for branch. set this option
