@@ -241,6 +241,14 @@ mkfs_domu()
 	mkfs_one $1 $DOMU_PARTITION $DOMU_LABEL
 }
 
+mkfs_domu()
+{
+	local img_output_file=$1
+	local loop_dev=$2
+
+	mkfs_one $img_output_file $loop_dev 3 domu
+}
+
 mkfs_image()
 {
 	local img_output_file=$1
@@ -388,6 +396,17 @@ unpack_domf()
 	unpack_dom_from_tar $db_base_folder $loop_dev $img_output_file 3 domu
 }
 
+unpack_domu()
+{
+	local db_base_folder=$1
+	local loop_dev=$2
+	local img_output_file=$3
+
+	print_step  "Unpacking DomU"
+
+	unpack_dom_from_tar $db_base_folder $loop_dev $img_output_file 3 domu
+}
+
 unpack_doma()
 {
 	local db_base_folder=$1
@@ -501,6 +520,11 @@ unpack_domain()
 			loop_dev=`sudo losetup --find --partscan --show $img_output_file`
 			mkfs_domf $img_output_file $loop_dev
 			unpack_domf $db_base_folder $loop_dev $img_output_file
+		;;
+		domu)
+			loop_dev=`sudo losetup --find --partscan --show $img_output_file`
+			mkfs_domu $img_output_file $loop_dev
+			unpack_domu $db_base_folder $loop_dev $img_output_file
 		;;
 		doma)
 			local loop_dev_a=`sudo losetup --find --partscan --show ${img_output_file}p$DOMA_PARTITION`
