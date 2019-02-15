@@ -369,26 +369,6 @@ unpack_domu()
 	unpack_dom_from_tar $db_base_folder $loop_dev $DOMU_PARTITION domu
 }
 
-unpack_domf()
-{
-	local db_base_folder=$1
-	local loop_dev=$2
-
-	print_step  "Unpacking DomF"
-
-	unpack_dom_from_tar $db_base_folder $loop_dev 3 domu
-}
-
-unpack_domu()
-{
-	local db_base_folder=$1
-	local loop_dev=$2
-
-	print_step  "Unpacking DomU"
-
-	unpack_dom_from_tar $db_base_folder $loop_dev 3 domu
-}
-
 unpack_doma()
 {
 	local db_base_folder=$1
