@@ -50,7 +50,14 @@ XT_QUIRK_PATCH_SRC_URI_rcar = "\
     file://0001-Force-RCAR_LOSSY_ENABLE-to-0-until-Xen-is-fixed-to-p.patch;patchdir=meta-renesas \
 "
 
-GLES_VERSION_rcar = "1.9"
+XT_BB_LOCAL_CONF_FILE_rcar = "meta-xt-prod-extra/doc/local.conf.rcar-domd-image-weston"
+XT_BB_LAYERS_FILE_rcar = "meta-xt-prod-extra/doc/bblayers.conf.rcar-domd-image-weston"
+
+# Path to proprietary graphic modules pre built binaries.
+# Uncomment line below and set proper path.
+#XT_RCAR_EVAPROPRIETARY_DIR = ""
+
+GLES_VERSION_rcar = "1.10"
 
 configure_versions_rcar() {
     local local_conf="${S}/build/conf/local.conf"
