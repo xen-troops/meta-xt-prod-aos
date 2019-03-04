@@ -70,7 +70,7 @@ directory.
 6. Now, to build the images you can run the same command as in 4) but with
 additional argument --continue-build:
 ```
-python ./build_prod.py --build-type dailybuild --machine MACHINE_NAME --product devel --with-local-conf --config xt-prod-devel.cfg --continue-build
+python ./build_prod.py --build-type dailybuild --machine MACHINE_NAME --product devel --with-local-conf --config xt-prod-aos.cfg --continue-build
 ```
 9. You are done. The artifacts of the build are located at workspace_base directory:
 ```
@@ -150,7 +150,7 @@ Usage:
 ======
 
 Different helpers scripts and docs are located at: 
-`build-workspace/build/meta-xt-prod-devel/doc`
+`build-workspace/build/meta-xt-prod-aos/doc`
 
 Let's consider available boot options in details.
 
