@@ -20,6 +20,7 @@ SRC_URI_remove = " \
 "
 
 SRC_URI_append_rcar = " \
+    file://salvator-generic-doma.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
     file://xen-chosen.dtsi;subdir=git/arch/${ARCH}/boot/dts/renesas \
 "
 
