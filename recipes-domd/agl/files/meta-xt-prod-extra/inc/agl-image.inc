@@ -4,7 +4,7 @@ IMAGE_INSTALL_append = " \
     guest-addons-bridge-config \
     kmscube \
     aos-vis \
-    telemetry-emulator \
+    ${@bb.utils.contains('AOS_VIS_PLUGINS', 'telemetryemulatoradapter', 'telemetry-emulator', '', d)} \
 "
 
 #Add Xen and additional packages to build

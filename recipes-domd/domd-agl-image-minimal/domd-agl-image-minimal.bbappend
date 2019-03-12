@@ -28,6 +28,10 @@ configure_versions_rcar() {
 
     base_update_conf_value ${local_conf} XT_GUESTS_INSTALL "${XT_GUESTS_INSTALL}"
 
+    if [ -z "${AOS_VIS_PLUGINS}" ];then
+        base_update_conf_value ${local_conf} AOS_VIS_PLUGINS "${AOS_VIS_PLUGINS}"
+    fi
+
     # U-boot/IPL option for H3 (SoC: r8a7795)
     # For H3 SiP DDR 4GiB (1GiB x 4ch)
     #H3_OPTION = "0"
