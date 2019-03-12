@@ -15,7 +15,7 @@
 			}
 		},
 		{
-			"Plugin": "renesassimulatoradapter.so",
+			"Plugin": "/usr/lib/aos/vis_plugins/renesassimulatoradapter.so",
 			"Disabled": false,
 			"Params": {
 				"ServerURL": ":9000",
