@@ -28,7 +28,7 @@ configure_versions_rcar() {
 
     base_update_conf_value ${local_conf} XT_GUESTS_INSTALL "${XT_GUESTS_INSTALL}"
 
-    if [ -z "${AOS_VIS_PLUGINS}" ];then
+    if [ ! -z "${AOS_VIS_PLUGINS}" ];then
         base_update_conf_value ${local_conf} AOS_VIS_PLUGINS "${AOS_VIS_PLUGINS}"
     fi
 
