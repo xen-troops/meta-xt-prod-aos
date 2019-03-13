@@ -37,7 +37,7 @@ file `xt-build-server.cfg`:
 ```
 cp xt-build-server.cfg xt-prod-aos.cfg
 ```
-1. Edit it to fit your environment:
+3. Edit it to fit your environment:
  - `workspace_base_dir`: change it to point to the place where the build will happen
  - `workspace_storage_base_dir`: change it to where downloads and other files will be put
  - comment out `XT_RCAR_EVAPROPRIETARY_DIR`
@@ -72,7 +72,7 @@ additional argument --continue-build:
 ```
 python ./build_prod.py --build-type dailybuild --machine MACHINE_NAME --product aos --with-local-conf --config xt-prod-aos.cfg --continue-build
 ```
-9. You are done. The artifacts of the build are located at workspace_base directory:
+7. You are done. The artifacts of the build are located at workspace_base directory:
 ```
 workspace_base/build/build/deploy/
 ├── dom0-image-thin-initramfs
