@@ -166,6 +166,21 @@ KERNEL_DEVICETREE_h3ulcb-xt = " \
     renesas/r8a7795-h3ulcb-domu.dtb \
 "
 
+##############################################################################
+# M3ULCB
+###############################################################################
+SRC_URI_append_m3ulcb-xt = " \
+    file://r8a7796-m3ulcb-dom0.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
+    file://r8a7796-m3ulcb-domd.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
+    file://r8a7796-m3ulcb-domu.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
+"
+
+KERNEL_DEVICETREE_m3ulcb-xt = " \
+    renesas/r8a7796-m3ulcb-dom0.dtb \
+    renesas/r8a7796-m3ulcb-domd.dtb \
+    renesas/r8a7796-m3ulcb-domu.dtb \
+"
+
 do_deploy_append() {
     for DTB in ${KERNEL_DEVICETREE}
         do
