@@ -43,8 +43,10 @@ SRCREV_agl-repo = "${AUTOREV}"
 SRCREV_img-proprietary = "${AUTOREV}"
 SRCREV_metago = "${AUTOREV}"
 
-SRC_URI_rcar = " \
-    file://0001-Do-not-try-to-use-XDG-environment-while-setting-up.patch \
+XT_QUIRK_PATCH_SRC_URI_rcar = "\
+    file://${S}/meta-renesas/meta-rcar-gen3/docs/sample/patch/patch-for-linaro-gcc/0001-rcar-gen3-add-readme-for-building-with-Linaro-Gcc.patch;patchdir=meta-renesas \
+    file://0001-hack-Remove-dependency-to-multi-user.target-from-wes.patch;patchdir=meta-renesas \
+    file://0001-rcar-gen3-arm-trusted-firmware-Allow-to-add-more-bui.patch;patchdir=meta-renesas \
 "
 
 GLES_VERSION_rcar = "1.9"
