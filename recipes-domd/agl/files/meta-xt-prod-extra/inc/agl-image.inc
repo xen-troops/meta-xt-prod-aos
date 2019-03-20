@@ -5,6 +5,7 @@ IMAGE_INSTALL_append = " \
     kmscube \
     aos-vis \
     ${@bb.utils.contains('AOS_VIS_PLUGINS', 'telemetryemulatoradapter', 'telemetry-emulator', '', d)} \
+    logrotate \
 "
 
 #Add Xen and additional packages to build

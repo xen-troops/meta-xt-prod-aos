@@ -1,0 +1,6 @@
+/var/log/xen/* {
+    size 2M
+    missingok
+    rotate 1
+    notifempty
+}
