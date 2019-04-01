@@ -12,6 +12,10 @@ SRC_URI_append = " \
 
 inherit systemd
 
+RDEPENDS_${PN} += "\
+    nodejs \
+"
+
 SYSTEMD_SERVICE_${PN} = " \
     first-boot.service \
 "
