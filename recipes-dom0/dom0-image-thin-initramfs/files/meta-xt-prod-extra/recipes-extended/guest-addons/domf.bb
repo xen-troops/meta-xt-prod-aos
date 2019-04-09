@@ -10,6 +10,7 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384
 SRC_URI = "\
     file://domf-h3ulcb.cfg \
     file://domf-m3ulcb.cfg \
+    file://domf-salvator-x-h3.cfg \
     file://guest_domf \
 "
 
@@ -24,7 +25,7 @@ DOMF_ALLOWED_PCPUS_h3ulcb-xt = "4-7"
 
 DOMF_CONFIG_h3ulcb-xt = "domf-h3ulcb.cfg"
 DOMF_CONFIG_m3ulcb-xt = "domf-m3ulcb.cfg"
-
+DOMF_CONFIG_salvator-x-h3-xt = "domf-salvator-x-h3.cfg"
 
 FILES_${PN} = " \
     ${base_prefix}${XT_DIR_ABS_ROOTFS_DOM_CFG}/domf.cfg \
