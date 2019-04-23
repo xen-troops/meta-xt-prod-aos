@@ -4,7 +4,6 @@ IMAGE_INSTALL_append = " \
     guest-addons-bridge-config \
     kmscube \
     aos-vis \
-    ${@bb.utils.contains('AOS_VIS_PLUGINS', 'telemetryemulatoradapter', 'telemetry-emulator', '', d)} \
     logrotate \
 "
 
