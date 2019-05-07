@@ -1,8 +1,8 @@
 RENESAS_BSP_URL = "git://github.com/xen-troops/linux.git"
 
-BRANCH = "rcar-3.7.0-xt.final"
-SRCREV = "7794f75ca7eba6cd6f19b80f8a45bc18fe3230d1"
-LINUX_VERSION = "4.14.35"
+BRANCH = "v4.14/rcar-3.7-ctc"
+SRCREV = "${AUTOREV}"
+LINUX_VERSION = "4.14.75"
 PV = "${LINUX_VERSION}+git${SRCPV}"
 SRC_URI_remove = " \
     file://0001-soc-renesas-rcar-sysc-Update-power-control-flow-for-.patch \
