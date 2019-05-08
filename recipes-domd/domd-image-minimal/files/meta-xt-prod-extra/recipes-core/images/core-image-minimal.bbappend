@@ -6,6 +6,8 @@ IMAGE_INSTALL_append = " \
     optee-os \
     libxenbe \
     sja1105-tool \
+    phytool \
+    devmem2 \
 "
 
 python __anonymous () {
