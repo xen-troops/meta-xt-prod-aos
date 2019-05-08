@@ -16,6 +16,7 @@ IMAGE_INSTALL_append = " \
     xen-base \
     xen-flask \
     xen-xenstat \
+    sja1105-tool \
 "
 
 # Configuration for ARM Trusted Firmware
