@@ -17,6 +17,8 @@ IMAGE_INSTALL_append = " \
     xen-flask \
     xen-xenstat \
     sja1105-tool \
+    phytool \
+    devmem2 \
 "
 
 # Configuration for ARM Trusted Firmware
