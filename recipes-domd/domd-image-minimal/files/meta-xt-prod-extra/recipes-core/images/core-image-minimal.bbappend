@@ -5,6 +5,7 @@ IMAGE_INSTALL_append = " \
     kernel-modules \
     optee-os \
     libxenbe \
+    sja1105-tool \
 "
 
 python __anonymous () {
