@@ -314,7 +314,6 @@
 &ehci0			{ xen,passthrough; };
 &ohci1			{ xen,passthrough; };
 &ehci1			{ xen,passthrough; };
-&pmic			{ xen,passthrough; };
 &ivdp1c			{ xen,passthrough; };
 &vdpb			{ xen,passthrough; };
 &vcplf			{ xen,passthrough; };

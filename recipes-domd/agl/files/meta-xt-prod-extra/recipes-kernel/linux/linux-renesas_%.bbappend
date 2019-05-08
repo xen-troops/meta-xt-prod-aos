@@ -17,15 +17,16 @@ SRC_URI_remove = " \
     file://0004-soc-renesas-rcar-sysc-Add-SYSCEXTMASK-info-for-r8a77.patch \
     file://0005-soc-renesas-rcar-sysc-Add-SYSCEXTMASK-info-for-r8a77.patch \
     file://0006-soc-renesas-rcar-sysc-Add-SYSCEXTMASK-info-for-r8a77.patch \
+    file://0001-NFC-pn533-don-t-send-USB-data-off-of-the-stack.patch \
 "
 
 SRC_URI_append_rcar = " \
     file://0008-soc-Extend-always-on-logic-to-H3-ES3.0.patch \
-    file://0001-firmware-Add-xHCI-Host-Controller-firmware.patch \
     file://0001-Revert-clk-renesas-r8a7795-Remove-clock-that-supplie.patch \
     file://0002-Revert-clk-renesas-r8a7796-Remove-clock-that-supplie.patch \
     file://0003-Revert-clk-renesas-r8a7795-Remove-clock-that-supplie.patch \
     file://0004-Revert-clk-renesas-r8a7796-Remove-clock-that-supplie.patch \
+    file://0001-r8a7795-cetibox-h3ulcb-gweb-v2.dts-Remove-dvfs-node.patch \
 "
 
 DEPLOYDIR="${XT_DIR_ABS_SHARED_BOOT_DOMD}"
