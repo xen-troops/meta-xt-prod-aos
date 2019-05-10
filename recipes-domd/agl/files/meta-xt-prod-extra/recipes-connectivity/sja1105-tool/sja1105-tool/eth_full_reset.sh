@@ -1,6 +1,7 @@
 #!/bin/sh
 GPIO_PATH=/sys/class/gpio
 
+ifconfig eth0 hw ether 11:22:33:44:55:66
 # interface must be up for phytool to access PHYs
 ip link set dev eth0 up
 
