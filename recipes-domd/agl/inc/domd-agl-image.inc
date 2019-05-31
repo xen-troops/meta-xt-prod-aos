@@ -26,8 +26,14 @@ XT_QUIRK_UNPACK_SRC_URI += " \
 XT_QUIRK_UNPACK_SRC_URI += "file://meta-agl;subdir=repo"
 XT_QUIRK_UNPACK_SRC_URI += "file://meta-agl-bsp;subdir=repo/meta-agl"
 
-# these layers will be added to bblayers.conf on do_configure
-XT_QUIRK_BB_ADD_LAYER += "meta-xt-prod-extra"
+################################################################################
+# Renesas R-Car H3ULCB ES3.0 8GB Kingfisher
+################################################################################
+XT_QUIRK_BB_ADD_LAYER_append_h3ulcb-4x2g-kf = " \
+    meta-rcar/meta-rcar-gen3-adas \
+"
+
+XT_BB_IMAGE_TARGET = "core-image-weston"
 
 # Override revision of AGL auxiliary layers
 # N.B. the revision to use must be aligned with Poky's version of AGL to be built with
