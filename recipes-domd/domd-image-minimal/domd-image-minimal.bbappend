@@ -2,13 +2,13 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 FILESEXTRAPATHS_prepend := "${THISDIR}/../../inc:"
 FILESEXTRAPATHS_prepend := "${THISDIR}/../../recipes-domx:"
 
-XT_PRODUCT_NAME ?= "prod-devel"
+XT_PRODUCT_NAME ?= "prod-aos"
 
 python __anonymous () {
     product_name = d.getVar('XT_PRODUCT_NAME', True)
     folder_name = product_name.replace("-", "_")
     d.setVar('XT_MANIFEST_FOLDER', folder_name)
-    if product_name == "prod-devel-src":
+    if product_name == "prod-aos":
         d.appendVar("XT_QUIRK_BB_ADD_LAYER", "meta-aos")
 }
 
@@ -50,11 +50,7 @@ python do_configure_append_h3ulcb-4x2g-kf() {
     bb.build.exec_func("configure_versions_kingfisher", d)
 }
 
-XT_BB_IMAGE_TARGET = "core-image-weston"
-
-# Path to proprietary graphic modules pre built binaries.
-# Uncomment line below and set proper path.
-#XT_RCAR_EVAPROPRIETARY_DIR = ""
+XT_BB_IMAGE_TARGET = "core-image-minimal"
 
 # Dom0 is a generic ARMv8 machine w/o machine overrides,
 # but still needs to know which system we are building,
@@ -79,14 +75,8 @@ XT_QUIRK_PATCH_SRC_URI_rcar = "\
     file://0001-Force-RCAR_LOSSY_ENABLE-to-0-until-Xen-is-fixed-to-p.patch;patchdir=meta-renesas \
 "
 
-XT_BB_LOCAL_CONF_FILE_rcar = "meta-xt-prod-extra/doc/local.conf.rcar-domd-image-weston"
-XT_BB_LAYERS_FILE_rcar = "meta-xt-prod-extra/doc/bblayers.conf.rcar-domd-image-weston"
-
-# Path to proprietary graphic modules pre built binaries.
-# Uncomment line below and set proper path.
-#XT_RCAR_EVAPROPRIETARY_DIR = ""
-
-GLES_VERSION_rcar = "1.10"
+XT_BB_LOCAL_CONF_FILE_rcar = "meta-xt-prod-extra/doc/local.conf.rcar-domd-image-minimal"
+XT_BB_LAYERS_FILE_rcar = "meta-xt-prod-extra/doc/bblayers.conf.rcar-domd-image-minimal"
 
 configure_versions_rcar() {
     local local_conf="${S}/build/conf/local.conf"
@@ -94,34 +84,6 @@ configure_versions_rcar() {
     cd ${S}
     base_update_conf_value ${local_conf} PREFERRED_VERSION_xen "4.12.0+git\%"
     base_update_conf_value ${local_conf} PREFERRED_VERSION_u-boot_rcar "v2018.09\%"
-    if [ -z ${XT_RCAR_EVAPROPRIETARY_DIR} ];then
-        base_update_conf_value ${local_conf} PREFERRED_PROVIDER_gles-user-module "gles-user-module"
-        base_update_conf_value ${local_conf} PREFERRED_VERSION_gles-user-module ${GLES_VERSION}
-
-        base_update_conf_value ${local_conf} PREFERRED_PROVIDER_kernel-module-gles "kernel-module-gles"
-        base_update_conf_value ${local_conf} PREFERRED_VERSION_kernel-module-gles ${GLES_VERSION}
-
-        base_update_conf_value ${local_conf} PREFERRED_PROVIDER_gles-module-egl-headers "gles-module-egl-headers"
-        base_update_conf_value ${local_conf} PREFERRED_VERSION_gles-module-egl-headers ${GLES_VERSION}
-        base_add_conf_value ${local_conf} EXTRA_IMAGEDEPENDS "prepare-graphic-package"
-    else
-        base_update_conf_value ${local_conf} PREFERRED_PROVIDER_virtual/libgles2 "rcar-proprietary-graphic"
-        base_update_conf_value ${local_conf} PREFERRED_PROVIDER_virtual/egl "rcar-proprietary-graphic"
-        base_set_conf_value ${local_conf} PREFERRED_PROVIDER_kernel-module-pvrsrvkm "rcar-proprietary-graphic"
-        base_set_conf_value ${local_conf} PREFERRED_PROVIDER_kernel-module-dc-linuxfb "rcar-proprietary-graphic"
-        base_set_conf_value ${local_conf} PREFERRED_PROVIDER_kernel-module-gles "rcar-proprietary-graphic"
-        base_set_conf_value ${local_conf} PREFERRED_PROVIDER_gles-user-module "rcar-proprietary-graphic"
-        base_set_conf_value ${local_conf} PREFERRED_PROVIDER_gles-module-egl-headers "rcar-proprietary-graphic"
-        base_add_conf_value ${local_conf} BBMASK "meta-xt-images-vgpu/recipes-graphics/gles-module/"
-        base_add_conf_value ${local_conf} BBMASK "meta-xt-prod-extra/recipes-graphics/gles-module/"
-        base_add_conf_value ${local_conf} BBMASK "meta-xt-prod-vgpu/recipes-graphics/gles-module/"
-        base_add_conf_value ${local_conf} BBMASK "meta-xt-prod-vgpu/recipes-graphics/wayland/"
-        base_add_conf_value ${local_conf} BBMASK "meta-xt-prod-vgpu/recipes-kernel/kernel-module-gles/"
-        base_add_conf_value ${local_conf} BBMASK "meta-xt-images-vgpu/recipes-kernel/kernel-module-gles/"
-        base_add_conf_value ${local_conf} BBMASK "meta-renesas/meta-rcar-gen3/recipes-kernel/kernel-module-gles/"
-        base_add_conf_value ${local_conf} BBMASK "meta-renesas/meta-rcar-gen3/recipes-graphics/gles-module/"
-        xt_unpack_proprietary
-    fi
 
     # HACK: force ipk instead of rpm b/c it makes troubles to PVR UM build otherwise
     base_update_conf_value ${local_conf} PACKAGE_CLASSES "package_ipk"
@@ -170,10 +132,10 @@ python do_configure_append_rcar() {
 }
 
 do_install_append () {
-    local LAYERDIR=${TOPDIR}/../meta-xt-prod-devel
-    find ${LAYERDIR}/doc -iname "u-boot-env*" -exec cp -f {} ${DEPLOY_DIR}/domd-image-weston/images/${MACHINE}-xt \; || true
-    find ${LAYERDIR}/doc -iname "mk_sdcard_image.sh" -exec cp -f {} ${DEPLOY_DIR}/domd-image-weston/images/${MACHINE}-xt \; \
+    local LAYERDIR=${TOPDIR}/../meta-xt-prod-aos
+    find ${LAYERDIR}/doc -iname "u-boot-env*" -exec cp -f {} ${DEPLOY_DIR}/domd-image-minimal/images/${MACHINE}-xt \; || true
+    find ${LAYERDIR}/doc -iname "mk_sdcard_image.sh" -exec cp -f {} ${DEPLOY_DIR}/domd-image-minimal/images/${MACHINE}-xt \; \
     -exec cp -f {} ${DEPLOY_DIR} \; || true
-    find ${DEPLOY_DIR}/${PN}/ipk/aarch64 -iname "aos-vis_git*" -exec cp -f {} ${DEPLOY_DIR}/domd-image-weston/images/${MACHINE}-xt \; || true
-    find ${DEPLOY_DIR}/${PN}/ipk/all -iname "ca-certificates_*" -exec cp -f {} ${DEPLOY_DIR}/domd-image-weston/images/${MACHINE}-xt \; || true
+    find ${DEPLOY_DIR}/${PN}/ipk/aarch64 -iname "aos-vis_git*" -exec cp -f {} ${DEPLOY_DIR}/domd-image-minimal/images/${MACHINE}-xt \; || true
+    find ${DEPLOY_DIR}/${PN}/ipk/all -iname "ca-certificates_*" -exec cp -f {} ${DEPLOY_DIR}/domd-image-minimal/images/${MACHINE}-xt \; || true
 }
