@@ -105,10 +105,8 @@ configure_versions_rcar() {
 
     base_update_conf_value ${local_conf} XT_GUESTS_INSTALL "${XT_GUESTS_INSTALL}"
 
-    # DomU based product doesn't need ivi-shell
-    if echo "${XT_GUESTS_INSTALL}" | grep -qi "domu";then
-        base_set_conf_value ${local_conf} DISTRO_FEATURES_remove "ivi-shell"
-    fi
+    # Remove multimedia and graphic support
+    base_set_conf_value ${local_conf} DISTRO_FEATURES_remove "ivi-shell opengl wayland vulkan pulseaudio"
 
     if [ ! -z "${AOS_VIS_PLUGINS}" ];then
         base_update_conf_value ${local_conf} AOS_VIS_PLUGINS "${AOS_VIS_PLUGINS}"
