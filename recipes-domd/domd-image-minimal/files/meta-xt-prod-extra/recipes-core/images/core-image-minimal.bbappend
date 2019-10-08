@@ -1,10 +1,10 @@
 IMAGE_INSTALL_append = " \
     packagegroup-xt-core-guest-addons \
     packagegroup-xt-core-xen \
-    packagegroup-xt-core-pv \
     packagegroup-xt-core-network \
     kernel-modules \
     optee-os \
+    libxenbe \
 "
 
 python __anonymous () {
