@@ -1,8 +1,8 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 FILESEXTRAPATHS_prepend := "${THISDIR}/../../inc:"
 
-do_configure[depends] += "domd-agl-image-minimal:do_domd_install_machine_overrides"
-do_compile[depends] += "domd-agl-image-minimal:do_${BB_DEFAULT_TASK}"
+do_configure[depends] += "domd-image-minimal:do_domd_install_machine_overrides"
+do_compile[depends] += "domd-image-minimal:do_${BB_DEFAULT_TASK}"
 
 XT_GUESTS_BUILD ?= "domf"
 XT_GUESTS_INSTALL ?= "domf"
