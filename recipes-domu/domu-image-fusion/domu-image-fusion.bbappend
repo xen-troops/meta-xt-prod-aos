@@ -47,7 +47,7 @@ configure_versions() {
     # Though systemd properly processes hvc0 advertised as serial console, and is not
     # provided with console by distro-feature xen.
     # So keep following line aligned with an init manager set for the system.
-    base_update_conf_value ${local_conf} SERIAL_CONSOLES = "115200;hvc0"
+    base_update_conf_value ${local_conf} SERIAL_CONSOLE "115200 hvc0"
 
     # set default timezone to Las Vegas
     base_update_conf_value ${local_conf} DEFAULT_TIMEZONE "US/Pacific"
