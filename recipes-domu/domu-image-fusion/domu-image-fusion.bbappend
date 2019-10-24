@@ -53,6 +53,9 @@ configure_versions() {
 
     # set default timezone to Las Vegas
     base_update_conf_value ${local_conf} DEFAULT_TIMEZONE "US/Pacific"
+
+    # Disable shared link for GO packages
+    base_set_conf_value ${local_conf} GO_LINKSHARED ""
 }
 
 python do_configure_append() {
