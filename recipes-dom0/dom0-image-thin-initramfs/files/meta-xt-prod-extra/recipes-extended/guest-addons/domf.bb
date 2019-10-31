@@ -8,9 +8,7 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384361b4de20420"
 
 SRC_URI = "\
-    file://domf-h3ulcb.cfg \
-    file://domf-m3ulcb.cfg \
-    file://domf-salvator-x-h3.cfg \
+    file://domf.cfg \
     file://guest_domf \
 "
 
@@ -45,7 +43,7 @@ INITSCRIPT_PARAMS_${PN}-run = "defaults 86"
 
 do_install() {
     install -d ${D}${base_prefix}${XT_DIR_ABS_ROOTFS_DOM_CFG}
-    install -m 0744 ${WORKDIR}/${DOMF_CONFIG} ${D}${base_prefix}${XT_DIR_ABS_ROOTFS_DOM_CFG}/domf.cfg
+    install -m 0744 ${WORKDIR}/domf.cfg ${D}${base_prefix}${XT_DIR_ABS_ROOTFS_DOM_CFG}/domf.cfg
 
     install -d ${D}${sysconfdir}/init.d
     install -m 0744 ${WORKDIR}/guest_domf ${D}${sysconfdir}/init.d/
