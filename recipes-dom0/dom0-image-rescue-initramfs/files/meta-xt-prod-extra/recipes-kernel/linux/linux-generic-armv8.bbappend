@@ -15,6 +15,13 @@ SRC_URI_append = " \
 SRC_URI_append_salvator-x-m3-xt = " \
     file://r8a7796-salvator-x-dom0.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
 "
+###############################################################################
+# cetibox
+###############################################################################
+SRC_URI_append_cetibox = " \
+    git://github.com/xen-troops/linux.git;branch=${BRANCH} \
+    file://defconfig_cb \
+  "
 
 KERNEL_DEVICETREE_salvator-x-m3-xt = " \
     renesas/r8a7796-salvator-x-dom0.dtb \

@@ -11,6 +11,10 @@ SRC_URI_append = " \
     file://defconfig \
 "
 
+SRC_URI_append_cetibox = " \
+    file://defconfig_cb \
+"
+
 DEPLOYDIR="${XT_DIR_ABS_SHARED_BOOT_DOMU}"
 
 do_deploy_append() {
