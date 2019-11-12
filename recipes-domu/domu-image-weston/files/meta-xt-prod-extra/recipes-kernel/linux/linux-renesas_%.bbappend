@@ -1,4 +1,5 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS_prepend_cetibox := "${THISDIR}/${PN}/cetibox:"
 
 require inc/xt_shared_env.inc
 
