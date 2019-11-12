@@ -1,8 +1,10 @@
 require inc/xt_shared_env.inc
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS_prepend_cetibox := "${THISDIR}/${PN}/cetibox:"
 
 BRANCH = "master"
+BRANCH_cetibox = "v4.14/rcar-3.7-ctc"
 SRCREV = "${AUTOREV}"
 LINUX_VERSION = "4.14.75"
 
