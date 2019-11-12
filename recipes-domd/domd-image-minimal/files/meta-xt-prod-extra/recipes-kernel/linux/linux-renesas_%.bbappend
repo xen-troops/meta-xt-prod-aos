@@ -1,10 +1,11 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
-
+FILESEXTRAPATHS_prepend_cetibox := "${THISDIR}/${PN}/cetibox:"
 require inc/xt_shared_env.inc
 
 RENESAS_BSP_URL = "git://github.com/xen-troops/linux.git"
 
 BRANCH = "master"
+BRANCH_cetibox = "v4.14/rcar-3.7-ctc"
 SRCREV = "${AUTOREV}"
 LINUX_VERSION = "4.14.75"
 SRC_URI_append = " \
@@ -181,7 +182,6 @@ SRC_URI_append_cetibox = " \
     file://r8a7795-h3ulcb-cetibox-dom0.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
     file://r8a7795-h3ulcb-cetibox-domd.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
     file://0001-r8a7795-cetibox-h3ulcb-gweb-v2.dts-Remove-dvfs-node.patch \
-    file://defconfig \
   "
 
 KERNEL_DEVICETREE_h3ulcb-cb-xt = " \
