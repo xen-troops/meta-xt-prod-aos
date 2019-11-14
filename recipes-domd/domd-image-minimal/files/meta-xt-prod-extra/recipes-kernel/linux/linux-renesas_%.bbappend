@@ -11,9 +11,20 @@ LINUX_VERSION = "4.14.75"
 SRC_URI_append = " \
     file://defconfig \
 "
+
 SRC_URI_append_cetibox = " \
+    git://github.com/xen-troops/linux.git;branch=${BRANCH} \
+    file://r8a7795-h3ulcb-cetibox-dom0.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
+    file://r8a7795-h3ulcb-cetibox-domd.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
     file://defconfig_cb \
+  "
+
+KERNEL_DEVICETREE_salvator-x-m3-xt = " \
+    renesas/r8a7795-h3ulcb-cetibox-dom0.dtb \
+    renesas/r8a7795-h3ulcb-cetibox-domd.dtb \
 "
+
+
 
 SRC_URI_append_rcar = " \
     file://salvator-generic-doma.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
