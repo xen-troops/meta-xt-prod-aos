@@ -15,9 +15,6 @@ SRC_URI_append_rcar = " \
     file://salvator-generic-doma.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
     file://xen-chosen.dtsi;subdir=git/arch/${ARCH}/boot/dts/renesas \
 "
-SRC_URI_append_cetibox = " \
-    file://0001-r8a7795-cetibox-h3ulcb-gweb-v2.dts-Remove-dvfs-node.patch \
-"
 
 KERNEL_DEVICETREE_append_rcar = " \
     renesas/salvator-generic-doma.dtb \
@@ -175,6 +172,21 @@ KERNEL_DEVICETREE_h3ulcb-4x2g-kf-xt = " \
 
 SRC_URI_remove_kingfisher = " \
     file://0112-ARM64-dts-renesas-ulcb-Make-AK4613-sound-device-name.patch \
+"
+
+##############################################################################
+# H3ULCB ES2.0 Cetibox
+###############################################################################
+SRC_URI_append_cetibox = " \
+    file://r8a7795-h3ulcb-cetibox-dom0.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
+    file://r8a7795-h3ulcb-cetibox-domd.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
+    file://0001-r8a7795-cetibox-h3ulcb-gweb-v2.dts-Remove-dvfs-node.patch \
+    file://defconfig \
+  "
+
+KERNEL_DEVICETREE_h3ulcb-cb-xt = " \
+    renesas/r8a7795-h3ulcb-cetibox-dom0.dtb \
+    renesas/r8a7795-h3ulcb-cetibox-domd.dtb \
 "
 
 do_deploy_append() {
