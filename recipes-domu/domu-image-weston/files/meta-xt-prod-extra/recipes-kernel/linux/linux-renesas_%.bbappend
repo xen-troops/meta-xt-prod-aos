@@ -1,4 +1,5 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS_prepend_cetibox := "${THISDIR}/${PN}/cetibox:"
 
 require inc/xt_shared_env.inc
 
@@ -9,10 +10,6 @@ SRCREV = "${AUTOREV}"
 LINUX_VERSION = "4.14.75"
 SRC_URI_append = " \
     file://defconfig \
-"
-
-SRC_URI_append_cetibox = " \
-    file://defconfig_cb \
 "
 
 DEPLOYDIR="${XT_DIR_ABS_SHARED_BOOT_DOMU}"
