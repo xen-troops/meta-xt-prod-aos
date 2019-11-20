@@ -15,6 +15,9 @@ SRC_URI_append_rcar = " \
     file://salvator-generic-doma.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
     file://xen-chosen.dtsi;subdir=git/arch/${ARCH}/boot/dts/renesas \
 "
+SRC_URI_append_cetibox = " \
+    file://0001-r8a7795-cetibox-h3ulcb-gweb-v2.dts-Remove-dvfs-node.patch \
+"
 
 KERNEL_DEVICETREE_append_rcar = " \
     renesas/salvator-generic-doma.dtb \
