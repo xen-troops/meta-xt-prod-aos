@@ -1,0 +1,67 @@
+From 5d956cdf7dd87731f6b7570b998eb36f20fd206f Mon Sep 17 00:00:00 2001
+From: Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>
+Date: Wed, 8 May 2019 17:05:07 +0300
+Subject: [PATCH] r8a7795-cetibox-h3ulcb-gweb-v2.dts: Remove dvfs node
+
+Signed-off-by: Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>
+Signed-off-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+---
+ ...-h3ulcb-gweb-v2.dts-Remove-dvfs-node.patch | 48 +++++++++++++++++++
+ .../linux/linux-renesas_%.bbappend            |  1 +
+ 2 files changed, 49 insertions(+)
+ create mode 100644 recipes-domd/domd-image-minimal/files/meta-xt-prod-extra/recipes-kernel/linux/linux-renesas/0001-r8a7795-cetibox-h3ulcb-gweb-v2.dts-Remove-dvfs-node.patch
+
+diff --git a/recipes-domd/domd-image-minimal/files/meta-xt-prod-extra/recipes-kernel/linux/linux-renesas/0001-r8a7795-cetibox-h3ulcb-gweb-v2.dts-Remove-dvfs-node.patch b/recipes-domd/domd-image-minimal/files/meta-xt-prod-extra/recipes-kernel/linux/linux-renesas/0001-r8a7795-cetibox-h3ulcb-gweb-v2.dts-Remove-dvfs-node.patch
+new file mode 100644
+index 000000000000..2519a72dde77
+--- /dev/null
++++ b/recipes-domd/domd-image-minimal/files/meta-xt-prod-extra/recipes-kernel/linux/linux-renesas/0001-r8a7795-cetibox-h3ulcb-gweb-v2.dts-Remove-dvfs-node.patch
+@@ -0,0 +1,48 @@
++From 43cfe23abc542754367fdf54488589f2096c0ae4 Mon Sep 17 00:00:00 2001
++From: Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>
++Date: Wed, 8 May 2019 17:02:33 +0300
++Subject: [PATCH] r8a7795-cetibox-h3ulcb-gweb-v2.dts: Remove dvfs node
++
++Signed-off-by: Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>
++Signed-off-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
++---
++ .../renesas/r8a7795-cetibox-h3ulcb-gweb-v2.dts    | 15 +--------------
++ 1 file changed, 1 insertion(+), 14 deletions(-)
++
++diff --git a/arch/arm64/boot/dts/renesas/r8a7795-cetibox-h3ulcb-gweb-v2.dts b/arch/arm64/boot/dts/renesas/r8a7795-cetibox-h3ulcb-gweb-v2.dts
++index f932cdd72b6c..cc1dae2e0574 100644
++--- a/arch/arm64/boot/dts/renesas/r8a7795-cetibox-h3ulcb-gweb-v2.dts
+++++ b/arch/arm64/boot/dts/renesas/r8a7795-cetibox-h3ulcb-gweb-v2.dts
++@@ -241,10 +241,6 @@
++ 	clock-frequency = <32768>;
++ };
++ 
++-&a57_0 {
++-	cpu-supply = <&vdd_dvfs>;
++-};
++-
++ &pfc {
++ 	pinctrl-0 = <&scif_clk_pins>;
++ 	pinctrl-names = "default";
++@@ -621,17 +617,8 @@
++ 
++ &i2c_dvfs {
++ 	status = "okay";
++-	clock-frequency = <400000>;
++-
++-	vdd_dvfs: regulator@30 {
++-		compatible = "rohm,bd9571mwv";
++-		reg = <0x30>;
++ 
++-		regulator-min-microvolt = <750000>;
++-		regulator-max-microvolt = <1030000>;
++-		regulator-boot-on;
++-		regulator-always-on;
++-	};
+++	clock-frequency = <400000>;
++ };
++ 
++ &wdt0 {
++-- 
++2.21.0
++
