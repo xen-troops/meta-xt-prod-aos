@@ -12,7 +12,6 @@ SRC_URI = "\
     file://domu-salvator-x-h3.cfg \
     file://domu-salvator-xs-m3n.cfg \
     file://domu-salvator-x-h3-4x2g.cfg \
-    file://domu-salvator-xs-h3-2x2g.cfg \
     file://guest_domu \
 "
 
@@ -24,7 +23,6 @@ DOMU_CONFIG_salvator-xs-m3n-xt = "domu-salvator-xs-m3n.cfg"
 DOMU_CONFIG_salvator-x-h3-4x2g-xt = "domu-salvator-x-h3-4x2g.cfg"
 DOMU_CONFIG_salvator-xs-h3-xt = "domu-salvator-x-h3.cfg"
 DOMU_CONFIG_salvator-xs-h3-4x2g-xt = "domu-salvator-x-h3-4x2g.cfg"
-DOMU_CONFIG_salvator-xs-h3-2x2g-xt = "domu-salvator-xs-h3-2x2g.cfg"
 DOMU_CONFIG_h3ulcb-4x2g-xt = "domu-salvator-x-h3-4x2g.cfg"
 DOMU_CONFIG_h3ulcb-4x2g-kf-xt = "domu-salvator-x-h3-4x2g.cfg"
 
