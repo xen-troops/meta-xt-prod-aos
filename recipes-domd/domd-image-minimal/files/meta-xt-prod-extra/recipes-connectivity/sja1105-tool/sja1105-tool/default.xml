@@ -368,10 +368,19 @@
 				<index>0</index>
 				<ving_mirr>0x0</ving_mirr>
 				<vegr_mirr>0x0</vegr_mirr>
-				<vmemb_port>0x1F</vmemb_port>
-				<vlan_bc>0x1F</vlan_bc>
-				<tag_port>0x0</tag_port>
-				<vlanid>0x0</vlanid>
+				<vmemb_port>0xA</vmemb_port>
+				<vlan_bc>0xA</vlan_bc>
+				<tag_port>0x8</tag_port>
+				<vlanid>0x1</vlanid>
+			</entry>
+			<entry>
+				<index>1</index>
+				<ving_mirr>0x0</ving_mirr>
+				<vegr_mirr>0x0</vegr_mirr>
+				<vmemb_port>0x18</vmemb_port>
+				<vlan_bc>0x18</vlan_bc>
+				<tag_port>0x8</tag_port>
+				<vlanid>0x2</vlanid>
 			</entry>
 		</vlan-lookup-table>
 		<l2-forwarding-table>
@@ -501,7 +510,7 @@
 				<tp_delout>0x0</tp_delout>
 				<maxage>0xFF</maxage>
 				<vlanprio>0x0</vlanprio>
-				<vlanid>0x0</vlanid>
+				<vlanid>0x1</vlanid>
 				<ing_mirr>0x0</ing_mirr>
 				<egr_mirr>0x0</egr_mirr>
 				<drpnona664>0x0</drpnona664>
@@ -567,7 +576,7 @@
 				<tp_delout>0x0</tp_delout>
 				<maxage>0xFF</maxage>
 				<vlanprio>0x0</vlanprio>
-				<vlanid>0x0</vlanid>
+				<vlanid>0x2</vlanid>
 				<ing_mirr>0x0</ing_mirr>
 				<egr_mirr>0x0</egr_mirr>
 				<drpnona664>0x0</drpnona664>
