@@ -14,7 +14,6 @@ SRC_URI = " \
     file://dm-salvator-x-m3.cfg \
     file://dm-salvator-x-h3.cfg \
     file://dm-ulcb.cfg \
-    file://eth0.network \
     file://xenbr0.netdev \
     file://xenbr0.network \
     file://xenbr0-systemd-networkd.conf \
@@ -33,7 +32,6 @@ PACKAGES += " \
 "
 
 FILES_${PN}-bridge-config = " \
-    ${sysconfdir}/systemd/network/eth0.network \
     ${sysconfdir}/systemd/network/xenbr0.netdev \
     ${sysconfdir}/systemd/network/xenbr0.network \
     ${sysconfdir}/systemd/system/systemd-networkd.service.d/xenbr0-systemd-networkd.conf \
