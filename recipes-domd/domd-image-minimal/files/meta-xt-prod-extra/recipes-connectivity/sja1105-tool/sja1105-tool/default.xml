@@ -7,7 +7,7 @@
 				<sharindx>0x0</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -15,7 +15,7 @@
 				<sharindx>0x1</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -23,7 +23,7 @@
 				<sharindx>0x2</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -31,7 +31,7 @@
 				<sharindx>0x3</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -39,7 +39,7 @@
 				<sharindx>0x4</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -47,7 +47,7 @@
 				<sharindx>0x5</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -55,7 +55,7 @@
 				<sharindx>0x6</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -63,7 +63,7 @@
 				<sharindx>0x7</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -71,7 +71,7 @@
 				<sharindx>0x8</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -79,7 +79,7 @@
 				<sharindx>0x9</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -87,7 +87,7 @@
 				<sharindx>0xA</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -95,7 +95,7 @@
 				<sharindx>0xB</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -103,7 +103,7 @@
 				<sharindx>0xC</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -111,7 +111,7 @@
 				<sharindx>0xD</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -119,7 +119,7 @@
 				<sharindx>0xE</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -127,7 +127,7 @@
 				<sharindx>0xF</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -135,7 +135,7 @@
 				<sharindx>0x10</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -143,7 +143,7 @@
 				<sharindx>0x11</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -151,7 +151,7 @@
 				<sharindx>0x12</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -159,7 +159,7 @@
 				<sharindx>0x13</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -167,7 +167,7 @@
 				<sharindx>0x14</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -175,7 +175,7 @@
 				<sharindx>0x15</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -183,7 +183,7 @@
 				<sharindx>0x16</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -191,7 +191,7 @@
 				<sharindx>0x17</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -199,7 +199,7 @@
 				<sharindx>0x18</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -207,7 +207,7 @@
 				<sharindx>0x19</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -215,7 +215,7 @@
 				<sharindx>0x1A</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -223,7 +223,7 @@
 				<sharindx>0x1B</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -231,7 +231,7 @@
 				<sharindx>0x1C</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -239,7 +239,7 @@
 				<sharindx>0x1D</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -247,7 +247,7 @@
 				<sharindx>0x1E</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -255,7 +255,7 @@
 				<sharindx>0x1F</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -263,7 +263,7 @@
 				<sharindx>0x20</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -271,7 +271,7 @@
 				<sharindx>0x21</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -279,7 +279,7 @@
 				<sharindx>0x22</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -287,7 +287,7 @@
 				<sharindx>0x23</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -295,7 +295,7 @@
 				<sharindx>0x24</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -303,7 +303,7 @@
 				<sharindx>0x25</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -311,7 +311,7 @@
 				<sharindx>0x26</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -319,7 +319,7 @@
 				<sharindx>0x27</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -327,7 +327,7 @@
 				<sharindx>0x28</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -335,7 +335,7 @@
 				<sharindx>0x29</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -343,7 +343,7 @@
 				<sharindx>0x2A</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -351,7 +351,7 @@
 				<sharindx>0x2B</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 			<entry>
@@ -359,7 +359,7 @@
 				<sharindx>0x2C</sharindx>
 				<smax>0xFFFF</smax>
 				<rate>0xFA00</rate>
-				<maxlen>0x5EE</maxlen>
+				<maxlen>0x5F2</maxlen>
 				<partition>0x0</partition>
 			</entry>
 		</l2-policing-table>
