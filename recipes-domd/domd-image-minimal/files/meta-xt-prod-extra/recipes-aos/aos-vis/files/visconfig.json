@@ -1,21 +1,10 @@
 {
 	"ServerURL": ":8088",
-	"VISCert": "/var/aos/vis/data/wwwivi.crt.pem",
-	"VISKey": "/var/aos/vis/data/wwwivi.key.pem",
+	"VISCert": "data/wwwivi.crt.pem",
+	"VISKey": "data/wwwivi.key.pem",
 	"Adapters": [
 		{
-			"Plugin": "/usr/lib/aos/vis_plugins/storageadapter.so",
-			"Disabled": false,
-			"Params": {
-				"Data" : {
-					"Attribute.Vehicle.VehicleIdentification.VIN": {"Value": "", "Public": true, "ReadOnly": true},
-					"Attribute.Vehicle.UserIdentification.Users":  {"Value": [], "Public": true},
-					"Attribute.Car.Message":  {"Public": true}
-				}
-			}
-		},
-		{
-			"Plugin": "/usr/lib/aos/vis_plugins/renesassimulatoradapter.so",
+			"Plugin": "renesassimulatoradapter.so",
 			"Disabled": false,
 			"Params": {
 				"ServerURL": ":9000",
@@ -119,6 +108,30 @@
 					"Emotion.Level":                           "Private.V2C.Emotion.Level",
 					"Emotion.PrimaryEmotion":                  "Private.V2C.Emotion.PrimaryEmotion",
 					"Emotion.Face.Picture":                    "Private.V2C.Emotion.Face.Picture"
+				}
+			}
+		},
+		{
+			"Plugin": "telemetryemulatoradapter.so",
+			"Disabled": false,
+			"Params": {
+				"SensorURL": "http://127.0.0.1:8800",
+				"PathPrefix": "Signal.Emulator",
+				"PathConverter" : {
+					"Signal.Emulator.telemetry.lon": "Signal.Cabin.Infotainment.Navigation.CurrentLocation.Longitude",
+					"Signal.Emulator.telemetry.lat": "Signal.Cabin.Infotainment.Navigation.CurrentLocation.Latitude",
+					"Signal.Emulator.telemetry.veh_speed": "Signal.Cabin.Infotainment.Navigation.CurrentLocation.Speed"
+				}
+			}
+		},
+		{
+			"Plugin": "storageadapter.so",
+			"Disabled": false,
+			"Params": {
+				"Data" : {
+					"Attribute.Vehicle.VehicleIdentification.VIN": {"Value": "", "Public": true, "ReadOnly": true},
+					"Attribute.Vehicle.UserIdentification.Users":  {"Value": [], "Public": true},
+					"Attribute.Car.Message":  {"Public": true}
 				}
 			}
 		}
