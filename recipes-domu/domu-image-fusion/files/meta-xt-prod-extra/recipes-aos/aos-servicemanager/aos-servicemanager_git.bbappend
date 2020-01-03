@@ -1,31 +1,36 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
 SRC_URI_append = " \
-    file://aos-servicemanager.service \
     file://aos_servicemanager.cfg \
+    file://aos-servicemanager.service \
     file://ipforwarding.conf \
     file://root_dev.conf \
-    file://first-boot.service \
-    file://first_boot.sh \
     file://rootCA.crt \
 "
 
 inherit systemd
 
 RDEPENDS_${PN} += "\
-    nodejs \
-"
-
-SYSTEMD_SERVICE_${PN} = " \
-    first-boot.service \
+    libvis \
+    nodejs\
+    python3 \
+    python3-compression \
+    python3-core \
+    python3-crypt \
+    python3-json \
+    python3-misc \
+    python3-shell \
+    python3-six \
+    python3-threading \
+    python3-websocket-client \
 "
 
 FILES_${PN} += " \
-    ${systemd_system_unitdir}/*.service \
     /var/aos/servicemanager/aos_servicemanager.cfg \
+    ${datadir}/ca-certificates/aos/*.crt \
     ${sysconfdir}/sysctl.d/*.conf \
     ${sysconfdir}/tmpfiles.d/*.conf \
-    ${datadir}/ca-certificates/aos/*.crt \
+    ${systemd_system_unitdir}/*.service \
 "
 
 do_install_append() {
@@ -43,24 +48,35 @@ do_install_append() {
     install -d ${D}${sysconfdir}/tmpfiles.d
     install -m 0644 ${WORKDIR}/root_dev.conf ${D}${sysconfdir}/tmpfiles.d
 
-    install -d ${D}${bindir}
-    install -m 0755 ${WORKDIR}/first_boot.sh ${D}${bindir}
-
     install -d ${D}${datadir}/ca-certificates/aos
     install -m 0644 ${WORKDIR}/rootCA.crt ${D}${datadir}/ca-certificates/aos
 }
 
-VISSERVER = "192.168.0.1    wwwivi"
-AOSCERTIFICATE = "aos/rootCA.crt"
-
 pkg_postinst_${PN}() {
-    if ! grep -q '${VISSERVER}' $D/etc/hosts ; then
-        echo '${VISSERVER}' >> $D/etc/hosts
+    # Add AOS certificate
+    if ! grep -q 'aos/rootCA.crt' $D/etc/ca-certificates.conf ; then
+        echo 'aos/rootCA.crt' >> $D/etc/ca-certificates.conf
     fi
 
-    if ! grep -q '${AOSCERTIFICATE}' $D/etc/ca-certificates.conf ; then
-        echo '${AOSCERTIFICATE}' >> $D/etc/ca-certificates.conf
+    # Add wwwivi to /etc/hosts
+    if ! grep -q 'wwwivi' $D${sysconfdir}/hosts ; then
+        echo '192.168.0.1	wwwivi' >> $D${sysconfdir}/hosts
     fi
 
-    sed -ie '/^\/dev\/root/ s/defaults/defaults,usrquota/' $D/etc/fstab
+    # Add wwwum to /etc/hosts
+    if ! grep -q 'wwwum' $D${sysconfdir}/hosts ; then
+        echo '127.0.0.1	wwwum' >> $D${sysconfdir}/hosts
+    fi
+
+    sed -ie '/^\/dev\/root/ s/defaults/defaults,usrjquota=aquota.user,jqfmt=vfsv0/' $D/etc/fstab
+}
+
+pkg_postinst_ontarget_${PN} () {
+    # Enable quotas
+    echo "Enable disk quotas"
+    quotacheck -avum && quotaon -avu
+
+    # Update certificates
+    echo "Update certificates"
+    update-ca-certificates
 }
