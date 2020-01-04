@@ -3,11 +3,4 @@ Name=eth0.2
 
 [Network]
 Address=10.0.0.1/24
-DHCPServer=yes
 IPMasquerade=yes
-
-[DHCPServer]
-PoolOffset=100
-PoolSize=1
-EmitDNS=yes
-#DNS=10.17.110.5
