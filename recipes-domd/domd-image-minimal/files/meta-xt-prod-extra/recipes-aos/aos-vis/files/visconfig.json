@@ -4,7 +4,7 @@
 	"VISKey": "data/wwwivi.key.pem",
 	"Adapters": [
 		{
-			"Plugin": "renesassimulatoradapter.so",
+			"Plugin": "/usr/lib/aos/vis_plugins/renesassimulatoradapter.so",
 			"Disabled": false,
 			"Params": {
 				"ServerURL": ":9000",
@@ -112,7 +112,7 @@
 			}
 		},
 		{
-			"Plugin": "telemetryemulatoradapter.so",
+			"Plugin": "/usr/lib/aos/vis_plugins/telemetryemulatoradapter.so",
 			"Disabled": false,
 			"Params": {
 				"SensorURL": "http://127.0.0.1:8800",
@@ -125,7 +125,7 @@
 			}
 		},
 		{
-			"Plugin": "storageadapter.so",
+			"Plugin": "/usr/lib/aos/vis_plugins/storageadapter.so",
 			"Disabled": false,
 			"Params": {
 				"Data" : {
