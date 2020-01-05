@@ -8,6 +8,7 @@ IMAGE_INSTALL_append = " \
     sja1105-tool \
     phytool \
     devmem2 \
+    openssh-sshd \
 "
 
 python __anonymous () {
