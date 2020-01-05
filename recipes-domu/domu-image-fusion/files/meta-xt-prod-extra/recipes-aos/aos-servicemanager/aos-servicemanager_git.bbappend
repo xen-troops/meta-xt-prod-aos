@@ -64,8 +64,8 @@ pkg_postinst_${PN}() {
     fi
 
     # Add wwwum to /etc/hosts
-    if ! grep -q 'wwwum' $D${sysconfdir}/hosts ; then
-        echo '127.0.0.1	wwwum' >> $D${sysconfdir}/hosts
+    if ! grep -q 'wwwaosum' $D${sysconfdir}/hosts ; then
+        echo '127.0.0.1	wwwaosum' >> $D${sysconfdir}/hosts
     fi
 
     sed -ie '/^\/dev\/root/ s/defaults/defaults,usrjquota=aquota.user,jqfmt=vfsv0/' $D/etc/fstab
