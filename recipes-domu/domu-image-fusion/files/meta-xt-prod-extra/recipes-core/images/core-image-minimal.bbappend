@@ -5,6 +5,7 @@ IMAGE_INSTALL_append = " \
     logrotate \
     openssh-sshd \
     openssh-scp \
+    haveged \
 "
 
 populate_vmlinux () {
