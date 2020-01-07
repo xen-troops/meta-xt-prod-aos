@@ -5,6 +5,16 @@ IMAGE_INSTALL_append = " \
     kernel-modules \
     optee-os \
     libxenbe \
+    python3 \
+    python3-compression \
+    python3-core \
+    python3-crypt \
+    python3-json \
+    python3-misc \
+    python3-shell \
+    python3-six \
+    python3-threading \
+    python3-websocket-client \
 "
 
 python __anonymous () {
