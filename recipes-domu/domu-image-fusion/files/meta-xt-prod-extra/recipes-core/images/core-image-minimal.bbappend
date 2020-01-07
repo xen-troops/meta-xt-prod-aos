@@ -4,6 +4,7 @@ IMAGE_INSTALL_append = " \
     logrotate \
     openssh-sshd \
     openssh-scp \
+    openssl-bin \
 "
 
 populate_vmlinux () {
