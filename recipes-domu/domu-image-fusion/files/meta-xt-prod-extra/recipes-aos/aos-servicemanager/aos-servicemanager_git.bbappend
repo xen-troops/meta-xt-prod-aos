@@ -16,6 +16,10 @@ RDEPENDS_${PN} += "\
     nodejs \
 "
 
+RDEPENDS_${PN}_append_cetibox += "\
+   openssl \
+"
+
 SYSTEMD_SERVICE_${PN} = " \
     first-boot.service \
 "
