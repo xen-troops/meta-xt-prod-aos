@@ -22,6 +22,8 @@ SRC_URI = " \
     file://systemd-networkd-wait-online.conf \
 "
 
+SRC_URI_remove_cetibox = "file://eth0.network"
+
 S = "${WORKDIR}"
 
 inherit systemd
@@ -38,6 +40,7 @@ FILES_${PN}-bridge-config = " \
     ${sysconfdir}/systemd/system/systemd-networkd.service.d/port-forward-systemd-networkd.conf \
     ${sysconfdir}/systemd/system/systemd-networkd-wait-online.service.d/systemd-networkd-wait-online.conf \
 "
+FILES_${PN}-bridge-config_remove_cetibox = "${sysconfdir}/systemd/network/eth0.network"
 
 SYSTEMD_PACKAGES = " \
     ${PN}-bridge-up-notification-service \
