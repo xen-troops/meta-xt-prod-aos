@@ -5,9 +5,6 @@ IMAGE_INSTALL_append = " \
     kernel-modules \
     optee-os \
     libxenbe \
-    sja1105-tool \
-    phytool \
-    devmem2 \
     openssh-sshd \
 "
 
@@ -23,6 +20,12 @@ IMAGE_INSTALL_append = " \
     python3-six \
     python3-threading \
     python3-websocket-client \
+"
+
+IMAGE_INSTALL_append_cetibox = " \
+    sja1105-tool \
+    phytool \
+    devmem2 \
 "
 
 python __anonymous () {
