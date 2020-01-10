@@ -11,6 +11,20 @@ IMAGE_INSTALL_append = " \
     openssh-sshd \
 "
 
+# Add python3 and modules required for provisioning
+IMAGE_INSTALL_append = " \
+    python3 \
+    python3-compression \
+    python3-core \
+    python3-crypt \
+    python3-json \
+    python3-misc \
+    python3-shell \
+    python3-six \
+    python3-threading \
+    python3-websocket-client \
+"
+
 python __anonymous () {
     if (d.getVar("AOS_VIS_PACKAGE_DIR", True) or "") == "":
         d.appendVar("IMAGE_INSTALL", "aos-vis")
