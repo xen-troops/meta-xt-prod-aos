@@ -17,6 +17,7 @@ IMAGE_INSTALL_append = " \
     openssh-scp \
     openssh-ssh \
     haveged \
+    provisioning \
 "
 
 XT_GUESTS_INSTALL ?= "doma domf"
