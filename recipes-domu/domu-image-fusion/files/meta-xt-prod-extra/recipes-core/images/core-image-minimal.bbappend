@@ -6,6 +6,7 @@ IMAGE_INSTALL_append = " \
     openssh-sshd \
     openssh-scp \
     haveged \
+    openssl-bin \
 "
 
 populate_vmlinux () {
