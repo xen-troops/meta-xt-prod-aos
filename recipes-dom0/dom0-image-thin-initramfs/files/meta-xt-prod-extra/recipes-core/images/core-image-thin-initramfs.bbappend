@@ -19,10 +19,6 @@ IMAGE_INSTALL_append = " \
     haveged \
 "
 
-IMAGE_INSTALL_append_cetibox = "\
-    provisioning \
-"
-
 XT_GUESTS_INSTALL ?= "doma domf"
 
 python __anonymous () {
