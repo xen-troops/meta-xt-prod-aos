@@ -21,6 +21,6 @@ do_install() {
     install -m 0755 ${S}/aos-provisioning.step1.sh ${D}${base_prefix}${XT_DIR_ABS_ROOTFS_SCRIPTS}
     install -m 0755 ${S}/aos-provisioning.step2.sh ${D}${base_prefix}${XT_DIR_ABS_ROOTFS_SCRIPTS}
 
-    install -d ${sysconfdir}/aos
-    echo ${XT_CANONICAL_MACHINE_NAME} > ${sysconfdir}/aos/model_name.txt
+    install -d ${D}${sysconfdir}/aos
+    echo ${XT_CANONICAL_MACHINE_NAME} > ${D}${sysconfdir}/aos/model_name.txt
 }
