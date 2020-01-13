@@ -12,6 +12,7 @@ S = "${WORKDIR}/git"
 FILES_${PN} = " \
     ${base_prefix}${XT_DIR_ABS_ROOTFS_SCRIPTS}/aos-provisioning.step1.sh \
     ${base_prefix}${XT_DIR_ABS_ROOTFS_SCRIPTS}/aos-provisioning.step2.sh \
+    ${sysconfdir}/aos/model_name.txt \
 "
 
 RDEPENDS_${PN} = "bash"
