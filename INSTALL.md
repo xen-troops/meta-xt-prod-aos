@@ -8,7 +8,7 @@ Prerequisites:
                     gnupg flex bison gperf build-essential zip curl zlib1g-dev \
                     gcc-multilib g++-multilib libc6-dev-i386 lib32ncurses5-dev \
                     x11proto-core-dev libx11-dev lib32z-dev ccache libgl1-mesa-dev \
-                    libxml2-utils xsltproc unzip -y
+                    libxml2-utils xsltproc unzip python-clang-5.0 gcc-5 g++-5 -y
 ```
 2. Checked with Python v 2.7.12, but other should also work
 
@@ -191,15 +191,26 @@ So, as you can see, varying U-Boot's `boot_dev` and `bootcmd` environment variab
 and domain config's `extra` and `disk` options it is possible to choose  different boot device
 for each system component.
 
-When you create image (or flash product to SD-card) using `mk_sdcard_image.sh`, volume structure of it will be
-the following:
+When you create image (or flash product to SD-card) using `mk_sdcard_image.sh`
+it will have partitions Dom0, DomD, DomF.
+
+You can inspect partitions inside image using `losetup` and `lsblk`.
+See example below for Ubuntu 18, assuming that the image was named 'prod-aos.img'.
+Pay attention that text after ## is a comment to console output.
+Sizes of partitions may vary.
+
 ```
-Device     Boot   Start      End Sectors  Size Id Type
-/dev/sdX1          2048   526335  524288  256M 83 Linux <---- Ext4 boot partition used by
-                                                              U-Boot to load xen,
-                                                              Dom0 kernel, Dom0 initramfs
-/dev/sdX2        526336  8718335 8192000  3,9G 83 Linux <---- Ext4 partition used by DomD
-/dev/sdX3       8718336 16910335 8192000  3,9G 83 Linux <---- Ext4 partition used by DomF
+ sudo losetup --find --partscan --show ./prod-aos.img
+/dev/loop23
+
+$ lsblk /dev/loop23
+NAME       MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+loop23       7:23   0    7G  0 loop
+├─loop23p1 259:0    0  256M  0 loop                 ## Dom0, also is used by U-Boot to load xen
+├─loop23p2 259:1    0  3.9G  0 loop                 ## DomD
+└─loop23p3 259:2    0  3.9G  0 loop                 ## DomF
+
+$ sudo losetup -d /dev/loop23
 ```
 
 Additional script available in the product: `uirfs.sh`.
