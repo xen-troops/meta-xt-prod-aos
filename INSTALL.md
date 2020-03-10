@@ -59,10 +59,11 @@ XT_GUESTS_BUILD = "domf"
 ```
 4. Run the build script for current stable release:
 ```
-python ./build_prod.py --build-type dailybuild --machine MACHINE_NAME --product aos --with-local-conf --config xt-prod-aos.cfg
+python ./build_prod.py --build-type dailybuild --machine MACHINE_NAME --product aos \
+    --with-local-conf --config xt-prod-aos.cfg
 ```
 The supported MACHINE_NAMEs are:
-- h3ulcb  (R-Car H3 Starter Kit)
+- h3ulcb-cb  (Cetibox with R-Car H3 Starter Kit)
 
 5. After that you will have all the build environment setup at workspace_base_dir
 directory.
@@ -70,7 +71,8 @@ directory.
 6. Now, to build the images you can run the same command as in 4) but with
 additional argument --continue-build:
 ```
-python ./build_prod.py --build-type dailybuild --machine MACHINE_NAME --product aos --with-local-conf --config xt-prod-aos.cfg --continue-build
+python ./build_prod.py --build-type dailybuild --machine MACHINE_NAME --product aos \
+    --with-local-conf --config xt-prod-aos.cfg --continue-build
 ```
 7. You are done. The artifacts of the build are located at workspace_base directory:
 ```
@@ -111,8 +113,7 @@ Here we get a rootfs image for DomF:
 Build logs are located at:
 * Domain-0: `workspace_base/build/build/log/dom0-image-thin-initramfs/cooker/generic-armv8-xt`
 * DomD: `workspace_base/build/tmp/log/domd-agl-image-minimal/cooker/MACHINE-NAME-xt`
-* DomF: 
-`workspace_base/build/build/log/domu-image-fusion/cooker/generic-armv8-xt`
+* DomF: `workspace_base/build/build/log/domu-image-fusion/cooker/generic-armv8-xt`
 
 If one wants to build any domain's images by hand, at the time of development
 for instance, it is possible by going into desired directory and using poky to build:
