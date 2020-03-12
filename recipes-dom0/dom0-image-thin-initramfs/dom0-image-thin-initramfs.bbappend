@@ -9,14 +9,8 @@ XT_GUESTS_INSTALL ?= "domf"
 
 python __anonymous () {
     guests = d.getVar('XT_GUESTS_BUILD', True).split()
-    if "doma" in guests :
-        d.appendVarFlag("do_compile", "depends", " domu-image-android:do_${BB_DEFAULT_TASK} ")
     if "domf" in guests :
         d.appendVarFlag("do_compile", "depends", " domu-image-fusion:do_${BB_DEFAULT_TASK} ")
-    if "domr" in guests :
-        d.appendVarFlag("do_compile", "depends", " domu-image-litmusrt:do_${BB_DEFAULT_TASK} ")
-    if "domu" in guests :
-        d.appendVarFlag("do_compile", "depends", " domu-image-weston:do_${BB_DEFAULT_TASK} ")
 }
 
 ################################################################################
