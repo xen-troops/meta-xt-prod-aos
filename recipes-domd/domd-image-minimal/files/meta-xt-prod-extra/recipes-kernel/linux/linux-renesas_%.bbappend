@@ -130,6 +130,21 @@ KERNEL_DEVICETREE_h3ulcb-4x2g-xt = " \
 "
 
 ##############################################################################
+# H3ULCB ES3.0 4G
+###############################################################################
+# N.B. DomU device tree is reused from Salvator-X H3 ES3.0 4G
+###############################################################################
+SRC_URI_append_h3ulcb-xt = " \
+    file://r8a7795-h3ulcb-dom0.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
+    file://r8a7795-h3ulcb-domd.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
+"
+
+KERNEL_DEVICETREE_h3ulcb-xt = " \
+    renesas/r8a7795-h3ulcb-dom0.dtb \
+    renesas/r8a7795-h3ulcb-domd.dtb \
+"
+
+##############################################################################
 # H3ULCB ES3.0 4x2G KF
 ###############################################################################
 # N.B. DomU device tree is reused from Salvator-X H3 ES3.0 4x2G
