@@ -1,5 +1,7 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
+SRCREV = "92ffa9d1411929bb25da30e01a6083ad162c5f88"
+
 SRC_URI_append = "\
     file://aos-updatemanager.service \
     file://aos_updatemanager.cfg \
