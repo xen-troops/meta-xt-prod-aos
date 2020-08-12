@@ -63,7 +63,8 @@ python ./build_prod.py --build-type dailybuild --machine MACHINE_NAME --product 
     --with-local-conf --config xt-prod-aos.cfg
 ```
 The supported MACHINE_NAMEs are:
-- h3ulcb-cb  (Cetibox with R-Car H3 Starter Kit)
+- h3ulcb     Starter Kit with H3 ES2 4GB
+- h3ulcb-cb  Starter Kit with H3 ES2 4GB inside Cetibox
 
 5. After that you will have all the build environment setup at workspace_base_dir
 directory.
