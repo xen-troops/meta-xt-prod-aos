@@ -112,9 +112,6 @@ configure_versions_rcar() {
         base_update_conf_value ${local_conf} AOS_VIS_PLUGINS "${AOS_VIS_PLUGINS}"
     fi
 
-    # Disable shared link for GO packages
-    base_set_conf_value ${local_conf} GO_LINKSHARED ""
-
     if [ ! -z "${AOS_VIS_PACKAGE_DIR}" ];then
         base_update_conf_value ${local_conf} AOS_VIS_PACKAGE_DIR "${AOS_VIS_PACKAGE_DIR}"
     fi
