@@ -26,36 +26,30 @@ RDEPENDS_${PN} += "\
 "
 
 FILES_${PN} += " \
-    /var/aos/servicemanager/aos_servicemanager.cfg \
-    ${datadir}/ca-certificates/aos/*.crt \
+    ${sysconfdir}/aos/aos_servicemanager.cfg \
     ${sysconfdir}/sysctl.d/*.conf \
-    ${sysconfdir}/tmpfiles.d/*.conf \
     ${systemd_system_unitdir}/*.service \
+    ${datadir}/ca-certificates/aos/*.crt \
 "
 
 do_install_append() {
-    install -d ${D}/var/aos/servicemanager
-    install -m 0644 ${WORKDIR}/aos_servicemanager.cfg ${D}/var/aos/servicemanager
-
-    install -d ${D}/var/aos/servicemanager/data/fcrypt
-
     install -d ${D}${systemd_system_unitdir}
     install -m 0644 ${WORKDIR}/*.service ${D}${systemd_system_unitdir}
 
     install -d ${D}${sysconfdir}/sysctl.d
     install -m 0644 ${WORKDIR}/ipforwarding.conf ${D}${sysconfdir}/sysctl.d
 
-    install -d ${D}${sysconfdir}/tmpfiles.d
-    install -m 0644 ${WORKDIR}/root_dev.conf ${D}${sysconfdir}/tmpfiles.d
-
     install -d ${D}${datadir}/ca-certificates/aos
     install -m 0644 ${WORKDIR}/rootCA.crt ${D}${datadir}/ca-certificates/aos
+
+    install -d ${D}${sysconfdir}/aos
+    install -m 0644 ${WORKDIR}/aos_servicemanager.cfg ${D}${sysconfdir}/aos
 }
 
 pkg_postinst_${PN}() {
     # Add AOS certificate
-    if ! grep -q 'aos/rootCA.crt' $D/etc/ca-certificates.conf ; then
-        echo 'aos/rootCA.crt' >> $D/etc/ca-certificates.conf
+    if ! grep -q 'aos/rootCA.crt' $D/{sysconfdir}/ca-certificates.conf ; then
+        echo 'aos/rootCA.crt' >> $D/{sysconfdir}/ca-certificates.conf
     fi
 
     # Add wwwivi to /etc/hosts
@@ -63,15 +57,17 @@ pkg_postinst_${PN}() {
         echo '192.168.0.1	wwwivi' >> $D${sysconfdir}/hosts
     fi
 
-    # Add wwwum to /etc/hosts
+    # Add wwwaosum to /etc/hosts
     if ! grep -q 'wwwaosum' $D${sysconfdir}/hosts ; then
         echo '127.0.0.1	wwwaosum' >> $D${sysconfdir}/hosts
     fi
-
-    sed -ie '/^\/dev\/root/ s/defaults/defaults,usrjquota=aquota.user,jqfmt=vfsv0/' $D/etc/fstab
 }
 
 pkg_postinst_ontarget_${PN} () {
+    # Create AOS working dirs
+    mkdir -p /var/aos/servicemanager
+    mkdir -p /var/aos/updatemanager
+
     # Enable quotas
     echo "Enable disk quotas"
     quotacheck -avum && quotaon -avu
