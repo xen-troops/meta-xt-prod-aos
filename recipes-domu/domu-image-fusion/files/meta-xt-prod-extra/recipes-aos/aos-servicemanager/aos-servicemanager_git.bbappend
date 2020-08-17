@@ -46,6 +46,17 @@ do_install_append() {
     install -m 0644 ${WORKDIR}/aos_servicemanager.cfg ${D}${sysconfdir}/aos
 }
 
+# content of /etc/aos/model_name.txt for provisioning
+DOMF_MODEL_NAME_salvator-x-m3-xt       = "salvator-x-m3"
+DOMF_MODEL_NAME_salvator-x-h3-xt       = "salvator-x-h3"
+DOMF_MODEL_NAME_salvator-xs-h3-xt      = "salvator-xs-h3"
+DOMF_MODEL_NAME_salvator-x-h3-4x2g-xt  = "salvator-x-h3-4x2g"
+DOMF_MODEL_NAME_salvator-xs-h3-4x2g-xt = "salvator-xs-h3-4x2g"
+DOMF_MODEL_NAME_h3ulcb-4x2g-xt         = "h3ulcb-4x2g"
+DOMF_MODEL_NAME_h3ulcb-4x2g-kf-xt      = "h3ulcb-4x2g-kf"
+DOMF_MODEL_NAME_h3ulcb-cb-xt           = "h3ulcb-cb"
+DOMF_MODEL_NAME_h3ulcb-xt              = "h3ulcb"
+
 pkg_postinst_${PN}() {
     # Add AOS certificate
     if ! grep -q 'aos/rootCA.crt' $D/{sysconfdir}/ca-certificates.conf ; then
@@ -61,6 +72,9 @@ pkg_postinst_${PN}() {
     if ! grep -q 'wwwaosum' $D${sysconfdir}/hosts ; then
         echo '127.0.0.1	wwwaosum' >> $D${sysconfdir}/hosts
     fi
+
+    # Add model name
+    echo "${DOMF_MODEL_NAME};1.0" > $D${sysconfdir}/aos/model_name.txt
 }
 
 pkg_postinst_ontarget_${PN} () {

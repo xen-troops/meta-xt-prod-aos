@@ -231,3 +231,5 @@ DEPLOY_DIR = "${TMPDIR}/deploy"
 IMAGE_ROOTFS = "${TMPDIR}/rootfs"
 XT_SHARED_ROOTFS_DIR = "${IMAGE_ROOTFS}/shared_rootfs"
 GO_LINKSHARED = ""
+
+include ${@d.getVar('XT_SHARED_ROOTFS_DIR', True) or ''}/local.conf.domd_machine.inc
