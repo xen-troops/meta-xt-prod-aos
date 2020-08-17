@@ -5,7 +5,7 @@ require inc/xt_shared_env.inc
 LICENSE = "CLOSED"
 
 SRCREV = "${AUTOREV}"
-SRC_URI = "git://git@gitpct.epam.com/epmd-aepr/aos_provisioning.git;protocol=ssh"
+SRC_URI = "git://git@gitpct.epam.com/epmd-aepr/aos_sdk.git;protocol=ssh"
 
 S = "${WORKDIR}/git"
 
@@ -29,8 +29,8 @@ DOM0_MODEL_NAME_h3ulcb-cb-xt           = "h3ulcb-cb"
 
 do_install() {
     install -d ${D}${base_prefix}${XT_DIR_ABS_ROOTFS_SCRIPTS}
-    install -m 0755 ${S}/aos-provisioning.step1.sh ${D}${base_prefix}${XT_DIR_ABS_ROOTFS_SCRIPTS}
-    install -m 0755 ${S}/aos-provisioning.step2.sh ${D}${base_prefix}${XT_DIR_ABS_ROOTFS_SCRIPTS}
+    install -m 0755 ${S}/aos-provisioning/aos-provisioning.step1.sh ${D}${base_prefix}${XT_DIR_ABS_ROOTFS_SCRIPTS}
+    install -m 0755 ${S}/aos-provisioning/aos-provisioning.step2.sh ${D}${base_prefix}${XT_DIR_ABS_ROOTFS_SCRIPTS}
 
     install -d ${D}${sysconfdir}/aos
     echo ${DOM0_MODEL_NAME} > ${D}${sysconfdir}/aos/model_name.txt
