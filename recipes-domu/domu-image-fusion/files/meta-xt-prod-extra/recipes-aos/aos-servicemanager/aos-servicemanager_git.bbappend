@@ -59,8 +59,8 @@ DOMF_MODEL_NAME_h3ulcb-xt              = "h3ulcb"
 
 pkg_postinst_${PN}() {
     # Add AOS certificate
-    if ! grep -q 'aos/rootCA.crt' $D/{sysconfdir}/ca-certificates.conf ; then
-        echo 'aos/rootCA.crt' >> $D/{sysconfdir}/ca-certificates.conf
+    if ! grep -q 'aos/rootCA.crt' $D${sysconfdir}/ca-certificates.conf ; then
+        echo 'aos/rootCA.crt' >> $D${sysconfdir}/ca-certificates.conf
     fi
 
     # Add wwwivi to /etc/hosts
