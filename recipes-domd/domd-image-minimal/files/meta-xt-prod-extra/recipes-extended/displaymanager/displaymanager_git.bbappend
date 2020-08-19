@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-SRCREV = "${AUTOREV}"
+SRCREV = "868e703b7652c9a40ae878d7d517f97398b4549c"
 
 SRC_URI_append = " \
     git://github.com/xen-troops/DisplayManager.git;protocol=https;branch=master \
