@@ -18,7 +18,7 @@ XT_QUIRK_BB_ADD_LAYER_append = " \
 # Generic ARMv8
 ################################################################################
 SRC_URI += " \
-    repo://github.com/xen-troops/manifests;protocol=https;branch=master;manifest=prod_aos/domf.xml;scmdata=keep \
+    repo://github.com/xen-troops/manifests;protocol=https;branch=aug-2020-release;manifest=prod_aos/domf.xml;scmdata=keep \
 "
 
 SRCREV_metago = "${AUTOREV}"

@@ -4,7 +4,7 @@ require inc/xt_shared_env.inc
 
 LICENSE = "CLOSED"
 
-SRCREV = "${AUTOREV}"
+SRCREV = "ef6868166b594ad073a8c988ded577a4ee9f9589"
 SRC_URI = "git://git@gitpct.epam.com/epmd-aepr/aos_sdk.git;protocol=ssh"
 
 S = "${WORKDIR}/git"

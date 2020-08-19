@@ -16,7 +16,7 @@ python __anonymous () {
 ################################################################################
 # Generic ARMv8
 ################################################################################
-SRC_URI = "repo://github.com/xen-troops/manifests;protocol=https;branch=master;manifest=prod_aos/dom0.xml;scmdata=keep"
+SRC_URI = "repo://github.com/xen-troops/manifests;protocol=https;branch=aug-2020-release;manifest=prod_aos/dom0.xml;scmdata=keep"
 
 ###############################################################################
 # extra layers and files to be put after Yocto's do_unpack into inner builder
