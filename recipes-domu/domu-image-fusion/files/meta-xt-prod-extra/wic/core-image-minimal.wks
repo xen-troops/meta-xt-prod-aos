@@ -1,0 +1,4 @@
+# short-description: Create an EFI disk image for Aos
+# long-description: Creates a partitioned EFI disk image for Aos domain
+part / --source rootfs --ondisk hda --fstype=ext4 --label platform --align 1024 --use-uuid
+part /var/aos --ondisk hda --fstype=ext4 --label aos --align 1024 --size 512M --fsoptions="defaults,usrjquota=aquota.user,jqfmt=vfsv0"
