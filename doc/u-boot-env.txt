@@ -107,3 +107,38 @@ setenv flash_z_loaders 'run flash_bootparam_sa0; run flash_bl2; run flash_cert_h
 
 saveenv
 
+Load uEnv.txt from eMMC:
+====================================
+
+Updating Dom0 and u-boot using A/B slots approach requires env to be read from
+mmc.
+Dom0 Slot A and Dom0 Slot B are expected to have file /boot/uEnv.txt with the
+following format:
+
+bootarg=test_boot_arg
+...
+
+To read uEnv.txt files on boot, the following commands should be executed:
+
+ext2load mmc 0:1 0x48000000 /boot/uEnv.txt
+env import -t ${fileaddr} ${filesize}
+
+Example:
+
+scriptaddr=0x48000000
+bootenv=/boot/uEnv.txt
+loadbootenv1=ext2load mmc 0:1 ${scriptaddr} ${bootenv}
+loadbootenv2=ext2load mmc 0:2 ${scriptaddr} ${bootenv}
+bootcmd=if run loadbootenv1; then \
+                echo Loaded environment from Slot A; \
+                env import -t ${scriptaddr} ${filesize}; \
+        fi; \
+        if run loadbootenv2; then \
+                echo Loaded environment from Slot B; \
+                env import -t ${scriptaddr} ${filesize}; \
+        fi; \
+        if test -n ${bootnextcmd}; then \
+                echo Running bootnextcmd ...; \
+                run bootnextcmd; \
+        fi; \
+        run bootcmd_emmc;
