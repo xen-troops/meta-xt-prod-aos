@@ -1,0 +1,52 @@
+
+// -- Directory list
+
+./update_dir/
+|
+|
+|-----/metadata.json
+|-----/rootfs_update/
+|     		|------------------ metadata.json
+|     		|------------------ rootfs.sqs
+|-----/dom0_update/
+		|------------------ metadata.json
+		|------------------ boot.img
+
+
+// --- ./update_dir/metadata.json
+{
+    "platformId": "AOS-OTA",
+    "bundleVersion": "v1.0 01-09-2020",  	///optional
+    "bundleDescription": "some update",  	///optional
+    "updateItems": [
+        {
+            "type": "rootfs",
+            "path": "./rootfs_update"
+        },
+        {
+            "type": "dom0",
+            "path": "./dom0_update"
+        }
+    ]
+}
+
+// --- ./update_dir/rootfs_update/metadata.json
+
+{
+    "version": 1,
+    "description": "DomD full rootfs",
+    "componentType": "rootfs",
+    "updateType": "incremental", 	// incremental or full
+    "resources": "./rootfs.sqs" 	// relative path
+}
+
+
+// --- ./update_dir/dom0_update/metadata.json
+{
+    "version": 1,
+    "description": "Dom0 update blob",
+    "componentType": "dom0",
+    "updateType": "full", 		// only full
+    "resources": "./boot.img" 		// relative path
+}
+
