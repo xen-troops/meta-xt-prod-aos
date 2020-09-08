@@ -41,20 +41,30 @@ define_partitions()
 		aos)
 			# prod-aos [1..257][257..4257][4257..8257]
 			DOM0_START=1
-			DOM0_END=$((DOM0_START+256))  # 257
+			DOM0_END=$((DOM0_START+128))  # 129
 			DOM0_PARTITION=1
 			DOM0_LABEL=boot
-			DOMD_START=$DOM0_END
-			DOMD_END=$((DOMD_START+4000))  # 4257
-			DOMD_PARTITION=2
+			# Backup partition
+			DOM0_P2_START=$DOM0_END
+			DOM0_P2_END=$((DOM0_P2_START+128))  # 257
+			DOM0_P2_PARTITION=2
+			DOM0_P2_LABEL=boot
+			#Extended partition list
+			# Setting DOMD_START as DOM0_P2_END + 1 is related to parted work behaviour.
+			# It requires new partition to start from sector, larger then the end of previous partition.
+			# This requirement is true only for GPT and logical partitions, for primary partitions
+			# is acceptable when start of the new partition equals to the end of the previous one.
+			DOMD_START=$((DOM0_P2_END + 1))
+			DOMD_END=$((DOMD_START+4000))  # 42578
+			DOMD_PARTITION=5
 			DOMD_LABEL=domd
-			DOMF_START=$DOMD_END  # Also is used as flag that DomF is defined
-			DOMF_END=$((DOMF_START+4000))  # 8257
-			DOMF_PARTITION=3
+			DOMF_START=$((DOMD_END + 1))  # Also is used as flag that DomF is defined
+			DOMF_END=$((DOMF_START+4000))  # 8259
+			DOMF_PARTITION=6
 			DOMF_LABEL=domf
-			AOS_START=$DOMF_END
-			AOS_END=$((AOS_START+1024))  # 9281
-			AOS_PARTITION=4
+			AOS_START=$((DOMF_END + 1))
+			AOS_END=$((AOS_START+1024))  # 9284
+			AOS_PARTITION=7
 			AOS_LABEL=aos
 			DEFAULT_IMAGE_SIZE_GIB=$(((AOS_END/1024)+1))
 		;;
@@ -174,16 +184,22 @@ partition_image()
 	sudo parted -s $1 mklabel msdos || true
 
 	sudo parted -s $1 mkpart primary ext4 ${DOM0_START}MiB ${DOM0_END}MiB || true
-	sudo parted -s $1 mkpart primary ext4 ${DOMD_START}MiB ${DOMD_END}MiB || true
+	local partition_type="primary"
+	if [ ! -z ${DOM0_P2_START} ]; then
+		sudo parted -s $1 mkpart primary ext4 ${DOM0_P2_START}MiB ${DOM0_P2_END}MiB || true
+		sudo parted -s $1 mkpart extended ${DOM0_P2_END}MiB $((AOS_END + 1))MiB || true
+		partition_type="logical"
+	fi 
+	sudo parted -s $1 mkpart $partition_type ext4 ${DOMD_START}MiB ${DOMD_END}MiB || true
 	if [ ! -z ${DOMF_START} ]; then
-		sudo parted -s $1 mkpart primary ext4 ${DOMF_START}MiB ${DOMF_END}MiB || true
-		sudo parted -s $1 mkpart primary ext4 ${AOS_START}MiB ${AOS_END}MiB || true
+		sudo parted -s $1 mkpart $partition_type ext4 ${DOMF_START}MiB ${DOMF_END}MiB || true
+		sudo parted -s $1 mkpart $partition_type ext4 ${AOS_START}MiB ${AOS_END}MiB || true
 	fi
 	if [ ! -z ${DOMU_START} ]; then
-		sudo parted -s $1 mkpart primary ext4 ${DOMU_START}MiB ${DOMU_END}MiB || true
+		sudo parted -s $1 mkpart $partition_type ext4 ${DOMU_START}MiB ${DOMU_END}MiB || true
 	fi
 	if [ ! -z ${DOMA_START} ]; then
-		sudo parted -s $1 mkpart primary ${DOMA_START}MiB ${DOMA_END}MiB || true
+		sudo parted -s $1 mkpart $partition_type ${DOMA_START}MiB ${DOMA_END}MiB || true
 	fi
 	sudo parted $1 print
 	sudo partprobe $1
