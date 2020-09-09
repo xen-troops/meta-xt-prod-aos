@@ -266,3 +266,8 @@ ASSUME_PROVIDED += "sync-native"
 HOSTTOOLS += "sync"
 ASSUME_PROVIDED += "bison-native"
 HOSTTOOLS += "bison"
+
+# Initramfs configuration
+INITRAMFS_IMAGE = "core-image-tiny-initramfs"
+INITRAMFS_IMAGE_BUNDLE = "0"
+INITRAMFS_FSTYPES = "cpio.gz"
