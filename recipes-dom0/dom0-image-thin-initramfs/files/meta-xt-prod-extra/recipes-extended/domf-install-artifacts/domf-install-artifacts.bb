@@ -14,5 +14,9 @@ do_install() {
    install -d "${D}/${base_prefix}${XT_DIR_ABS_ROOTFS_DOMF}"
    find "${XT_DIR_ABS_SHARED_BOOT_DOMF}" -iname 'Image*' -exec \
      cp -f --no-dereference --preserve=links {} "${D}/${base_prefix}${XT_DIR_ABS_ROOTFS_DOMF}" \;
+
+   #copy initramfs image
+   find "${XT_DIR_ABS_SHARED_INITRAMFS_DOMF}" -iname '*ramfs*cpio.gz' -exec \
+     cp -f --no-dereference --preserve=links {} "${D}/${base_prefix}${XT_DIR_ABS_ROOTFS_DOMF}" \;
 }
 
