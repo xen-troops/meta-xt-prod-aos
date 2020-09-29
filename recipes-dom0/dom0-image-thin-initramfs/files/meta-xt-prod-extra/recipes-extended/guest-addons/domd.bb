@@ -18,6 +18,7 @@ SRC_URI = "\
     file://domd-h3ulcb-cb.cfg \
     file://domd-h3ulcb.cfg \
     file://guest_domd \
+    file://dom_watcher.sh \
 "
 
 S = "${WORKDIR}"
@@ -34,6 +35,7 @@ DOMD_CONFIG_h3ulcb-xt = "domd-h3ulcb.cfg"
 
 FILES_${PN} = " \
     ${base_prefix}${XT_DIR_ABS_ROOTFS_DOM_CFG}/domd.cfg \
+    ${base_prefix}${XT_DIR_ABS_ROOTFS_SCRIPTS}/dom_watcher.sh \
 "
 
 inherit update-rc.d
@@ -58,4 +60,7 @@ do_install() {
 
     install -d ${D}${sysconfdir}/init.d
     install -m 0744 ${WORKDIR}/guest_domd ${D}${sysconfdir}/init.d/
+
+    install -d ${D}${base_prefix}${XT_DIR_ABS_ROOTFS_SCRIPTS}
+    install -m 0744 ${WORKDIR}/dom_watcher.sh ${D}${base_prefix}${XT_DIR_ABS_ROOTFS_SCRIPTS}/
 }
