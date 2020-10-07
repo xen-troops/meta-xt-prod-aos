@@ -6,6 +6,8 @@ IMAGE_INSTALL_append = " \
     optee-os \
     libxenbe \
     openssh-sshd \
+    openssh-ssh \
+    openssh-scp \
 "
 
 # Add python3 and modules required for provisioning
