@@ -21,6 +21,7 @@
 DOMAIN_NAME="DomD"
 CONFIG_NAME="domd.cfg"
 CONFIG_PATH="/xt/dom.cfg"
+WATCHER_SCRIPT="/xt/scripts/dom_watcher.sh"
 
 # not running in Xen dom0 or domU
 if ! test -d /proc/xen ; then
@@ -34,6 +35,7 @@ do_start () {
         exit 0
     fi
     xl create ${CONFIG_PATH}/${CONFIG_NAME}
+    $WATCHER_SCRIPT $DOMAIN_NAME &
 }
 
 do_stop () {

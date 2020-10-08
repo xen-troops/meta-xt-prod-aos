@@ -107,3 +107,37 @@ setenv flash_z_loaders 'run flash_bootparam_sa0; run flash_bl2; run flash_cert_h
 
 saveenv
 
+Load uEnv.txt from eMMC:
+====================================
+
+Updating Dom0 and u-boot using A/B slots approach requires env to be read from
+mmc.
+Separate environment partition is expected to have file /boot/uEnv.txt with the
+following format:
+
+bootarg=test_boot_arg
+...
+
+If no uEnv.txt was found, it should be created with the default configuration.
+
+To read uEnv.txt files on boot, the following configuration should be applied:
+
+setenv mmc0_dtb_load 'ext2load mmc 0:${aos_boot_slot} 0x48000000 /boot/dom0.dtb; fdt addr 0x48000000; fdt resize; fdt mknode / boot_dev; fdt set /boot_dev device mmcblk1'
+setenv mmc0_initramfs_load 'ext2load mmc 0:${aos_boot_slot} 0x74000000 /boot/uInitramfs'
+setenv mmc0_kernel_load 'ext2load mmc 0:${aos_boot_slot} 0x7a000000 /boot/Image'
+setenv mmc0_xen_load 'ext2load mmc 0:${aos_boot_slot} 0x48080000 /boot/xen-uImage'
+setenv mmc0_xenpolicy_load 'ext2load mmc 0:${aos_boot_slot} 0x7c000000 /boot/xenpolicy'
+setenv aos_slot1 1
+setenv aos_slot2 2
+
+setenv aos_default_vars 'setenv aos_boot_main 0; setenv aos_boot1_ok 1; setenv aos_boot2_ok 1; setenv aos_boot_part 0'
+setenv aos_save_vars 'env export -t ${loadaddr} aos_boot_main aos_boot_part aos_boot1_ok aos_boot2_ok; fatwrite mmc 0:3 ${loadaddr} /uEnv.txt ${filesize}'
+setenv aos_read_vars 'if load mmc 0:3 ${loadaddr} /uEnv.txt; then env import -t ${loadaddr} ${filesize}; else run aos_default_vars; run aos_save_vars; fi'
+
+
+setenv aos_boot1 'if test ${aos_boot1_ok} -eq 1; then setenv aos_boot1_ok 0; setenv aos_boot2_ok 1; setenv aos_boot_part 0; setenv aos_boot_slot ${aos_slot1}; run aos_save_vars; run bootcmd_mmc0; fi'
+setenv aos_boot2 'if test ${aos_boot2_ok} -eq 1; then setenv aos_boot2_ok 0; setenv aos_boot1_ok 1; setenv aos_boot_part 1; setenv aos_boot_slot ${aos_slot2}; run aos_save_vars; run bootcmd_mmc0; fi'
+
+
+setenv aos_bootcmd 'run aos_read_vars; if test ${aos_boot_main} -eq 0; then run aos_boot1; run aos_boot2; else run aos_boot2; run aos_boot1; fi'
+setenv bootcmd 'run aos_bootcmd'

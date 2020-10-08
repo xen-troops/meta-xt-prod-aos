@@ -39,23 +39,54 @@ define_partitions()
 	# Products are listed in alphabetical order.
 	case $1 in
 		aos)
-			# prod-aos [1..257][257..4257][4257..8257]
+			# prod-aos [1..128][129..256][257..273][274..1277][1278...2278][2279..3279][3280..4280][4281..9304]
 			DOM0_START=1
-			DOM0_END=$((DOM0_START+256))  # 257
+			DOM0_END=$((DOM0_START+128))  # 129
 			DOM0_PARTITION=1
 			DOM0_LABEL=boot
-			DOMD_START=$DOM0_END
-			DOMD_END=$((DOMD_START+4000))  # 4257
-			DOMD_PARTITION=2
+
+			# Backup partition
+			DOM0_P2_START=$DOM0_END
+			DOM0_P2_END=$((DOM0_P2_START+128))  # 257
+			DOM0_P2_PARTITION=2
+			DOM0_P2_LABEL=boot
+
+			ENV_START=$DOM0_P2_END
+			ENV_END=$((ENV_START+16)) # 273
+			ENV_PARTITION=3
+			ENV_LABEL=ENVPART
+
+			#Extended partition list
+			# Setting DOMD_START as DOM0_P2_END + 1 is related to parted work behaviour.
+			# It requires new partition to start from sector, larger then the end of previous partition.
+			# This requirement is true only for GPT and logical partitions, for primary partitions
+			# is acceptable when start of the new partition equals to the end of the previous one.
+
+			DOMD_START=$((ENV_END + 1))
+			DOMD_END=$((DOMD_START+1000))  # 1278
+			DOMD_PARTITION=5
 			DOMD_LABEL=domd
-			DOMF_START=$DOMD_END  # Also is used as flag that DomF is defined
-			DOMF_END=$((DOMF_START+4000))  # 8257
-			DOMF_PARTITION=3
+
+			DOMD_USR_START=$((DOMD_END + 1))
+			DOMD_USR_END=$((DOMD_USR_START+1000))  # 2279
+			DOMD_USR_PARTITION=6
+			DOMD_USR_LABEL=domd_userdata
+
+			DOMF_START=$((DOMD_USR_END + 1))  # Also is used as flag that DomF is defined
+			DOMF_END=$((DOMF_START+1000))  # 3280
+			DOMF_PARTITION=7
 			DOMF_LABEL=domf
-			AOS_START=$DOMF_END
-			AOS_END=$((AOS_START+1024))  # 9281
-			AOS_PARTITION=4
+
+			DOMF_USR_START=$((DOMF_END + 1))
+			DOMF_USR_END=$((DOMF_USR_START+1000))  # 4281
+			DOMF_USR_PARTITION=8
+			DOMF_USR_LABEL=domf_userdata
+
+			AOS_START=$((DOMF_USR_END + 1))
+			AOS_END=$((AOS_START+5022))  # 9304
+			AOS_PARTITION=9
 			AOS_LABEL=aos
+
 			DEFAULT_IMAGE_SIZE_GIB=$(((AOS_END/1024)+1))
 		;;
 		ces2019)
@@ -174,16 +205,36 @@ partition_image()
 	sudo parted -s $1 mklabel msdos || true
 
 	sudo parted -s $1 mkpart primary ext4 ${DOM0_START}MiB ${DOM0_END}MiB || true
-	sudo parted -s $1 mkpart primary ext4 ${DOMD_START}MiB ${DOMD_END}MiB || true
-	if [ ! -z ${DOMF_START} ]; then
-		sudo parted -s $1 mkpart primary ext4 ${DOMF_START}MiB ${DOMF_END}MiB || true
-		sudo parted -s $1 mkpart primary ext4 ${AOS_START}MiB ${AOS_END}MiB || true
+	local partition_type="primary"
+	if [ ! -z ${DOM0_P2_START} ]; then
+		sudo parted -s $1 mkpart primary ext4 ${DOM0_P2_START}MiB ${DOM0_P2_END}MiB || true
+		if [ ! -z ${ENV_START} ]; then
+			sudo parted -s $1 mkpart primary ext4 ${ENV_START}MiB ${ENV_END}MiB || true
+			sudo parted -s $1 mkpart extended ${ENV_END}MiB $((AOS_END + 1))MiB || true
+		else
+			sudo parted -s $1 mkpart extended ${DOM0_P2_END}MiB $((AOS_END + 1))MiB || true
+		fi
+		partition_type="logical"
+	fi 
+	sudo parted -s $1 mkpart $partition_type ext4 ${DOMD_START}MiB ${DOMD_END}MiB || true
+	if [ ! -z ${DOMD_USR_START} ]; then
+		sudo parted -s $1 mkpart $partition_type ext4 ${DOMD_USR_START}MiB ${DOMD_USR_END}MiB || true
 	fi
+	if [ ! -z ${DOMF_START} ]; then
+		sudo parted -s $1 mkpart $partition_type ext4 ${DOMF_START}MiB ${DOMF_END}MiB || true
+	fi
+	if [ ! -z ${DOMF_USR_START} ]; then
+		sudo parted -s $1 mkpart $partition_type ext4 ${DOMF_USR_START}MiB ${DOMF_USR_END}MiB || true
+	fi
+	if [ ! -z ${AOS_START} ]; then
+		sudo parted -s $1 mkpart $partition_type ext4 ${AOS_START}MiB ${AOS_END}MiB || true
+	fi
+
 	if [ ! -z ${DOMU_START} ]; then
-		sudo parted -s $1 mkpart primary ext4 ${DOMU_START}MiB ${DOMU_END}MiB || true
+		sudo parted -s $1 mkpart $partition_type ext4 ${DOMU_START}MiB ${DOMU_END}MiB || true
 	fi
 	if [ ! -z ${DOMA_START} ]; then
-		sudo parted -s $1 mkpart primary ${DOMA_START}MiB ${DOMA_END}MiB || true
+		sudo parted -s $1 mkpart $partition_type ${DOMA_START}MiB ${DOMA_END}MiB || true
 	fi
 	sudo parted $1 print
 	sudo partprobe $1
@@ -227,16 +278,28 @@ mkfs_one()
 mkfs_boot()
 {
 	mkfs_one $1 $DOM0_PARTITION $DOM0_LABEL
+	if [ ! -z ${DOM0_P2_PARTITION} ]; then
+		mkfs_one $1 $DOM0_P2_PARTITION $DOM0_P2_LABEL
+	fi
+	if [ ! -z ${ENV_PARTITION} ]; then
+		sudo mkfs.vfat -F 16 -n $ENV_LABEL ${1}p${ENV_PARTITION}
+	fi
 }
 
 mkfs_domd()
 {
 	mkfs_one $1 $DOMD_PARTITION $DOMD_LABEL
+	if [ ! -z ${DOMD_USR_PARTITION} ]; then
+		mkfs_one $1 $DOMD_USR_PARTITION $DOMD_USR_LABEL
+	fi
 }
 
 mkfs_domf()
 {
 	mkfs_one $1 $DOMF_PARTITION $DOMF_LABEL
+	if [ ! -z ${DOMF_USR_PARTITION} ]; then
+		mkfs_one $1 $DOMF_USR_PARTITION $DOMF_USR_LABEL
+	fi
 	mkfs_one $1 $AOS_PARTITION $AOS_LABEL
 }
 
@@ -328,7 +391,8 @@ unpack_dom0()
 	local db_base_folder=$1
 	local loop_base=$2
 
-	local part=1
+	local part=$DOM0_PARTITION
+	local secondPart=$DOM0_P2_PARTITION
 
 	print_step "Unpacking Dom0"
 
@@ -364,6 +428,11 @@ unpack_dom0()
 	done
 
 	umount_part $loop_base $part
+
+	# Copy boot partition to fallback
+	if [ ! -z DOM0_P2_START ]; then
+		sudo dd if=${loop_base}p${part} of=${loop_base}p${secondPart} bs=10M
+	fi
 }
 
 unpack_domd()
