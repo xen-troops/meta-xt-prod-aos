@@ -10,7 +10,7 @@ UPDATED_FLAG="updated"
 FAIL_FLAG="failed"
 DO_UPDATE_FLAG="do_update"
 DO_APPLY_FLAG="do_apply"
-UPDATE_DIR="/data/update/image/rootfs"
+UPDATE_DIR="/data/var/upper/update/image/rootfs"
 
 do_switchroot() {
 	echo "Moving /dev, /proc and /sys onto rootfs..."
@@ -40,6 +40,12 @@ mount_data() {
 	mkdir -p /data
 	mount $bootparam_userdata /data
 	switch_if_fail "Error: can't mount /data"
+	mkdir -p /data/var/work
+	[ "$(ls -A /data/var/work)" ] && rm -rf /data/var/work/*
+	mkdir -p /data/var/upper
+	mkdir -p /data/etc/work
+	[ "$(ls -A /data/etc/work)" ] && rm -rf /data/etc/work/*
+	mkdir -p /data/etc/upper
 	rm -rf $UPDATE_DIR/$FAIL_FLAG
 }
 
@@ -135,7 +141,8 @@ do_mount_inc_update() {
 prepare_rootfs() {
 	echo "prepare_rootfs"
 	mkdir -p $ROOTFS_DIR/var
-	mount --move /data $ROOTFS_DIR/var
+	mount -t overlay overlay -o lowerdir=$ROOTFS_DIR/var/,workdir=/data/var/work,upperdir=/data/var/upper $ROOTFS_DIR/var
+	mount -t overlay overlay -o lowerdir=$ROOTFS_DIR/etc/,workdir=/data/etc/work,upperdir=/data/etc/upper $ROOTFS_DIR/etc
 }
 
 finish_run() {
