@@ -13,4 +13,7 @@ USERADD_ERROR_DYNAMIC = "warn"
 do_install_append() {
     install -d ${D}${sysconfdir}/systemd/network
     install -m 0644 ${WORKDIR}/*.network ${D}${sysconfdir}/systemd/network
+
+    sed -i -e "s/\/lib\/systemd\/systemd-quotacheck/\/usr\/sbin\/quotacheck -avum/" \
+          ${D}${systemd_unitdir}/system/systemd-quotacheck.service
 }

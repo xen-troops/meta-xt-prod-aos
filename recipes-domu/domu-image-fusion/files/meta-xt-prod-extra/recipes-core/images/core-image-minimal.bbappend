@@ -17,3 +17,4 @@ populate_vmlinux () {
 }
 
 IMAGE_POSTPROCESS_COMMAND += "populate_vmlinux; "
+IMAGE_FEATURES_append = " read-only-rootfs"
