@@ -79,3 +79,4 @@ install_aos () {
 }
 
 ROOTFS_POSTPROCESS_COMMAND += "install_aos; "
+IMAGE_FEATURES_append = " read-only-rootfs"

@@ -75,18 +75,10 @@ pkg_postinst_${PN}() {
 
     # Add model name
     echo "${DOMF_MODEL_NAME};1.0" > $D${sysconfdir}/aos/model_name.txt
-}
 
-pkg_postinst_ontarget_${PN} () {
-    # Create AOS working dirs
-    mkdir -p /var/aos/servicemanager
-    mkdir -p /var/aos/updatemanager
-
-    # Enable quotas
-    echo "Enable disk quotas"
-    quotacheck -avum && quotaon -avu
-
-    # Update certificates
-    echo "Update certificates"
-    update-ca-certificates
+    install -d $D${sysconfdir}/ssl/certs
+    install -m 0644 ${WORKDIR}/rootCA.crt $D${sysconfdir}/ssl/certs
+    cd $D${sysconfdir}/ssl/certs
+    ln -sf rootCA.crt rootCA.pem
+    cd -
 }
