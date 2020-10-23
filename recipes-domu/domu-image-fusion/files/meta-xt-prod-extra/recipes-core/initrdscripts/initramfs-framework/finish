@@ -122,6 +122,7 @@ do_mount_full_update() {
 	mount -o ro $update_file $ROOTFS_DIR
 	if [ $? -ne 0 ]; then
 		echo "Error: unable to mount full update image. Switching back to original rootfs"
+		mount -o ro $root_device $ROOTFS_DIR
 		[[ -d $UPDATE_DIR ]] && touch $UPDATE_DIR/$FAIL_FLAG
 		do_switchroot
 	fi
