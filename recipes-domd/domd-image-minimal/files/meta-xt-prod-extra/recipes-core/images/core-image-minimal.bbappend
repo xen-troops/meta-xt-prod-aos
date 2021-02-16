@@ -24,6 +24,11 @@ IMAGE_INSTALL_append = " \
     python3-websocket-client \
 "
 
+# Add aos components
+IMAGE_INSTALL_append = " \
+    aos-updatemanager \
+"
+
 IMAGE_INSTALL_append_cetibox = " \
     sja1105-tool \
     phytool \
