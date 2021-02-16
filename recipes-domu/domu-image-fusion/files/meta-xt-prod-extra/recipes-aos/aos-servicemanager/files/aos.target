@@ -1,0 +1,7 @@
+[Unit]
+Description=Aos services
+Wants=aos-servicemanager.service aos-updatemanager.service
+After=aos-servicemanager.service aos-updatemanager.service
+
+[Install]
+WantedBy=multi-user.target
