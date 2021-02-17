@@ -78,16 +78,11 @@ define_partitions()
 			DOMF_LABEL=domf
 
 			DOMF_USR_START=$((DOMF_END + 1))
-			DOMF_USR_END=$((DOMF_USR_START+1000))  # 4281
+			DOMF_USR_END=$((DOMF_USR_START+6022))  # 9304
 			DOMF_USR_PARTITION=8
 			DOMF_USR_LABEL=domf_userdata
 
-			AOS_START=$((DOMF_USR_END + 1))
-			AOS_END=$((AOS_START+5022))  # 9304
-			AOS_PARTITION=9
-			AOS_LABEL=aos
-
-			DEFAULT_IMAGE_SIZE_GIB=$(((AOS_END/1024)+1))
+			DEFAULT_IMAGE_SIZE_GIB=$(((DOMF_USR_END/1024)+1))
 		;;
 		ces2019)
 			# prod-ces2019 [1..257][257..4257][4257..8680]
@@ -210,9 +205,9 @@ partition_image()
 		sudo parted -s $1 mkpart primary ext4 ${DOM0_P2_START}MiB ${DOM0_P2_END}MiB || true
 		if [ ! -z ${ENV_START} ]; then
 			sudo parted -s $1 mkpart primary ext4 ${ENV_START}MiB ${ENV_END}MiB || true
-			sudo parted -s $1 mkpart extended ${ENV_END}MiB $((AOS_END + 1))MiB || true
+			sudo parted -s $1 mkpart extended ${ENV_END}MiB $((DOMF_USR_END + 1))MiB || true
 		else
-			sudo parted -s $1 mkpart extended ${DOM0_P2_END}MiB $((AOS_END + 1))MiB || true
+			sudo parted -s $1 mkpart extended ${DOM0_P2_END}MiB $((DOMF_USR_END + 1))MiB || true
 		fi
 		partition_type="logical"
 	fi 
@@ -225,9 +220,6 @@ partition_image()
 	fi
 	if [ ! -z ${DOMF_USR_START} ]; then
 		sudo parted -s $1 mkpart $partition_type ext4 ${DOMF_USR_START}MiB ${DOMF_USR_END}MiB || true
-	fi
-	if [ ! -z ${AOS_START} ]; then
-		sudo parted -s $1 mkpart $partition_type ext4 ${AOS_START}MiB ${AOS_END}MiB || true
 	fi
 
 	if [ ! -z ${DOMU_START} ]; then
@@ -300,7 +292,6 @@ mkfs_domf()
 	if [ ! -z ${DOMF_USR_PARTITION} ]; then
 		mkfs_one $1 $DOMF_USR_PARTITION $DOMF_USR_LABEL
 	fi
-	mkfs_one $1 $AOS_PARTITION $AOS_LABEL
 }
 
 mkfs_doma()
