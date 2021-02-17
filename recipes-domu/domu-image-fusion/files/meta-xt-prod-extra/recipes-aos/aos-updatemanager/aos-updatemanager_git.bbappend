@@ -19,6 +19,7 @@ MIGRATION_SCRIPTS_PATH = "/usr/share/updatemanager/migration"
 DEPENDS_append = "\
     pkgconfig-native \
     systemd \
+    efivar \
 "
 
 FILES_${PN} += " \
