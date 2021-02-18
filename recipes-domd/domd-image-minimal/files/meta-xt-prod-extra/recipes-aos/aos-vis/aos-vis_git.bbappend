@@ -22,7 +22,7 @@ SYSTEMD_SERVICE_${PN} = "aos-vis.service"
 FILES_${PN} += " \
     ${sysconfdir}/aos/aos_vis.cfg \
     ${systemd_system_unitdir}/aos-vis.service \
-    /var/aos/vis/data/*.pem \
+    /etc/aos/vis/data/*.pem \
 "
 
 RDEPENDS_${PN} += "\
@@ -49,6 +49,6 @@ do_install_append() {
     install -d ${D}${systemd_system_unitdir}
     install -m 0644 ${WORKDIR}/aos-vis.service ${D}${systemd_system_unitdir}/aos-vis.service
 
-    install -d ${D}/var/aos/vis/crypt
-    install -m 0644 ${S}/src/${GO_IMPORT}/data/*.pem ${D}/var/aos/vis/crypt
+    install -d ${D}/etc/aos/vis/data
+    install -m 0644 ${S}/src/${GO_IMPORT}/data/*.pem ${D}/etc/aos/vis/data
 }
