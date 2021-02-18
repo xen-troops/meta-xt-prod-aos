@@ -10,6 +10,7 @@ IMAGE_INSTALL_append = " \
     openssh-sshd \
     openssh-ssh \
     openssh-scp \
+    volatile-binds \
 "
 
 populate_vmlinux () {
