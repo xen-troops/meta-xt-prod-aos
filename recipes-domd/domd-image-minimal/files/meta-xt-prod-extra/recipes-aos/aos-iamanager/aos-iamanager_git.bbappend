@@ -7,6 +7,7 @@ SRC_URI_append = "\
     file://aos_iamanager.cfg \
     file://finish.sh \
     file://aos.target \
+    file://rootCA.pem \
 "
 
 AOS_IAM_CERT_MODULES = "\
@@ -43,6 +44,9 @@ do_install_append() {
 
     install -d ${D}/var/aos/iamanager
     install -m 0755 ${WORKDIR}/finish.sh ${D}/var/aos/finish.sh
+
+    install -d ${D}${sysconfdir}/ssl/certs
+    install -m 0644 ${WORKDIR}/rootCA.pem ${D}${sysconfdir}/ssl/certs/
 }
 
 pkg_postinst_${PN}() {
