@@ -1,3 +1,6 @@
+VOLATILE_BINDS += "\
+    /var/machine-id /etc/machine-id\n\
+"
 
 do_compile_append() {
     if [ -e var-machine-id.service ]; then
