@@ -28,6 +28,11 @@ FILES_${PN} += " \
     ${MIGRATION_SCRIPTS_PATH} \
 "
 
+do_compile_prepend(){
+    export GOCACHE=${WORKDIR}/cache
+}
+
+
 do_install_append() {
     install -d ${D}${sysconfdir}/aos
     install -m 0644 ${WORKDIR}/aos_updatemanager.cfg ${D}${sysconfdir}/aos

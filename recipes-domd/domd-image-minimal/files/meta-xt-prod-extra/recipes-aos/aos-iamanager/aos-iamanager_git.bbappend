@@ -28,6 +28,11 @@ FILES_${PN} += " \
     /var/aos/finish.sh \
 "
 
+do_compile_prepend(){
+    export GOCACHE=${WORKDIR}/cache
+}
+
+
 do_install_append() {
     install -d ${D}${sysconfdir}/aos
     install -m 0644 ${WORKDIR}/aos_iamanager.cfg ${D}${sysconfdir}/aos

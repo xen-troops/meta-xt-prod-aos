@@ -28,6 +28,9 @@ FILES_${PN} += " \
 RDEPENDS_${PN} += "\
     ${@bb.utils.contains('AOS_VIS_PLUGINS', 'plugins/telemetryemulatoradapter', 'telemetry-emulator', '', d)} \
 "
+do_compile_prepend(){
+    export GOCACHE=${WORKDIR}/cache
+}
 
 do_install_append() {
     if "${@bb.utils.contains('AOS_VIS_PLUGINS', 'plugins/telemetryemulatoradapter', 'true', 'false', d)}"; then
