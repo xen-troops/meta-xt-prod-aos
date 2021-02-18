@@ -22,9 +22,9 @@ There are three domains which are running on top of Xen:
 1. Generic machine independent control domain named "Domain-0". This initramfs based domain is responsible
    for managing VMs only (create/destroy/reboot guest domains). There is no HW assigned to this domain.
 2. Machine dependent driver domain named "DomD". This domain is based on agl-image-minimal and contains
-   AOS VIS and AOS telemetry emulator.
-3. AOS domain named "DomF". This domain is based on core-image-minimal and contains AOS Service Manager,
-   drives AOS services etc.
+   AOS VIS, AOS update manager(UM), AOS access and identity manager(IAM) and AOS telemetry emulator.
+3. AOS domain named "DomF". This domain is based on core-image-minimal and contains AOS update manager(UM),
+   AOS Service Manager, drives AOS services etc.
 
 Build:
 ======
