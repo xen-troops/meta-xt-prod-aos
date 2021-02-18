@@ -8,6 +8,7 @@ IMAGE_INSTALL_append = " \
     openssh-sshd \
     openssh-ssh \
     openssh-scp \
+    volatile-binds \
 "
 
 # Add python3 and modules required for provisioning
