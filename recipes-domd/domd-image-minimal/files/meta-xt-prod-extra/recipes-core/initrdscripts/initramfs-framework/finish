@@ -41,6 +41,7 @@ do_switchroot() {
 prepare_data() {
 	echo "Prepare rootfs"
 	mount --move /data $ROOTFS_DIR/var
+	mkdir -p $ROOTFS_DIR/var/lib/misc
 }
 
 switch_if_fail() {
