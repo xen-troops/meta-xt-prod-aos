@@ -89,6 +89,7 @@ ROOTFS_POSTPROCESS_COMMAND += "install_aos; "
 IMAGE_FEATURES_append = " read-only-rootfs"
 
 BOARD_MODEL ?= "h3-ulcb;1.0"
+BOARD_ROOTFS_VERSION ?= "${PV}"
 
 do_set_board_model() {
     install -d ${IMAGE_ROOTFS}/etc/aos
