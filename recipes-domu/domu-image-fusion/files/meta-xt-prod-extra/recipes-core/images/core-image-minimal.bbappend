@@ -19,3 +19,12 @@ populate_vmlinux () {
 
 IMAGE_POSTPROCESS_COMMAND += "populate_vmlinux; "
 IMAGE_FEATURES_append = " read-only-rootfs"
+
+BOARD_ROOTFS_VERSION ?= "${PV}"
+
+do_set_rootfs_version() {
+    install -d ${IMAGE_ROOTFS}/etc/aos
+
+    echo "VERSION=\"${BOARD_ROOTFS_VERSION}\"" > ${IMAGE_ROOTFS}/etc/aos/version
+}
+addtask set_rootfs_version after do_rootfs before do_image_qa
