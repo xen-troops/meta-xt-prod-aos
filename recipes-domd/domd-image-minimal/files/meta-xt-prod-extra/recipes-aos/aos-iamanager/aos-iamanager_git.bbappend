@@ -26,7 +26,7 @@ FILES_${PN} += " \
     ${sysconfdir}/aos/aos_iamanager.cfg \
     ${systemd_system_unitdir}/aos-iamanager.service \
     ${systemd_system_unitdir}/aos.target \
-    /var/aos/finish.sh \
+    /usr/bin/finish.sh \
 "
 
 do_compile_prepend(){
@@ -43,7 +43,7 @@ do_install_append() {
     install -m 0644 ${WORKDIR}/aos.target ${D}${systemd_system_unitdir}/aos.target
 
     install -d ${D}/var/aos/iamanager
-    install -m 0755 ${WORKDIR}/finish.sh ${D}/var/aos/finish.sh
+    install -m 0755 ${WORKDIR}/finish.sh ${D}/usr/bin/finish.sh
 
     install -d ${D}${sysconfdir}/ssl/certs
     install -m 0644 ${WORKDIR}/rootCA.pem ${D}${sysconfdir}/ssl/certs/
