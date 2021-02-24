@@ -1,2 +1,0 @@
-# Mount /var/aos to separate partition, enable disk quotas
-/dev/xvda3           /var/aos/crypt             auto       defaults,usrjquota=aquota.user,jqfmt=vfsv0 0  0
