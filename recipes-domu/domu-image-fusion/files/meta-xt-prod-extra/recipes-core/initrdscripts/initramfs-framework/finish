@@ -40,12 +40,8 @@ do_switchroot() {
 
 prepare_data() {
 	echo "Prepare rootfs"
-	
-	mkdir -p /data/home/work
-	mkdir -p /data/home/upper
-
-	mount -t overlay overlay -o lowerdir=$ROOTFS_DIR/home/,workdir=/data/home/work,upperdir=/data/home/upper $ROOTFS_DIR/home
 	mount --move /data $ROOTFS_DIR/var
+	mkdir -p $ROOTFS_DIR/var/lib/misc
 }
 
 switch_if_fail() {

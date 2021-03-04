@@ -267,6 +267,8 @@ HOSTTOOLS += "sync"
 ASSUME_PROVIDED += "bison-native"
 HOSTTOOLS += "bison"
 
+GOVERSION = "1.14%"
+
 # Initramfs configuration
 INITRAMFS_IMAGE = "core-image-tiny-initramfs"
 INITRAMFS_IMAGE_BUNDLE = "0"

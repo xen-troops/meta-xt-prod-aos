@@ -8,6 +8,7 @@ IMAGE_INSTALL_append = " \
     openssh-sshd \
     openssh-ssh \
     openssh-scp \
+    volatile-binds \
 "
 
 # Add python3 and modules required for provisioning
@@ -86,3 +87,23 @@ install_aos () {
 
 ROOTFS_POSTPROCESS_COMMAND += "install_aos; "
 IMAGE_FEATURES_append = " read-only-rootfs"
+
+BOARD_MODEL ?= "h3-ulcb;1.0"
+BOARD_MODEL_cetibox ?= "cetibox;1.0"
+
+BOARD_ROOTFS_VERSION ?= "${PV}"
+
+do_set_board_model() {
+    install -d ${IMAGE_ROOTFS}/etc/aos
+
+    echo "${BOARD_MODEL}" > ${IMAGE_ROOTFS}/etc/aos/board_model
+}
+
+do_set_rootfs_version() {
+    install -d ${IMAGE_ROOTFS}/etc/aos
+
+    echo "VERSION=\"${BOARD_ROOTFS_VERSION}\"" > ${IMAGE_ROOTFS}/etc/aos/version
+}
+
+addtask set_board_model after do_rootfs before do_image_qa
+addtask set_rootfs_version after do_rootfs before do_image_qa

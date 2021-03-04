@@ -19,6 +19,7 @@ MIGRATION_SCRIPTS_PATH = "/usr/share/updatemanager/migration"
 DEPENDS_append = "\
     pkgconfig-native \
     systemd \
+    efivar \
 "
 
 FILES_${PN} += " \
@@ -26,6 +27,11 @@ FILES_${PN} += " \
     ${systemd_system_unitdir}/aos-updatemanager.service \
     ${MIGRATION_SCRIPTS_PATH} \
 "
+
+do_compile_prepend(){
+    export GOCACHE=${WORKDIR}/cache
+}
+
 
 do_install_append() {
     install -d ${D}${sysconfdir}/aos

@@ -3,14 +3,16 @@ Prerequisites:
 1. Install tools:
 ```
    apt-get install gawk wget diffstat texinfo chrpath socat libsdl1.2-dev \
-                    python-crypto repo checkpolicy python-git python-github \
-                    python-ctypeslib bzr pigz m4 lftp openjdk-8-jdk git-core \
+                    python3-cryptography repo checkpolicy  bizone \
+                    bzr pigz m4 lftp openjdk-8-jdk git-core \
                     gnupg flex bison gperf build-essential zip curl zlib1g-dev \
                     gcc-multilib g++-multilib libc6-dev-i386 lib32ncurses5-dev \
                     x11proto-core-dev libx11-dev lib32z-dev ccache libgl1-mesa-dev \
-                    libxml2-utils xsltproc unzip python-clang-5.0 gcc-5 g++-5 -y
+                    libxml2-utils xsltproc unzip gcc-5 g++-5 -y
+
+   pip3 install configparser pygithub  gitpython
 ```
-2. Checked with Python v 2.7.12, but other should also work
+2. Checked with Python3 v 3.8.5, but other should also work
 
 About:
 ======
@@ -20,9 +22,9 @@ There are three domains which are running on top of Xen:
 1. Generic machine independent control domain named "Domain-0". This initramfs based domain is responsible
    for managing VMs only (create/destroy/reboot guest domains). There is no HW assigned to this domain.
 2. Machine dependent driver domain named "DomD". This domain is based on agl-image-minimal and contains
-   AOS VIS and AOS telemetry emulator.
-3. AOS domain named "DomF". This domain is based on core-image-minimal and contains AOS Service Manager,
-   drives AOS services etc.
+   AOS VIS, AOS update manager(UM), AOS access and identity manager(IAM) and AOS telemetry emulator.
+3. AOS domain named "DomF". This domain is based on core-image-minimal and contains AOS update manager(UM),
+   AOS Service Manager, drives AOS services etc.
 
 Build:
 ======
