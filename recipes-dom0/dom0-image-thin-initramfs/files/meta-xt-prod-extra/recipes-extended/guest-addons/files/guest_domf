@@ -23,6 +23,7 @@ SCRIPT_NAME="start_guest.sh"
 SCRIPT_PATH="/xt/scripts"
 GUEST="domf"
 GUEST_DEPENDENCIES="bridge"
+STOP_TIMEOUT=100
 
 # not running in Xen dom0 or domU
 if ! test -d /proc/xen ; then
@@ -53,14 +54,19 @@ do_stop () {
     PID=`ps -ef | grep ${SCRIPT_NAME} | grep ${GUEST} | awk '{print $1;}' `
 
     if [ ! -z $PID ] ; then
-        kill -SIGTERM PID
+        kill -s SIGTERM $PID
     fi
 
     if ! xl domid ${DOMAIN_NAME} &> /dev/null ; then
         echo "${DOMAIN_NAME} is not running"
         exit 0
     fi
-    xl shutdown ${DOMAIN_NAME}
+
+    ( sleep ${STOP_TIMEOUT}; xl destroy ${DOMAIN_NAME} ) &
+
+    xl shutdown -w ${DOMAIN_NAME}
+
+    kill -s SIGTERM $!
 }
 
 do_status () {

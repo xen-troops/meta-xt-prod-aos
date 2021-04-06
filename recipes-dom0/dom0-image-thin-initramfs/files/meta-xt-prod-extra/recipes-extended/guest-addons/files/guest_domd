@@ -21,7 +21,10 @@
 DOMAIN_NAME="DomD"
 CONFIG_NAME="domd.cfg"
 CONFIG_PATH="/xt/dom.cfg"
-WATCHER_SCRIPT="/xt/scripts/dom_watcher.sh"
+SCRIPT_PATH="/xt/scripts"
+WATCHER_SCRIPT="dom_watcher.sh"
+STOP_TIMEOUT=100
+
 
 # not running in Xen dom0 or domU
 if ! test -d /proc/xen ; then
@@ -35,17 +38,28 @@ do_start () {
         exit 0
     fi
     xl create ${CONFIG_PATH}/${CONFIG_NAME}
-    $WATCHER_SCRIPT $DOMAIN_NAME &
+    ${SCRIPT_PATH}/${WATCHER_SCRIPT} ${DOMAIN_NAME} &
 }
 
 do_stop () {
     echo "Stopping ${DOMAIN_NAME}"
 
+    PID=`ps -ef | grep ${WATCHER_SCRIPT} | grep ${DOMAIN_NAME} | awk '{print $1;}'`
+
+    if [ ! -z $PID ] ; then
+        kill -s SIGTERM $PID
+    fi
+
     if ! xl domid ${DOMAIN_NAME} &> /dev/null ; then
         echo "${DOMAIN_NAME} is not running"
         exit 0
     fi
-    xl destroy ${DOMAIN_NAME}
+
+    ( sleep ${STOP_TIMEOUT}; xl destroy ${DOMAIN_NAME} ) &
+
+    xl shutdown -w ${DOMAIN_NAME}
+
+    kill -s SIGTERM $!
 }
 
 do_status () {
