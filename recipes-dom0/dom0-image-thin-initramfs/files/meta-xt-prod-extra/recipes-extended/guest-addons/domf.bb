@@ -41,7 +41,7 @@ PACKAGES += " \
 INITSCRIPT_PACKAGES = "${PN}-run"
 
 INITSCRIPT_NAME_${PN}-run = "guest_domf"
-INITSCRIPT_PARAMS_${PN}-run = "defaults 86"
+INITSCRIPT_PARAMS_${PN}-run = "defaults 86 78"
 
 do_install() {
     install -d ${D}${base_prefix}${XT_DIR_ABS_ROOTFS_DOM_CFG}
