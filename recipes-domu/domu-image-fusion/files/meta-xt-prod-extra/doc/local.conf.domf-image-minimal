@@ -229,10 +229,6 @@ VIRTUAL-RUNTIME_initscripts = "systemd-compat-units"
 
 PREFERRED_PROVIDER_virtual/runc = "runc-opencontainers"
 
-DEPLOY_DIR = "${TMPDIR}/deploy"
-IMAGE_ROOTFS = "${TMPDIR}/rootfs"
-XT_SHARED_ROOTFS_DIR = "${IMAGE_ROOTFS}/shared_rootfs"
-
 include ${@d.getVar('XT_SHARED_ROOTFS_DIR', True) or ''}/local.conf.domd_machine.inc
 
 #initramfs configuration
