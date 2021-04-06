@@ -8,6 +8,4 @@ ssh -o "ServerAliveInterval=1" -o "StrictHostKeyChecking=no" -o "UserKnownHostsF
 sync
 
 # reboot domf
-( sleep 20 ; xenstore-write control/user-reboot 2 ) &
-
-
+( sleep 2 ; xenstore-write control/user-reboot 2 ) &
