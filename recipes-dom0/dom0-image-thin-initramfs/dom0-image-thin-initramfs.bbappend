@@ -51,6 +51,9 @@ add_to_local_conf() {
     base_update_conf_value ${local_conf} PREFERRED_VERSION_xen "4.12.0+git\%"
 
     base_update_conf_value ${local_conf} XT_GUESTS_INSTALL "${XT_GUESTS_INSTALL}"
+
+    # set update variables
+    base_update_conf_value ${local_conf} DOM0_IMAGE_VERSION "${DOM0_IMAGE_VERSION}"
 }
 
 python do_configure_append() {

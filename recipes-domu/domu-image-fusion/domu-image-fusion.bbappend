@@ -1,6 +1,8 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 FILESEXTRAPATHS_prepend := "${THISDIR}/../../inc:"
 
+require inc/xt_shared_env.inc
+
 ###############################################################################
 # extra layers and files to be put after Yocto's do_unpack into inner builder
 ###############################################################################
@@ -53,6 +55,9 @@ configure_versions() {
 
     # set default timezone to Las Vegas
     base_update_conf_value ${local_conf} DEFAULT_TIMEZONE "US/Pacific"
+
+    # set update variables
+    base_update_conf_value ${local_conf} DOMF_IMAGE_VERSION "${DOMF_IMAGE_VERSION}"
 }
 
 python do_configure_append() {
