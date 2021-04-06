@@ -2,6 +2,8 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 FILESEXTRAPATHS_prepend := "${THISDIR}/../../inc:"
 FILESEXTRAPATHS_prepend := "${THISDIR}/../../recipes-domx:"
 
+require inc/xt_shared_env.inc
+
 XT_PRODUCT_NAME ?= "prod-aos"
 
 python __anonymous () {
@@ -120,6 +122,10 @@ configure_versions_rcar() {
     if echo "${MACHINEOVERRIDES}" | grep -qiv "kingfisher"; then
         base_add_conf_value ${local_conf} DISTRO_FEATURES_remove "wifi bluetooth"
     fi
+
+    # set update variables
+    base_update_conf_value ${local_conf} DOMD_IMAGE_VERSION "${DOMD_IMAGE_VERSION}"
+    base_update_conf_value ${local_conf} BOARD_MODEL "${BOARD_MODEL}"
 }
 
 python do_configure_append_rcar() {
