@@ -1,3 +1,5 @@
+require inc/xt_shared_env.inc
+
 IMAGE_INSTALL_append = " \
     packagegroup-xt-core-guest-addons \
     packagegroup-xt-core-xen \
@@ -85,25 +87,39 @@ install_aos () {
     fi
 }
 
-ROOTFS_POSTPROCESS_COMMAND += "install_aos; "
+ROOTFS_POSTPROCESS_COMMAND += " install_aos; set_board_model; set_image_version; "
+IMAGE_POSTPROCESS_COMMAND += " create_shared_links; "
+
 IMAGE_FEATURES_append = " read-only-rootfs"
 
-BOARD_MODEL ?= "h3-ulcb;1.0"
-BOARD_MODEL_cetibox ?= "cetibox;1.0"
+# Vars
 
-BOARD_ROOTFS_VERSION ?= "${PV}"
+SHARED_ROOTFS_DIR = "${XT_DIR_ABS_SHARED_ROOTFS_DOMD}/${IMAGE_BASENAME}"
 
-do_set_board_model() {
+# Dependencies
+
+create_shared_links[dirs] = "${SHARED_ROOTFS_DIR}"
+
+# Tasks
+
+set_board_model() {
     install -d ${IMAGE_ROOTFS}/etc/aos
 
     echo "${BOARD_MODEL}" > ${IMAGE_ROOTFS}/etc/aos/board_model
 }
 
-do_set_rootfs_version() {
+set_image_version() {
     install -d ${IMAGE_ROOTFS}/etc/aos
 
-    echo "VERSION=\"${BOARD_ROOTFS_VERSION}\"" > ${IMAGE_ROOTFS}/etc/aos/version
+    echo "VERSION=\"${DOMD_IMAGE_VERSION}\"" > ${IMAGE_ROOTFS}/etc/aos/version
 }
 
-addtask set_board_model after do_rootfs before do_image_qa
-addtask set_rootfs_version after do_rootfs before do_image_qa
+# We need to have shared resources in work-shared dir for the layer and update functionality
+# Creating symlink IMAGE_ROOTFS to work-shared to get an access to them by
+# layers and update
+create_shared_links() {
+    if [ -d ${IMAGE_ROOTFS} ]; then
+        rm -rf ${SHARED_ROOTFS_DIR}
+        lnr ${IMAGE_ROOTFS} ${SHARED_ROOTFS_DIR}
+    fi
+}

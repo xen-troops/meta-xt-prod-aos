@@ -46,3 +46,38 @@ XT_DIR_ABS_SHARED_BOOT_DOMU = "${XT_SHARED_ROOTFS_DIR}/${XT_DIR_REL_DOMU}/boot"
 
 XT_DIR_ABS_SHARED_INITRAMFS_DOMD = "${XT_SHARED_ROOTFS_DIR}/${XT_DIR_REL_DOMD}/initramfs"
 XT_DIR_ABS_SHARED_INITRAMFS_DOMF = "${XT_SHARED_ROOTFS_DIR}/${XT_DIR_REL_DOMF}/initramfs"
+
+XT_DIR_ABS_SHARED_ROOTFS_DOMD = "${XT_SHARED_ROOTFS_DIR}/${XT_DIR_REL_DOMD}/rootfs"
+XT_DIR_ABS_SHARED_ROOTFS_DOMF = "${XT_SHARED_ROOTFS_DIR}/${XT_DIR_REL_DOMF}/rootfs"
+
+###############################################################################
+# Upddate bundle
+###############################################################################
+
+BOARD_MODEL ?= "h3ulcb;1.0"
+BOARD_MODEL_cetibox ?= "cetibox;1.0"
+
+# Bundle image version used as suffix in the bundle name
+BUNDLE_IMAGE_VERSION ?= "1.0.0"
+
+# Dom0 image type. Dom0 supports only "full". Empty value means dom0 update image
+# will not be included into the bunle.
+BUNDLE_DOM0_TYPE ?= "full"
+# DomD image type. DomD supports "full" and "incremental" update. Empty value
+# means DomD update image will not be included into the bunle.
+BUNDLE_DOMD_TYPE ?= "full"
+# DomF image type. DomF supports "full" and "incremental" update. Empty value
+# means DomF update image will not be included into the bunle.
+BUNDLE_DOMF_TYPE ?= "full"
+
+# Dom0 image version
+DOM0_IMAGE_VERSION ?= "1.0.0"
+# DomD image version
+DOMD_IMAGE_VERSION ?= "1.0.0"
+# DomF image version
+DOMF_IMAGE_VERSION ?= "1.0.0"
+
+# DomD reference version, used for incremental update.
+DOMD_REF_VERSION ?= "1.0.0"
+# DomF reference version, used for incremental update.
+DOMF_REF_VERSION ?= "1.0.0"
