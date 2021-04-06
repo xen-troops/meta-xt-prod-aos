@@ -395,15 +395,17 @@ unpack_dom0()
 
 	local Image=`find $dom0_root -name Image`
 	local uInitramfs=`find $dom0_root -name uInitramfs`
+	local aos=`find $dom0_root -name aos`
 	local dom0dtb=`find $domd_root -name dom0.dtb`
 	local xenpolicy=`find $domd_root -name xenpolicy`
 	local xenuImage=`find $domd_root -name xen-uImage`
 
-	echo "Dom0 kernel image:" `realpath --relative-to=$db_base_folder $Image`
-	echo "Dom0 initramfs:   " `realpath --relative-to=$db_base_folder $uInitramfs`
-	echo "Dom0 device tree: " `realpath --relative-to=$db_base_folder $dom0dtb`
-	echo "Xen policy:       " `realpath --relative-to=$db_base_folder $xenpolicy`
-	echo "Xen image:        " `realpath --relative-to=$db_base_folder $xenuImage`
+	echo "Dom0 vendor version: " `cat $aos/version`
+	echo "Dom0 kernel image:   " `realpath --relative-to=$db_base_folder $Image`
+	echo "Dom0 initramfs:      " `realpath --relative-to=$db_base_folder $uInitramfs`
+	echo "Dom0 device tree:    " `realpath --relative-to=$db_base_folder $dom0dtb`
+	echo "Xen policy:          " `realpath --relative-to=$db_base_folder $xenpolicy`
+	echo "Xen image:           " `realpath --relative-to=$db_base_folder $xenuImage`
 
 	if [ $(echo "$Image" | wc -w) -gt 1 ]; then
 		echo "Error: Too many kernel images were found."
@@ -417,6 +419,8 @@ unpack_dom0()
 	for f in $Image $uInitramfs $dom0dtb $xenpolicy $xenuImage ; do
 		sudo cp -L $f "${MOUNT_POINT}/boot/"
 	done
+
+	sudo cp -Lrf $aos "${MOUNT_POINT}"
 
 	umount_part $loop_base $part
 
