@@ -55,6 +55,7 @@ Our build system uses set of additional meta layers and tools.
     - comment out `XT_RCAR_EVAPROPRIETARY_DIR`
     - `XT_GUESTS_INSTALL = "domf"`
     - `XT_GUESTS_BUILD = "domf"`
+    - `BBMASK = "../meta-aos/recipes-aos"`: add this line if not exist
     - set OTA updates variables in case generating the update bundle is required (see [UPDATE.md](UPDATE.md))
 
    For example:
