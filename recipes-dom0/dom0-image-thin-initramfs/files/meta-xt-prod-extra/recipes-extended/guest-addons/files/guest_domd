@@ -47,7 +47,7 @@ do_stop () {
     PID=`ps -ef | grep ${WATCHER_SCRIPT} | grep ${DOMAIN_NAME} | awk '{print $1;}'`
 
     if [ ! -z $PID ] ; then
-        kill -s SIGTERM $PID
+        kill $PID
     fi
 
     if ! xl domid ${DOMAIN_NAME} &> /dev/null ; then
@@ -59,7 +59,7 @@ do_stop () {
 
     xl shutdown -w ${DOMAIN_NAME}
 
-    kill -s SIGTERM $!
+    kill $!
 }
 
 do_status () {
