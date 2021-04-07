@@ -1,7 +1,10 @@
-Prerequisites:
-==============
+# Install
+
+## Prerequisites
+
 1. Install tools:
-```
+
+```bash
    apt-get install gawk wget diffstat texinfo chrpath socat libsdl1.2-dev \
                     python3-cryptography repo checkpolicy  bizone \
                     bzr pigz m4 lftp openjdk-8-jdk git-core \
@@ -12,13 +15,15 @@ Prerequisites:
 
    pip3 install configparser pygithub  gitpython
 ```
-2. Checked with Python3 v 3.8.5, but other should also work
 
-About:
-======
+1. Checked with Python3 v 3.8.5, but other should also work
+
+## About
+
 prod-aos product is based on Renesas BSP, AGL, Xen hypervisor and AOS.
 
 There are three domains which are running on top of Xen:
+
 1. Generic machine independent control domain named "Domain-0". This initramfs based domain is responsible
    for managing VMs only (create/destroy/reboot guest domains). There is no HW assigned to this domain.
 2. Machine dependent driver domain named "DomD". This domain is based on agl-image-minimal and contains
@@ -26,144 +31,176 @@ There are three domains which are running on top of Xen:
 3. AOS domain named "DomF". This domain is based on core-image-minimal and contains AOS update manager(UM),
    AOS Service Manager, drives AOS services etc.
 
-Build:
-======
+## Build
+
 Our build system uses set of additional meta layers and tools.
+
 1. Please, clone the following build scripts, master branch:
-```
-git clone https://github.com/xen-troops/build-scripts.git
-cd build-scripts
-```
-2. In the build-scripts directory you will find a sample configuration
-file `xt-build-server.cfg`:
-```
-cp xt-build-server.cfg xt-prod-aos.cfg
-```
+
+   ``` bash
+   git clone https://github.com/xen-troops/build-scripts.git
+   cd build-scripts
+   ```
+
+2. In the build-scripts directory you will find a sample configuration file `xt-build-server.cfg`:
+
+   ```bash
+   cp xt-build-server.cfg xt-prod-aos.cfg
+   ```
+
 3. Edit it to fit your environment:
- - `workspace_base_dir`: change it to point to the place where the build will happen
- - `workspace_storage_base_dir`: change it to where downloads and other files will be put
- - comment out `XT_RCAR_EVAPROPRIETARY_DIR`
- - `XT_GUESTS_INSTALL = "domf"`
- - `XT_GUESTS_BUILD = "domf"`
 
-For example,
-```
-[path]
-workspace_base_dir = /home/workspace_base
-workspace_storage_base_dir = /home/workspace_storage_base
+    - `workspace_base_dir`: change it to point to the place where the build will happen
+    - `workspace_storage_base_dir`: change it to where downloads and other files will be put
+    - comment out `XT_RCAR_EVAPROPRIETARY_DIR`
+    - `XT_GUESTS_INSTALL = "domf"`
+    - `XT_GUESTS_BUILD = "domf"`
 
-[local_conf]
-# correct path to the eva archives set
-# XT_RCAR_EVAPROPRIETARY_DIR = "/path/to/eva/archives"
-# guests domains which to be built and installed
-XT_GUESTS_INSTALL = "domf"
-XT_GUESTS_BUILD = "domf"
-```
+   For example:
+
+   ```bash
+   [path]
+   workspace_base_dir = /home/workspace_base
+   workspace_storage_base_dir = /home/workspace_storage_base
+
+   [local_conf]
+   # correct path to the eva archives set
+   # XT_RCAR_EVAPROPRIETARY_DIR = "/path/to/eva/archives"
+   # guests domains which to be built and installed
+   XT_GUESTS_INSTALL = "domf"
+   XT_GUESTS_BUILD = "domf"
+   ```
+
 4. Run the build script for current stable release:
-```
-python ./build_prod.py --build-type dailybuild --machine MACHINE_NAME --product aos \
-    --with-local-conf --config xt-prod-aos.cfg
-```
-The supported MACHINE_NAMEs are:
-- h3ulcb     Starter Kit with H3 ES2 4GB
-- h3ulcb-cb  Starter Kit with H3 ES2 4GB inside Cetibox
+
+   ```bash
+   python ./build_prod.py --build-type dailybuild --machine MACHINE_NAME --product aos \
+      --with-local-conf --config xt-prod-aos.cfg
+   ```
+
+   The supported MACHINE_NAMEs are:
+
+   - h3ulcb     Starter Kit with H3 ES2 4GB
+   - h3ulcb-cb  Starter Kit with H3 ES2 4GB inside Cetibox
 
 5. After that you will have all the build environment setup at workspace_base_dir
 directory.
 
 6. Now, to build the images you can run the same command as in 4) but with
 additional argument --continue-build:
-```
-python ./build_prod.py --build-type dailybuild --machine MACHINE_NAME --product aos \
-    --with-local-conf --config xt-prod-aos.cfg --continue-build
-```
+
+   ```bash
+   python ./build_prod.py --build-type dailybuild --machine MACHINE_NAME --product aos \
+      --with-local-conf --config xt-prod-aos.cfg --continue-build
+   ```
+
 7. You are done. The artifacts of the build are located at workspace_base directory:
-```
-workspace_base/build/build/deploy/
-├── dom0-image-thin-initramfs
-│   └── images
-│       └── generic-armv8-xt
-│  
-├── domd-agl-image-minimal
-│   └── images
-│       └── MACHINE_NAME-xt
-│  
-└── domu-image-fusion
-     └── images
-        └── generic-armv8-xt
-```
+
+   ```bash
+   workspace_base/build/build/deploy/
+   ├── dom0-image-thin-initramfs
+   │   └── images
+   │       └── generic-armv8-xt
+   │  
+   ├── domd-agl-image-minimal
+   │   └── images
+   │       └── MACHINE_NAME-xt
+   │  
+   └── domu-image-fusion
+        └── images
+           └── generic-armv8-xt
+   ```
+
 Images are located at:
 
 Domain-0: `workspace_base/build/build/deploy/dom0-image-thin-initramfs/images/generic-armv8-xt`.
 Here we get a part of boot images:
-* `uInitramfs` - thin-initramfs for Domain-0
-* `Image` - Kernel image for Domain-0
+
+- `uInitramfs` - thin-initramfs for Domain-0
+- `Image` - Kernel image for Domain-0
 
 DomD: `workspace_base/build/build/deploy/domd-agl-image-minimal/images/MACHINE-NAME-xt`.
-Here we get a part of boot images, all bootloader images and rootfs image for DomD:
-* `xen-uImage` - Xen main image
-* `xenpolicy` - special image for Xen usage
-* `dom0.dtb` - device-tree image for Domain-0
-* `bootloader` images in both binary and srec formats
-* `agl-image-minimal-MACHINE_NAME-xt.tar.bz2` - rootfs image for DomD
 
-DomF: 
-`workspace_base/build/build/deploy/domu-image-fusion/images/generic-armv8-xt`.
+Here we get a part of boot images, all bootloader images and rootfs image for DomD:
+
+- `xen-uImage` - Xen main image
+- `xenpolicy` - special image for Xen usage
+- `dom0.dtb` - device-tree image for Domain-0
+- `bootloader` images in both binary and srec formats
+- `agl-image-minimal-MACHINE_NAME-xt.tar.bz2` - rootfs image for DomD
+
+DomF: `workspace_base/build/build/deploy/domu-image-fusion/images/generic-armv8-xt`.
+
 Here we get a rootfs image for DomF:
-* `Image` -> vmlinux - Kernel image for DomF
-* `core-image-minimal-generic-armv8-xt.tar.bz2` - rootfs image for DomF
+
+- `Image` -> vmlinux - Kernel image for DomF
+- `core-image-minimal-generic-armv8-xt.tar.bz2` - rootfs image for DomF
   
 Build logs are located at:
-* Domain-0: `workspace_base/build/build/log/dom0-image-thin-initramfs/cooker/generic-armv8-xt`
-* DomD: `workspace_base/build/tmp/log/domd-agl-image-minimal/cooker/MACHINE-NAME-xt`
-* DomF: `workspace_base/build/build/log/domu-image-fusion/cooker/generic-armv8-xt`
+
+- Domain-0: `workspace_base/build/build/log/dom0-image-thin-initramfs/cooker/generic-armv8-xt`
+- DomD: `workspace_base/build/tmp/log/domd-agl-image-minimal/cooker/MACHINE-NAME-xt`
+- DomF: `workspace_base/build/build/log/domu-image-fusion/cooker/generic-armv8-xt`
 
 If one wants to build any domain's images by hand, at the time of development
 for instance, it is possible by going into desired directory and using poky to build:
 
 For building Domain-0:
-```
+
+```bash
 cd workspace_base/build/build/tmp/work/x86_64-xt-linux/dom0-image-thin-initramfs/1.0-r0/repo/
 ```
+
 For building DomD:
-```
+
+```bash
 cd workspace_base/build/build/tmp/work/x86_64-xt-linux/domd-agl-image-minimal/1.0-r0/repo/
 ```
+
 For building DomF:
-```
+
+```bash
 cd workspace_base/build/build/tmp/work/x86_64-xt-linux/domu-image-fusion/1.0-r0/repo/
 ```
+
 Then:
-```
+
+```bash
 source poky/oe-init-build-env
 ```
+
 For building Domain-0:
-```
+
+```bash
 bitbake core-image-thin-initramfs
 ```
+
 For building DomD:
-```
+
+```bash
 bitbake agl-image-minimal
 ```
+
 For building DomF:
-```
+
+```bash
 bitbake core-image-minimal
 ```
 
-Usage:
-======
+## Usage
 
-Different helpers scripts and docs are located at: 
-`build-workspace/build/meta-xt-prod-aos/doc`
+Different helpers scripts and docs are located at: `build-workspace/build/meta-xt-prod-aos/doc`
 
 Let's consider available boot options in details.
 
 Using a storage device.
 In order to boot system using a storage device, required storage device should be prepared
 and flashed beforehand. The mk_sdcard_image.sh script is intended to help with that:
-```
+
+```bash
 sudo ./mk_sdcard_image.sh -p /IMAGE_FOLDER -d /IMAGE_FILE -c aos
 ```
+
 Where, `IMAGE_FOLDER` is a path to a folder where artifacts live (in the context of this document
 it is a `deploy` directory) and `IMAGE_FILE` is an output image file or physical device how
 it is appears in the filesystem (`/dev/sdx`). As far as script intended to support different products,
@@ -181,13 +218,17 @@ set system to boot via NFS, go to a DomD on target (where eMMC device is availab
 and using "dd" command just copy blob to eMMC.
 
 For example, prepare an image blob:
-```
+
+```bash
 sudo ./mk_sdcard_image.sh -p /IMAGE_FOLDER -d /home/emmc.img -c aos
 ```
+
 and then run on target:
-```
+
+```bash
 dd if=/home/emmc.img of=/dev/mmcblk0
 ```
+
 After getting eMMC flashed we have to choose it to be an boot device in a similar way as it is done
 for SD card. See `u-boot-env.txt` for details.
 
@@ -203,7 +244,7 @@ See example below for Ubuntu 18, assuming that the image was named 'prod-aos.img
 Pay attention that text after ## is a comment to console output.
 Sizes of partitions may vary.
 
-```
+```bash
  sudo losetup --find --partscan --show ./prod-aos.img
 /dev/loop23
 
@@ -224,15 +265,18 @@ contains a lot of things which may changed during testing. The "xt" directory sh
 configs, device-tree and Kernel images, etc.
 
 For example, unpack uInitramfs:
-```
+
+```bash
 cd /srv
 sudo mkdir initramfs
 sudo ./uirfs.sh unpack uInitramfs initramfs
 ```
+
 Modify it's components if needed.
 For example, domain config files located at: `/srv/initramfs/xt/dom.cfg/`
 
 pack it back:
-```
+
+```bash
 sudo ./uirfs.sh pack uInitramfs initramfs
 ```
