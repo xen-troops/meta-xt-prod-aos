@@ -99,7 +99,7 @@ additional argument --continue-build:
 7. You are done. The artifacts of the build are located at workspace_base directory:
 
    ```bash
-   workspace_base/build/build/deploy/
+   workspace_base/build/deploy/
    ├── dom0-image-thin-initramfs
    │   └── images
    │       └── generic-armv8-xt
