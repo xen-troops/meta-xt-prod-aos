@@ -17,7 +17,6 @@ SYSTEMD_SERVICE_${PN} = "aos-servicemanager.service aos.target"
 
 RDEPENDS_${PN} += "\
     libvis \
-    nodejs\
     python3 \
     python3-compression \
     python3-core \
