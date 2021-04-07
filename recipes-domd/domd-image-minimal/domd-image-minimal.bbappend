@@ -134,9 +134,10 @@ python do_configure_append_rcar() {
 
 do_install_append () {
     local LAYERDIR=${TOPDIR}/../meta-xt-prod-aos
-    find ${LAYERDIR}/doc -iname "u-boot-env*" -exec cp -f {} ${DEPLOY_DIR}/domd-image-minimal/images/${MACHINE}-xt \; || true
-    find ${LAYERDIR}/doc -iname "mk_sdcard_image.sh" -exec cp -f {} ${DEPLOY_DIR}/domd-image-minimal/images/${MACHINE}-xt \; \
-    -exec cp -f {} ${DEPLOY_DIR} \; || true
+    find ${LAYERDIR}/doc -iname "u-boot-env*" -exec cp -f {} ${DEPLOY_DIR} \;
+    find ${LAYERDIR}/doc -iname "mk_sdcard_image.sh" -exec cp -f {} ${DEPLOY_DIR} \;
+    find ${LAYERDIR}/doc -iname "boardconfig.json" -exec cp -f {} ${DEPLOY_DIR} \;
+
     find ${DEPLOY_DIR}/${PN}/ipk/aarch64 -iname "aos-vis_git*" -exec cp -f {} ${DEPLOY_DIR}/domd-image-minimal/images/${MACHINE}-xt \; || true
     find ${DEPLOY_DIR}/${PN}/ipk/all -iname "ca-certificates_*" -exec cp -f {} ${DEPLOY_DIR}/domd-image-minimal/images/${MACHINE}-xt \; || true
 }
