@@ -17,6 +17,7 @@ BBLAYERS ?= " \
   ${TOPDIR}/../meta-openembedded/meta-filesystems \
   ${TOPDIR}/../meta-selinux \
   ${TOPDIR}/../meta-virtualization \
+  ${TOPDIR}/../meta-cetibox_x3 \
   "
 BBLAYERS_NON_REMOVABLE ?= " \
   ${TOPDIR}/../poky/meta \
