@@ -77,6 +77,8 @@ XT_QUIRK_PATCH_SRC_URI_rcar = "\
     file://0001-Force-RCAR_LOSSY_ENABLE-to-0-until-Xen-is-fixed-to-p.patch;patchdir=meta-renesas \
 "
 
+XT_QUIRK_PATCH_SRC_URI_append_cetibox = " file://0001-use-oe.utils.conditional-instead-of-deprecated-base_.patch;patchdir=meta-cetibox_x3 "
+
 XT_BB_LOCAL_CONF_FILE_rcar = "meta-xt-prod-extra/doc/local.conf.rcar-domd-image-minimal"
 XT_BB_LAYERS_FILE_rcar = "meta-xt-prod-extra/doc/bblayers.conf.rcar-domd-image-minimal"
 
@@ -85,7 +87,11 @@ configure_versions_rcar() {
 
     cd ${S}
     base_update_conf_value ${local_conf} PREFERRED_VERSION_xen "4.12.0+git\%"
-    base_update_conf_value ${local_conf} PREFERRED_VERSION_u-boot_rcar "v2018.09\%"
+    if [ "${MACHINE}" == "h3ulcb-cb" ];then
+       base_update_conf_value ${local_conf} PREFERRED_VERSION_u-boot_rcar "v2018.05\%"
+    else
+       base_update_conf_value ${local_conf} PREFERRED_VERSION_u-boot_rcar "v2018.09\%"
+    fi
 
     # HACK: force ipk instead of rpm b/c it makes troubles to PVR UM build otherwise
     base_update_conf_value ${local_conf} PACKAGE_CLASSES "package_ipk"
