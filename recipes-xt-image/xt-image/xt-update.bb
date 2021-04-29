@@ -7,7 +7,7 @@ inherit metadata-generator bundle-generator rootfs-image-generator
 
 # Require
 
-require inc/xt_shared_env.inc
+require recipes-domx/meta-xt-prod-domx/inc/xt_shared_env.inc
 
 # Depends
 
