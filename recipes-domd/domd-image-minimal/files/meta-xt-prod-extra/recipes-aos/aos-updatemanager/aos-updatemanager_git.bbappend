@@ -1,4 +1,5 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS_prepend_cetibox := "${THISDIR}/files/cetibox:"
 
 BRANCH = "master"
 
@@ -11,7 +12,11 @@ AOS_UM_UPDATE_MODULES ?= "\
     updatemodules/overlayxenstore \
     updatemodules/ubootdualpart \
 "
-
+AOS_UM_UPDATE_MODULES_cetibox ?= "\
+    updatemodules/overlayxenstore \
+    updatemodules/ubootdualpart \    
+    updatemodules/sshmodule \
+"
 inherit systemd
 
 SYSTEMD_SERVICE_${PN} = "aos-updatemanager.service"
