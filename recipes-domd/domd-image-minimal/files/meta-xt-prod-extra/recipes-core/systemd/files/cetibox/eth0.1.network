@@ -3,4 +3,4 @@ Name=eth0.1
 
 [Network]
 DHCP=yes
-IPMasquerade=ipv4
+IPMasquerade=yes
