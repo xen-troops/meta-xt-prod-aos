@@ -1,7 +1,7 @@
 [Unit]
 Description=AOS Identity and Access Manager
-Wants=network-online.target aos-vis.service
-After=network-online.target aos-vis.service
+Wants=network-online.target
+After=network-online.target
 PartOf=aos.target
 
 [Service]
