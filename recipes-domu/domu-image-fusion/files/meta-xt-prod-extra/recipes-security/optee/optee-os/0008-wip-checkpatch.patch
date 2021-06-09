@@ -1,0 +1,38 @@
+From 23b2a8b92719b22254fd4175212fabc7a14b7727 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Vesa=20J=C3=A4=C3=A4skel=C3=A4inen?=
+ <vesa.jaaskelainen@vaisala.com>
+Date: Sun, 28 Feb 2021 22:48:17 +0200
+Subject: [PATCH 08/10] wip: checkpatch
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Vesa Jääskeläinen <vesa.jaaskelainen@vaisala.com>
+---
+ scripts/checkpatch_inc.sh | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/scripts/checkpatch_inc.sh b/scripts/checkpatch_inc.sh
+index e5b8f8fa..d0f29d4c 100644
+--- a/scripts/checkpatch_inc.sh
++++ b/scripts/checkpatch_inc.sh
+@@ -1,6 +1,7 @@
+ #!/bin/bash
+ 
+ CHECKPATCH="${CHECKPATCH:-checkpatch.pl}"
++CHECKPATCH_OPT="${CHECKPATCH_OPT:-}"
+ # checkpatch.pl will ignore the following paths
+ CHECKPATCH_IGNORE=$(echo \
+ 		core/include/gen-asm-defines.h \
+@@ -19,7 +20,7 @@ function _checkpatch() {
+ 				typedefs_opt="";
+ 		# Ignore NOT_UNIFIED_DIFF in case patch has no diff
+ 		# (e.g., all paths filtered out)
+-		$CHECKPATCH $typedefs_opt -
++		$CHECKPATCH $CHECKPATCH_OPT $typedefs_opt -
+ }
+ 
+ function checkpatch() {
+-- 
+2.25.1
+

@@ -1,5 +1,18 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/optee-os:"
 
+SRC_URI += " \
+    file://0001-ta-pkcs11-Add-RSA-key-pair-generation-support.patch \
+    file://0002-ta-pkcs11-Add-support-for-RSA-signing-verification.patch \
+    file://0003-ta-pkcs11-Add-support-for-RSA-PSS-signing-verificati.patch \
+    file://0004-ta-pkcs11-Add-support-for-RSA-OAEP-encryption-decryp.patch \
+    file://0005-wip-fix-rsa-public-key-import.patch \
+    file://0006-ta-pkcs11-Add-certificate-object-support.patch \
+    file://0007-wip-ecdh.patch \
+    file://0008-wip-checkpatch.patch \
+    file://0009-ta-pkcs11-Add-support-to-generate-optional-attribute.patch \
+    file://0010-wip-key-size-check-for-rsa-pss.patch \
+"
+
 SRCREV = "bc9618c0b6e6585ada3efcab4ce5ba155507d777"
 
 PV = "git${SRCPV}"
