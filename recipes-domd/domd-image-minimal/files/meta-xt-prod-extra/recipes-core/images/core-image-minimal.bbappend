@@ -30,7 +30,6 @@ IMAGE_INSTALL_append = " \
 # Add aos components
 IMAGE_INSTALL_append = " \
     aos-updatemanager \
-    aos-iamanager \
 "
 
 IMAGE_INSTALL_append_cetibox = " \
