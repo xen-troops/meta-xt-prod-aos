@@ -6,8 +6,6 @@ SRC_URI_append = "\
     file://aos-iamanager.service \
     file://aos_iamanager.cfg \
     file://finish.sh \
-    file://aos.target \
-    file://rootCA.pem \
 "
 
 AOS_IAM_CERT_MODULES = "\
@@ -20,12 +18,11 @@ AOS_IAM_IDENT_MODULES = "\
 
 inherit systemd
 
-SYSTEMD_SERVICE_${PN} = "aos-iamanager.service aos.target"
+SYSTEMD_SERVICE_${PN} = "aos-iamanager.service"
 
 FILES_${PN} += " \
     ${sysconfdir}/aos/aos_iamanager.cfg \
     ${systemd_system_unitdir}/aos-iamanager.service \
-    ${systemd_system_unitdir}/aos.target \
     /usr/bin/finish.sh \
 "
 
@@ -40,13 +37,9 @@ do_install_append() {
 
     install -d ${D}${systemd_system_unitdir}
     install -m 0644 ${WORKDIR}/aos-iamanager.service ${D}${systemd_system_unitdir}/aos-iamanager.service
-    install -m 0644 ${WORKDIR}/aos.target ${D}${systemd_system_unitdir}/aos.target
 
     install -d ${D}/var/aos/iamanager
     install -m 0755 ${WORKDIR}/finish.sh ${D}/usr/bin/finish.sh
-
-    install -d ${D}${sysconfdir}/ssl/certs
-    install -m 0644 ${WORKDIR}/rootCA.pem ${D}${sysconfdir}/ssl/certs/
 }
 
 pkg_postinst_${PN}() {
