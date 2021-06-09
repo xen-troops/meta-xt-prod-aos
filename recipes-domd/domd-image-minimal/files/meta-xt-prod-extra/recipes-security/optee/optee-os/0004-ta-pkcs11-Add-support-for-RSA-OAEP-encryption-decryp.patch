@@ -1,0 +1,251 @@
+From 5235c519246986244c7bce94f0b1bd7e29ac702a Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Vesa=20J=C3=A4=C3=A4skel=C3=A4inen?=
+ <vesa.jaaskelainen@vaisala.com>
+Date: Mon, 4 Jan 2021 16:22:04 +0200
+Subject: [PATCH 04/10] ta: pkcs11: Add support for RSA OAEP encryption &
+ decryption
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Add support for performing PKCS #1 RSA OAEP encryption & decryption
+operations for:
+
+- MGF1 SHA-1
+- MGF1 SHA-224
+- MGF1 SHA-256
+- MGF1 SHA-384
+- MGF1 SHA-512
+
+Specified in:
+PKCS #11 Cryptographic Token Interface Current Mechanisms Specification
+Version 2.40 Plus Errata 01
+2.1.8 PKCS #1 RSA OAEP
+
+Signed-off-by: Vesa Jääskeläinen <vesa.jaaskelainen@vaisala.com>
+---
+ ta/pkcs11/include/pkcs11_ta.h      |  7 +++
+ ta/pkcs11/src/pkcs11_attributes.c  |  1 +
+ ta/pkcs11/src/processing.h         |  3 ++
+ ta/pkcs11/src/processing_asymm.c   |  6 +++
+ ta/pkcs11/src/processing_rsa.c     | 87 ++++++++++++++++++++++++++++++
+ ta/pkcs11/src/token_capabilities.c |  4 ++
+ 6 files changed, 108 insertions(+)
+
+diff --git a/ta/pkcs11/include/pkcs11_ta.h b/ta/pkcs11/include/pkcs11_ta.h
+index d8340604..17af8f97 100644
+--- a/ta/pkcs11/include/pkcs11_ta.h
++++ b/ta/pkcs11/include/pkcs11_ta.h
+@@ -1147,6 +1147,7 @@ enum pkcs11_mechanism_id {
+ 	PKCS11_CKM_RSA_PKCS			= 0x00001,
+ 	PKCS11_CKM_MD5_RSA_PKCS			= 0x00005,
+ 	PKCS11_CKM_SHA1_RSA_PKCS		= 0x00006,
++	PKCS11_CKM_RSA_PKCS_OAEP		= 0x00009,
+ 	PKCS11_CKM_RSA_PKCS_PSS			= 0x0000d,
+ 	PKCS11_CKM_SHA1_RSA_PKCS_PSS		= 0x0000e,
+ 	PKCS11_CKM_SHA256_RSA_PKCS		= 0x00040,
+@@ -1216,4 +1217,10 @@ enum pkcs11_mgf_id {
+ 	PKCS11_CKG_UNDEFINED_ID			= PKCS11_UNDEFINED_ID,
+ };
+ 
++/*
++ * Valid values for RSA PKCS/OAEP source type identifier
++ * PKCS11_CKZ_<x> reflects CryptoKi client API source type IDs CKZ_<x>.
++ */
++#define PKCS11_CKZ_DATA_SPECIFIED		0x0001
++
+ #endif /*PKCS11_TA_H*/
+diff --git a/ta/pkcs11/src/pkcs11_attributes.c b/ta/pkcs11/src/pkcs11_attributes.c
+index 91b3a747..eace9ed0 100644
+--- a/ta/pkcs11/src/pkcs11_attributes.c
++++ b/ta/pkcs11/src/pkcs11_attributes.c
+@@ -1516,6 +1516,7 @@ check_parent_attrs_against_processing(enum pkcs11_mechanism_id proc_id,
+ 	case PKCS11_CKM_RSA_PKCS:
+ 	case PKCS11_CKM_MD5_RSA_PKCS:
+ 	case PKCS11_CKM_SHA1_RSA_PKCS:
++	case PKCS11_CKM_RSA_PKCS_OAEP:
+ 	case PKCS11_CKM_RSA_PKCS_PSS:
+ 	case PKCS11_CKM_SHA1_RSA_PKCS_PSS:
+ 	case PKCS11_CKM_SHA256_RSA_PKCS:
+diff --git a/ta/pkcs11/src/processing.h b/ta/pkcs11/src/processing.h
+index e2ef00ee..5dcfe858 100644
+--- a/ta/pkcs11/src/processing.h
++++ b/ta/pkcs11/src/processing.h
+@@ -139,6 +139,9 @@ void tee_release_rsa_pss_operation(struct active_processing *processing);
+ enum pkcs11_rc pkcs2tee_algo_rsa_pss(uint32_t *tee_id,
+ 				     struct pkcs11_attribute_head *params);
+ 
++enum pkcs11_rc pkcs2tee_algo_rsa_oaep(uint32_t *tee_id, uint32_t *tee_hash_id,
++				      struct pkcs11_attribute_head *params);
++
+ enum pkcs11_rc generate_rsa_keys(struct pkcs11_attribute_head *proc_params,
+ 				 struct obj_attrs **pub_head,
+ 				 struct obj_attrs **priv_head);
+diff --git a/ta/pkcs11/src/processing_asymm.c b/ta/pkcs11/src/processing_asymm.c
+index 706bdfb7..2a5e5521 100644
+--- a/ta/pkcs11/src/processing_asymm.c
++++ b/ta/pkcs11/src/processing_asymm.c
+@@ -20,6 +20,7 @@ bool processing_is_tee_asymm(uint32_t proc_id)
+ 	switch (proc_id) {
+ 	/* RSA flavors */
+ 	case PKCS11_CKM_RSA_PKCS:
++	case PKCS11_CKM_RSA_PKCS_OAEP:
+ 	case PKCS11_CKM_RSA_PKCS_PSS:
+ 	case PKCS11_CKM_MD5_RSA_PKCS:
+ 	case PKCS11_CKM_SHA1_RSA_PKCS:
+@@ -58,6 +59,7 @@ pkcs2tee_algorithm(uint32_t *tee_id, uint32_t *tee_hash_id,
+ 	} pkcs2tee_algo[] = {
+ 		/* RSA flavors */
+ 		{ PKCS11_CKM_RSA_PKCS, TEE_ALG_RSAES_PKCS1_V1_5, 0 },
++		{ PKCS11_CKM_RSA_PKCS_OAEP, 1, 0 },
+ 		{ PKCS11_CKM_RSA_PKCS_PSS, 1, 0 },
+ 		{ PKCS11_CKM_MD5_RSA_PKCS, TEE_ALG_RSASSA_PKCS1_V1_5_MD5,
+ 		  TEE_ALG_MD5 },
+@@ -112,6 +114,9 @@ pkcs2tee_algorithm(uint32_t *tee_id, uint32_t *tee_hash_id,
+ 	case PKCS11_CKM_SHA512_RSA_PKCS_PSS:
+ 		rc = pkcs2tee_algo_rsa_pss(tee_id, proc_params);
+ 		break;
++	case PKCS11_CKM_RSA_PKCS_OAEP:
++		rc = pkcs2tee_algo_rsa_oaep(tee_id, tee_hash_id, proc_params);
++		break;
+ 	case PKCS11_CKM_ECDSA:
+ 	case PKCS11_CKM_ECDSA_SHA1:
+ 	case PKCS11_CKM_ECDSA_SHA224:
+@@ -632,6 +637,7 @@ enum pkcs11_rc step_asymm_operation(struct pkcs11_session *session,
+ 	switch (proc->mecha_type) {
+ 	case PKCS11_CKM_ECDSA:
+ 	case PKCS11_CKM_RSA_PKCS:
++	case PKCS11_CKM_RSA_PKCS_OAEP:
+ 	case PKCS11_CKM_RSA_PKCS_PSS:
+ 		/* For operations using provided input data */
+ 		switch (function) {
+diff --git a/ta/pkcs11/src/processing_rsa.c b/ta/pkcs11/src/processing_rsa.c
+index 12c9193d..1cd86cd7 100644
+--- a/ta/pkcs11/src/processing_rsa.c
++++ b/ta/pkcs11/src/processing_rsa.c
+@@ -138,6 +138,93 @@ enum pkcs11_rc pkcs2tee_algo_rsa_pss(uint32_t *tee_id,
+ 	return PKCS11_CKR_OK;
+ }
+ 
++enum pkcs11_rc
++pkcs2tee_algo_rsa_oaep(uint32_t *tee_id, uint32_t *tee_hash_id,
++		       struct pkcs11_attribute_head *proc_params)
++{
++	struct serialargs args = { };
++	enum pkcs11_rc rc = PKCS11_CKR_GENERAL_ERROR;
++	uint32_t hash = 0;
++	uint32_t mgf = 0;
++	uint32_t source_type = 0;
++	void *source_data = NULL;
++	uint32_t source_size = 0;
++
++	serialargs_init(&args, proc_params->data, proc_params->size);
++
++	rc = serialargs_get(&args, &hash, sizeof(uint32_t));
++	if (rc)
++		return rc;
++
++	rc = serialargs_get(&args, &mgf, sizeof(uint32_t));
++	if (rc)
++		return rc;
++
++	rc = serialargs_get(&args, &source_type, sizeof(uint32_t));
++	if (rc)
++		return rc;
++
++	rc = serialargs_get(&args, &source_size, sizeof(uint32_t));
++	if (rc)
++		return rc;
++
++	rc = serialargs_get_ptr(&args, &source_data, source_size);
++	if (rc)
++		return rc;
++
++	if (serialargs_remaining_bytes(&args))
++		return PKCS11_CKR_ARGUMENTS_BAD;
++
++	switch (proc_params->id) {
++	case PKCS11_CKM_RSA_PKCS_OAEP:
++		switch (hash) {
++		case PKCS11_CKM_SHA_1:
++			if (mgf != PKCS11_CKG_MGF1_SHA1 || source_size)
++				return PKCS11_CKR_MECHANISM_PARAM_INVALID;
++			*tee_id = TEE_ALG_RSAES_PKCS1_OAEP_MGF1_SHA1;
++			*tee_hash_id = TEE_ALG_SHA1;
++			break;
++		case PKCS11_CKM_SHA224:
++			if (mgf != PKCS11_CKG_MGF1_SHA224 || source_size)
++				return PKCS11_CKR_MECHANISM_PARAM_INVALID;
++			*tee_id = TEE_ALG_RSAES_PKCS1_OAEP_MGF1_SHA224;
++			*tee_hash_id = TEE_ALG_SHA224;
++			break;
++		case PKCS11_CKM_SHA256:
++			if (mgf != PKCS11_CKG_MGF1_SHA256 || source_size)
++				return PKCS11_CKR_MECHANISM_PARAM_INVALID;
++			*tee_id = TEE_ALG_RSAES_PKCS1_OAEP_MGF1_SHA256;
++			*tee_hash_id = TEE_ALG_SHA256;
++			break;
++		case PKCS11_CKM_SHA384:
++			if (mgf != PKCS11_CKG_MGF1_SHA384 || source_size)
++				return PKCS11_CKR_MECHANISM_PARAM_INVALID;
++			*tee_id = TEE_ALG_RSAES_PKCS1_OAEP_MGF1_SHA384;
++			*tee_hash_id = TEE_ALG_SHA384;
++			break;
++		case PKCS11_CKM_SHA512:
++			if (mgf != PKCS11_CKG_MGF1_SHA512 || source_size)
++				return PKCS11_CKR_MECHANISM_PARAM_INVALID;
++			*tee_id = TEE_ALG_RSAES_PKCS1_OAEP_MGF1_SHA512;
++			*tee_hash_id = TEE_ALG_SHA512;
++			break;
++		default:
++			EMSG("Unexpected %#"PRIx32"/%s", hash,
++			     id2str_proc(hash));
++
++			return PKCS11_CKR_GENERAL_ERROR;
++		}
++		break;
++	default:
++		EMSG("Unexpected mechanism %#"PRIx32"/%s", proc_params->id,
++		     id2str_proc(proc_params->id));
++
++		return PKCS11_CKR_GENERAL_ERROR;
++	}
++
++	return PKCS11_CKR_OK;
++}
++
+ enum pkcs11_rc load_tee_rsa_key_attrs(TEE_Attribute **tee_attrs,
+ 				      size_t *tee_count,
+ 				      struct pkcs11_object *obj)
+diff --git a/ta/pkcs11/src/token_capabilities.c b/ta/pkcs11/src/token_capabilities.c
+index 6603f432..3f38767b 100644
+--- a/ta/pkcs11/src/token_capabilities.c
++++ b/ta/pkcs11/src/token_capabilities.c
+@@ -108,6 +108,8 @@ static const struct pkcs11_mechachism_modes pkcs11_modes[] = {
+ 		  PKCS11_CKFM_GENERATE_KEY_PAIR, ANY_PART),
+ 	MECHANISM(PKCS11_CKM_RSA_PKCS, CKFM_CIPHER_WRAP | CKFM_AUTH_NO_RECOVER |
+ 		  CKFM_AUTH_WITH_RECOVER, SINGLE_PART_ONLY),
++	MECHANISM(PKCS11_CKM_RSA_PKCS_OAEP, CKFM_CIPHER_WRAP,
++		  SINGLE_PART_ONLY),
+ 	MECHANISM(PKCS11_CKM_RSA_PKCS_PSS, CKFM_AUTH_NO_RECOVER,
+ 		  SINGLE_PART_ONLY),
+ 	MECHANISM(PKCS11_CKM_MD5_RSA_PKCS, CKFM_AUTH_NO_RECOVER, ANY_PART),
+@@ -240,6 +242,7 @@ const struct pkcs11_mechachism_modes token_mechanism[] = {
+ 	TA_MECHANISM(PKCS11_CKM_RSA_PKCS_PSS, CKFM_AUTH_NO_RECOVER),
+ 	TA_MECHANISM(PKCS11_CKM_MD5_RSA_PKCS, CKFM_AUTH_NO_RECOVER),
+ 	TA_MECHANISM(PKCS11_CKM_SHA1_RSA_PKCS, CKFM_AUTH_NO_RECOVER),
++	TA_MECHANISM(PKCS11_CKM_RSA_PKCS_OAEP, CKFM_CIPHER),
+ 	TA_MECHANISM(PKCS11_CKM_SHA1_RSA_PKCS_PSS, CKFM_AUTH_NO_RECOVER),
+ 	TA_MECHANISM(PKCS11_CKM_SHA256_RSA_PKCS, CKFM_AUTH_NO_RECOVER),
+ 	TA_MECHANISM(PKCS11_CKM_SHA384_RSA_PKCS, CKFM_AUTH_NO_RECOVER),
+@@ -362,6 +365,7 @@ void pkcs11_mechanism_supported_key_sizes(uint32_t proc_id,
+ 	case PKCS11_CKM_RSA_PKCS:
+ 	case PKCS11_CKM_MD5_RSA_PKCS:
+ 	case PKCS11_CKM_SHA1_RSA_PKCS:
++	case PKCS11_CKM_RSA_PKCS_OAEP:
+ 	case PKCS11_CKM_SHA1_RSA_PKCS_PSS:
+ 	case PKCS11_CKM_SHA256_RSA_PKCS:
+ 	case PKCS11_CKM_SHA384_RSA_PKCS:
+-- 
+2.25.1
+
