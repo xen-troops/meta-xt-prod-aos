@@ -26,6 +26,12 @@ FILES_${PN} += " \
     /usr/bin/finish.sh \
 "
 
+RDEPENDS_${PN} += "\
+    opensc \
+    optee-os \
+    optee-client \
+"
+
 do_compile_prepend(){
     export GOCACHE=${WORKDIR}/cache
 }
