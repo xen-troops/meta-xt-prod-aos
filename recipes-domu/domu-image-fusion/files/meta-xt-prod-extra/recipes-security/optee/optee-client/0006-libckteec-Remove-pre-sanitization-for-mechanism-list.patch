@@ -1,0 +1,41 @@
+From 10ec0a67b735e4a41413a0126e77ddad4bd2d055 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Vesa=20J=C3=A4=C3=A4skel=C3=A4inen?=
+ <vesa.jaaskelainen@vaisala.com>
+Date: Thu, 8 Apr 2021 15:52:51 +0300
+Subject: [PATCH 6/9] libckteec: Remove pre-sanitization for mechanism lists
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Pre-sanitization cannot be done when querying things from TA.
+
+For setting things up TA should be able to handle the sanitization should
+there be a need for particular operation.
+
+Signed-off-by: Vesa Jääskeläinen <vesa.jaaskelainen@vaisala.com>
+---
+ libckteec/src/serialize_ck.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
+
+diff --git a/libckteec/src/serialize_ck.c b/libckteec/src/serialize_ck.c
+index e1cfa13..716c7ee 100644
+--- a/libckteec/src/serialize_ck.c
++++ b/libckteec/src/serialize_ck.c
+@@ -172,13 +172,8 @@ static CK_RV serialize_ck_attribute(struct serializer *obj, CK_ATTRIBUTE *attr)
+ 			return CKR_HOST_MEMORY;
+ 
+ 		type = attr->pValue;
+-		for (m = 0; m < n; m++) {
++		for (m = 0; m < n; m++)
+ 			mech_buf[m] = type[m];
+-			if (mech_buf[m] == PKCS11_UNDEFINED_ID) {
+-				rv = CKR_MECHANISM_INVALID;
+-				goto out;
+-			}
+-		}
+ 		pkcs11_pdata = mech_buf;
+ 		break;
+ 	/* Attributes which data value do not need conversion (aside ulong) */
+-- 
+2.25.1
+

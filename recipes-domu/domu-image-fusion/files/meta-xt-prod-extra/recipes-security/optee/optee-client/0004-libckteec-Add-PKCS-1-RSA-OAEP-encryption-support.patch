@@ -1,0 +1,140 @@
+From 9444e1581183c99fdbf4bfef15fe4b5ac658c623 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Vesa=20J=C3=A4=C3=A4skel=C3=A4inen?=
+ <vesa.jaaskelainen@vaisala.com>
+Date: Mon, 4 Jan 2021 15:58:44 +0200
+Subject: [PATCH 4/9] libckteec: Add PKCS #1 RSA OAEP encryption support
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Add support for performing PKCS #1 RSA OAEP encryption & decryption
+operations for:
+
+- MGF1 SHA-1
+- MGF1 SHA-224
+- MGF1 SHA-256
+- MGF1 SHA-384
+- MGF1 SHA-512
+
+Specified in:
+PKCS #11 Cryptographic Token Interface Current Mechanisms Specification
+Version 2.40 Plus Errata 01
+2.1.8 PKCS #1 RSA OAEP
+
+Signed-off-by: Vesa Jääskeläinen <vesa.jaaskelainen@vaisala.com>
+---
+ libckteec/include/pkcs11.h    | 17 ++++++++++++++++
+ libckteec/include/pkcs11_ta.h |  7 +++++++
+ libckteec/src/serialize_ck.c  | 38 +++++++++++++++++++++++++++++++++++
+ 3 files changed, 62 insertions(+)
+
+diff --git a/libckteec/include/pkcs11.h b/libckteec/include/pkcs11.h
+index 9248ae4..f232303 100644
+--- a/libckteec/include/pkcs11.h
++++ b/libckteec/include/pkcs11.h
+@@ -408,6 +408,11 @@ typedef CK_ULONG CK_RSA_PKCS_MGF_TYPE;
+ #define CKG_MGF1_SHA384		0x0003UL
+ #define CKG_MGF1_SHA512		0x0004UL
+ 
++typedef CK_ULONG CK_RSA_PKCS_OAEP_SOURCE_TYPE;
++
++/* Values for type CK_RSA_PKCS_OAEP_SOURCE_TYPE */
++#define CKZ_DATA_SPECIFIED	0x0001UL
++
+ /* MAC General parameters */
+ typedef CK_ULONG CK_MAC_GENERAL_PARAMS;
+ typedef CK_MAC_GENERAL_PARAMS *CK_MAC_GENERAL_PARAMS_PTR;
+@@ -477,6 +482,18 @@ struct CK_RSA_PKCS_PSS_PARAMS {
+ 	CK_ULONG		sLen;
+ };
+ 
++/* Parameters for CKM_RSA_PKCS_OAEP */
++typedef struct CK_RSA_PKCS_OAEP_PARAMS CK_RSA_PKCS_OAEP_PARAMS;
++typedef struct CK_RSA_PKCS_OAEP_PARAMS *CK_RSA_PKCS_OAEP_PARAMS_PTR;
++
++struct CK_RSA_PKCS_OAEP_PARAMS {
++	CK_MECHANISM_TYPE	hashAlg;
++	CK_RSA_PKCS_MGF_TYPE	mgf;
++	CK_RSA_PKCS_OAEP_SOURCE_TYPE source;
++	CK_VOID_PTR		pSourceData;
++	CK_ULONG		ulSourceDataLen;
++};
++
+ /*
+  * PKCS#11 return values
+  */
+diff --git a/libckteec/include/pkcs11_ta.h b/libckteec/include/pkcs11_ta.h
+index 27bbecb..5b64356 100644
+--- a/libckteec/include/pkcs11_ta.h
++++ b/libckteec/include/pkcs11_ta.h
+@@ -1256,4 +1256,11 @@ enum pkcs11_mgf_id {
+ 	/* Vendor extension: reserved for undefined ID (~0U) */
+ 	PKCS11_CKG_UNDEFINED_ID			= PKCS11_UNDEFINED_ID,
+ };
++
++/*
++ * Valid values for RSA PKCS/OAEP source type identifier
++ * PKCS11_CKZ_<x> reflects CryptoKi client API source type IDs CKZ_<x>.
++ */
++#define PKCS11_CKZ_DATA_SPECIFIED		0x0001
++
+ #endif /*PKCS11_TA_H*/
+diff --git a/libckteec/src/serialize_ck.c b/libckteec/src/serialize_ck.c
+index 338b74d..0901fc3 100644
+--- a/libckteec/src/serialize_ck.c
++++ b/libckteec/src/serialize_ck.c
+@@ -490,6 +490,41 @@ static CK_RV serialize_mecha_rsa_pss_param(struct serializer *obj,
+ 	return serialize_ck_ulong(obj, params->sLen);
+ }
+ 
++static CK_RV serialize_mecha_rsa_oaep_param(struct serializer *obj,
++					    CK_MECHANISM_PTR mecha)
++{
++	CK_RSA_PKCS_OAEP_PARAMS *params = mecha->pParameter;
++	CK_RV rv = CKR_GENERAL_ERROR;
++	size_t params_size = 4 * sizeof(uint32_t) + params->ulSourceDataLen;
++
++	rv = serialize_32b(obj, obj->type);
++	if (rv)
++		return rv;
++
++	rv = serialize_32b(obj, params_size);
++	if (rv)
++		return rv;
++
++	rv = serialize_ck_ulong(obj, params->hashAlg);
++	if (rv)
++		return rv;
++
++	rv = serialize_ck_ulong(obj, params->mgf);
++	if (rv)
++		return rv;
++
++	rv = serialize_ck_ulong(obj, params->source);
++	if (rv)
++		return rv;
++
++	rv = serialize_ck_ulong(obj, params->ulSourceDataLen);
++	if (rv)
++		return rv;
++
++	return serialize_buffer(obj, params->pSourceData,
++				params->ulSourceDataLen);
++}
++
+ /**
+  * serialize_ck_mecha_params - serialize a mechanism type & params
+  *
+@@ -581,6 +616,9 @@ CK_RV serialize_ck_mecha_params(struct serializer *obj,
+ 	case CKM_SHA224_RSA_PKCS_PSS:
+ 		return serialize_mecha_rsa_pss_param(obj, &mecha);
+ 
++	case CKM_RSA_PKCS_OAEP:
++		return serialize_mecha_rsa_oaep_param(obj, &mecha);
++
+ 	default:
+ 		return CKR_MECHANISM_INVALID;
+ 	}
+-- 
+2.25.1
+
