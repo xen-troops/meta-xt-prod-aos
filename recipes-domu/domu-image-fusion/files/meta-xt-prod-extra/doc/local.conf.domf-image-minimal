@@ -235,3 +235,8 @@ include ${@d.getVar('XT_SHARED_ROOTFS_DIR', True) or ''}/local.conf.domd_machine
 INITRAMFS_IMAGE = "core-image-tiny-initramfs"
 INITRAMFS_IMAGE_BUNDLE = "0"
 INITRAMFS_FSTYPES = "cpio.gz"
+
+# Disable optee in meta-xt-images-domx layers
+BBMASK = " \
+    meta-xt-images-domx/recipes-bsp/optee \
+"
