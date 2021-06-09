@@ -1,0 +1,381 @@
+From cf08adddb448c5059679eacd86469fe156415016 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Vesa=20J=C3=A4=C3=A4skel=C3=A4inen?=
+ <vesa.jaaskelainen@vaisala.com>
+Date: Sat, 26 Dec 2020 12:59:36 +0200
+Subject: [PATCH 07/10] wip: ecdh
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Vesa Jääskeläinen <vesa.jaaskelainen@vaisala.com>
+---
+ ta/pkcs11/include/pkcs11_ta.h      |   4 ++
+ ta/pkcs11/src/pkcs11_attributes.c  |  10 +++
+ ta/pkcs11/src/processing.h         |  11 +++
+ ta/pkcs11/src/processing_asymm.c   | 104 +++++++++++++++++++++++++++--
+ ta/pkcs11/src/processing_ec.c      |  82 +++++++++++++++++++++++
+ ta/pkcs11/src/token_capabilities.c |  13 ++++
+ 6 files changed, 220 insertions(+), 4 deletions(-)
+
+diff --git a/ta/pkcs11/include/pkcs11_ta.h b/ta/pkcs11/include/pkcs11_ta.h
+index fb49408a..62101499 100644
+--- a/ta/pkcs11/include/pkcs11_ta.h
++++ b/ta/pkcs11/include/pkcs11_ta.h
+@@ -1199,6 +1199,10 @@ enum pkcs11_mechanism_id {
+ 	PKCS11_CKM_ECDSA_SHA256			= 0x01044,
+ 	PKCS11_CKM_ECDSA_SHA384			= 0x01045,
+ 	PKCS11_CKM_ECDSA_SHA512			= 0x01046,
++	PKCS11_CKM_ECDH1_DERIVE			= 0x01050,
++	PKCS11_CKM_ECDH1_COFACTOR_DERIVE	= 0x01051,
++	PKCS11_CKM_ECMQV_DERIVE			= 0x01052,
++	PKCS11_CKM_ECDH_AES_KEY_WRAP		= 0x01053,
+ 	PKCS11_CKM_AES_KEY_GEN			= 0x01080,
+ 	PKCS11_CKM_AES_ECB			= 0x01081,
+ 	PKCS11_CKM_AES_CBC			= 0x01082,
+diff --git a/ta/pkcs11/src/pkcs11_attributes.c b/ta/pkcs11/src/pkcs11_attributes.c
+index a41cd37a..0297ea6a 100644
+--- a/ta/pkcs11/src/pkcs11_attributes.c
++++ b/ta/pkcs11/src/pkcs11_attributes.c
+@@ -1285,6 +1285,8 @@ enum pkcs11_rc check_created_attrs_against_processing(uint32_t proc_id,
+ 	case PKCS11_PROCESSING_IMPORT:
+ 	case PKCS11_CKM_AES_ECB_ENCRYPT_DATA:
+ 	case PKCS11_CKM_AES_CBC_ENCRYPT_DATA:
++	case PKCS11_CKM_ECDH1_DERIVE:
++	case PKCS11_CKM_ECDH1_COFACTOR_DERIVE:
+ 		assert(check_attr_bval(proc_id, head, PKCS11_CKA_LOCAL, false));
+ 		break;
+ 	case PKCS11_CKM_GENERIC_SECRET_KEY_GEN:
+@@ -1308,6 +1310,11 @@ enum pkcs11_rc check_created_attrs_against_processing(uint32_t proc_id,
+ 	case PKCS11_CKM_EC_KEY_PAIR_GEN:
+ 		assert(get_key_type(head) == PKCS11_CKK_EC);
+ 		break;
++	case PKCS11_CKM_ECDH1_DERIVE:
++	case PKCS11_CKM_ECDH1_COFACTOR_DERIVE:
++		if (get_class(head) != PKCS11_CKO_SECRET_KEY)
++			return PKCS11_CKR_TEMPLATE_INCONSISTENT;
++		break;
+ 	case PKCS11_CKM_RSA_PKCS_KEY_PAIR_GEN:
+ 		assert(get_key_type(head) == PKCS11_CKK_RSA);
+ 		break;
+@@ -1634,6 +1641,9 @@ check_parent_attrs_against_processing(enum pkcs11_mechanism_id proc_id,
+ 	case PKCS11_CKM_ECDSA_SHA256:
+ 	case PKCS11_CKM_ECDSA_SHA384:
+ 	case PKCS11_CKM_ECDSA_SHA512:
++	case PKCS11_CKM_ECDH1_DERIVE:
++	case PKCS11_CKM_ECDH1_COFACTOR_DERIVE:
++	case PKCS11_CKM_ECMQV_DERIVE:
+ 		if (key_type != PKCS11_CKK_EC) {
+ 			EMSG("Invalid key %s for mechanism %s",
+ 			     id2str_type(key_type, key_class),
+diff --git a/ta/pkcs11/src/processing.h b/ta/pkcs11/src/processing.h
+index 5dcfe858..83d890a4 100644
+--- a/ta/pkcs11/src/processing.h
++++ b/ta/pkcs11/src/processing.h
+@@ -103,6 +103,10 @@ enum pkcs11_rc step_digest_operation(struct pkcs11_session *session,
+ 				     struct pkcs11_object *obj,
+ 				     uint32_t ptypes, TEE_Param *params);
+ 
++enum pkcs11_rc do_asymm_derivation(struct pkcs11_session *session,
++				   struct pkcs11_attribute_head *proc_params,
++				   struct obj_attrs **head);
++
+ /*
+  * Elliptic curve crypto algorithm specific functions
+  */
+@@ -114,6 +118,13 @@ size_t ec_params2tee_keysize(void *attr, size_t size);
+ 
+ uint32_t ec_params2tee_curve(void *attr, size_t size);
+ 
++enum pkcs11_rc pkcs2tee_algo_ecdh(uint32_t *tee_id,
++				  struct pkcs11_attribute_head *proc_params,
++				  struct pkcs11_object *obj);
++
++enum pkcs11_rc pkcs2tee_ecdh_param_pub(struct pkcs11_attribute_head *params,
++				       void **pub_data, size_t *pub_size);
++
+ enum pkcs11_rc pkcs2tee_algo_ecdsa(uint32_t *tee_id,
+ 				   struct pkcs11_attribute_head *proc_params,
+ 				   struct pkcs11_object *obj);
+diff --git a/ta/pkcs11/src/processing_asymm.c b/ta/pkcs11/src/processing_asymm.c
+index 2a5e5521..da827fd5 100644
+--- a/ta/pkcs11/src/processing_asymm.c
++++ b/ta/pkcs11/src/processing_asymm.c
+@@ -40,6 +40,8 @@ bool processing_is_tee_asymm(uint32_t proc_id)
+ 	case PKCS11_CKM_ECDSA_SHA256:
+ 	case PKCS11_CKM_ECDSA_SHA384:
+ 	case PKCS11_CKM_ECDSA_SHA512:
++	case PKCS11_CKM_ECDH1_DERIVE:
++	case PKCS11_CKM_ECDH1_COFACTOR_DERIVE:
+ 		return true;
+ 	default:
+ 		return false;
+@@ -90,6 +92,8 @@ pkcs2tee_algorithm(uint32_t *tee_id, uint32_t *tee_hash_id,
+ 		{ PKCS11_CKM_ECDSA_SHA256, 1, TEE_ALG_SHA256 },
+ 		{ PKCS11_CKM_ECDSA_SHA384, 1, TEE_ALG_SHA384 },
+ 		{ PKCS11_CKM_ECDSA_SHA512, 1, TEE_ALG_SHA512 },
++		{ PKCS11_CKM_ECDH1_DERIVE, 1, 0 },
++		{ PKCS11_CKM_ECDH1_COFACTOR_DERIVE, 1, 0 },
+ 	};
+ 	size_t n = 0;
+ 	enum pkcs11_rc rc = PKCS11_CKR_GENERAL_ERROR;
+@@ -125,6 +129,11 @@ pkcs2tee_algorithm(uint32_t *tee_id, uint32_t *tee_hash_id,
+ 	case PKCS11_CKM_ECDSA_SHA512:
+ 		rc = pkcs2tee_algo_ecdsa(tee_id, proc_params, obj);
+ 		break;
++	case PKCS11_CKM_ECDH1_DERIVE:
++		rc = pkcs2tee_algo_ecdh(tee_id, proc_params, obj);
++		break;
++	case PKCS11_CKM_ECDH1_COFACTOR_DERIVE:
++		return PKCS11_RV_NOT_IMPLEMENTED;
+ 	default:
+ 		rc = PKCS11_CKR_OK;
+ 		break;
+@@ -156,12 +165,14 @@ static enum pkcs11_rc pkcs2tee_key_type(uint32_t *tee_type,
+ 
+ 	switch (type) {
+ 	case PKCS11_CKK_EC:
+-		assert(function != PKCS11_FUNCTION_DERIVE);
+-
+ 		if (class == PKCS11_CKO_PRIVATE_KEY)
+-			*tee_type = TEE_TYPE_ECDSA_KEYPAIR;
++			*tee_type = (function == PKCS11_FUNCTION_DERIVE) ?
++					TEE_TYPE_ECDH_KEYPAIR :
++					TEE_TYPE_ECDSA_KEYPAIR;
+ 		else
+-			*tee_type = TEE_TYPE_ECDSA_PUBLIC_KEY;
++			*tee_type = (function == PKCS11_FUNCTION_DERIVE) ?
++					TEE_TYPE_ECDH_PUBLIC_KEY :
++					TEE_TYPE_ECDSA_PUBLIC_KEY;
+ 		break;
+ 	case PKCS11_CKK_RSA:
+ 		if (class == PKCS11_CKO_PRIVATE_KEY)
+@@ -266,6 +277,11 @@ static enum pkcs11_rc load_tee_key(struct pkcs11_session *session,
+ 				if (function != PKCS11_FUNCTION_DERIVE)
+ 					goto key_ready;
+ 				break;
++			case TEE_TYPE_ECDH_PUBLIC_KEY:
++			case TEE_TYPE_ECDH_KEYPAIR:
++				if (function == PKCS11_FUNCTION_DERIVE)
++					goto key_ready;
++				break;
+ 			default:
+ 				assert(0);
+ 				break;
+@@ -749,3 +765,83 @@ out:
+ 
+ 	return rc;
+ }
++
++enum pkcs11_rc do_asymm_derivation(struct pkcs11_session *session,
++				   struct pkcs11_attribute_head *proc_params,
++				   struct obj_attrs **head)
++{
++	enum pkcs11_rc rc = PKCS11_CKR_GENERAL_ERROR;
++	TEE_Result res = TEE_ERROR_GENERIC;
++	TEE_Attribute tee_attrs[2] = { };
++	size_t tee_attrs_count = 0;
++	TEE_ObjectHandle out_handle = TEE_HANDLE_NULL;
++	void *a_ptr = NULL;
++	size_t a_size = 0;
++	uint32_t key_bit_size = 0;
++	uint32_t key_byte_size = 0;
++
++	/* Remove default attribute set at template sanitization */
++	if (remove_empty_attribute(head, PKCS11_CKA_VALUE))
++		return PKCS11_CKR_FUNCTION_FAILED;
++
++	rc = get_u32_attribute(*head, PKCS11_CKA_VALUE_LEN, &key_bit_size);
++	if (rc)
++		return rc;
++
++	if (get_key_type(*head) != PKCS11_CKK_GENERIC_SECRET)
++		key_bit_size *= 8;
++
++	key_byte_size = (key_bit_size + 7) / 8;
++
++	res = TEE_AllocateTransientObject(TEE_TYPE_GENERIC_SECRET,
++					  key_byte_size * 8, &out_handle);
++	if (res) {
++		DMSG("TEE_AllocateTransientObject failed, %#"PRIx32, res);
++
++		return tee2pkcs_error(res);
++	}
++
++	switch (proc_params->id) {
++	case PKCS11_CKM_ECDH1_DERIVE:
++	case PKCS11_CKM_ECDH1_COFACTOR_DERIVE:
++		rc = pkcs2tee_ecdh_param_pub(proc_params, &a_ptr, &a_size);
++		if (rc)
++			goto out;
++
++		// TODO: check size is the expected one (active proc key)
++		TEE_InitRefAttribute(&tee_attrs[tee_attrs_count],
++				     TEE_ATTR_ECC_PUBLIC_VALUE_X,
++				     a_ptr, a_size / 2);
++		tee_attrs_count++;
++
++		TEE_InitRefAttribute(&tee_attrs[tee_attrs_count],
++				     TEE_ATTR_ECC_PUBLIC_VALUE_Y,
++				     (char *)a_ptr + a_size / 2,
++				     a_size / 2);
++		tee_attrs_count++;
++		break;
++	default:
++		TEE_Panic(proc_params->id);
++		break;
++	}
++
++	TEE_DeriveKey(session->processing->tee_op_handle, &tee_attrs[0],
++		      tee_attrs_count, out_handle);
++
++	rc = alloc_get_tee_attribute_data(out_handle, TEE_ATTR_SECRET_VALUE,
++					  &a_ptr, &a_size);
++	if (rc)
++		goto out;
++
++	if (a_size * 8 < key_bit_size)
++		rc = PKCS11_CKR_KEY_SIZE_RANGE;
++	else
++		rc = add_attribute(head, PKCS11_CKA_VALUE, a_ptr,
++				   key_byte_size);
++
++	TEE_Free(a_ptr);
++out:
++	release_active_processing(session);
++	TEE_FreeTransientObject(out_handle);
++	return rc;
++}
+diff --git a/ta/pkcs11/src/processing_ec.c b/ta/pkcs11/src/processing_ec.c
+index c817da7c..2e0672a2 100644
+--- a/ta/pkcs11/src/processing_ec.c
++++ b/ta/pkcs11/src/processing_ec.c
+@@ -400,6 +400,88 @@ enum pkcs11_rc load_tee_ec_key_attrs(TEE_Attribute **tee_attrs,
+ 	return rc;
+ }
+ 
++enum pkcs11_rc pkcs2tee_algo_ecdh(uint32_t *tee_id,
++				  struct pkcs11_attribute_head *proc_params,
++				  struct pkcs11_object *obj)
++{
++	struct serialargs args = { };
++	enum pkcs11_rc rc = PKCS11_CKR_GENERAL_ERROR;
++	uint32_t kdf = 0;
++
++	serialargs_init(&args, proc_params->data, proc_params->size);
++
++	rc = serialargs_get(&args, &kdf, sizeof(uint32_t));
++	if (rc)
++		return rc;
++
++	/* Remaining arguments are extracted by pkcs2tee_ecdh_param_pub() */
++
++	if (kdf != PKCS11_CKD_NULL) {
++		EMSG("Currently no support for hashed shared data");
++		return PKCS11_CKR_MECHANISM_PARAM_INVALID;
++	}
++
++	switch (get_object_key_bit_size(obj)) {
++	case 192:
++		*tee_id = TEE_ALG_ECDH_P192;
++		break;
++	case 224:
++		*tee_id = TEE_ALG_ECDH_P224;
++		break;
++	case 256:
++		*tee_id = TEE_ALG_ECDH_P256;
++		break;
++	case 384:
++		*tee_id = TEE_ALG_ECDH_P384;
++		break;
++	case 521:
++		*tee_id = TEE_ALG_ECDH_P521;
++		break;
++	default:
++		TEE_Panic(0);
++		break;
++	}
++
++	return PKCS11_CKR_OK;
++}
++
++enum pkcs11_rc
++pkcs2tee_ecdh_param_pub(struct pkcs11_attribute_head *proc_params,
++			void **pub_data, size_t *pub_size)
++{
++	struct serialargs args = { };
++	enum pkcs11_rc rc = PKCS11_CKR_GENERAL_ERROR;
++	uint32_t temp = 0;
++
++	serialargs_init(&args, proc_params->data, proc_params->size);
++
++	/* Skip KDF already extracted by pkcs2tee_algo_ecdh() */
++	rc = serialargs_get(&args, &temp, sizeof(uint32_t));
++	if (rc)
++		return rc;
++
++	/* Shared data size, shall be 0 */
++	rc = serialargs_get(&args, &temp, sizeof(uint32_t));
++	if (rc || temp)
++		return rc;
++
++	/* Public data size and content */
++	rc = serialargs_get(&args, &temp, sizeof(uint32_t));
++	if (rc || !temp)
++		return rc;
++
++	rc = serialargs_get_ptr(&args, pub_data, temp);
++	if (rc)
++		return rc;
++
++	if (serialargs_remaining_bytes(&args))
++		return PKCS11_CKR_ARGUMENTS_BAD;
++
++	*pub_size = temp;
++
++	return PKCS11_CKR_OK;
++}
++
+ enum pkcs11_rc pkcs2tee_algo_ecdsa(uint32_t *tee_id,
+ 				   struct pkcs11_attribute_head *proc_params,
+ 				   struct pkcs11_object *obj)
+diff --git a/ta/pkcs11/src/token_capabilities.c b/ta/pkcs11/src/token_capabilities.c
+index 3f38767b..b75ce190 100644
+--- a/ta/pkcs11/src/token_capabilities.c
++++ b/ta/pkcs11/src/token_capabilities.c
+@@ -103,6 +103,11 @@ static const struct pkcs11_mechachism_modes pkcs11_modes[] = {
+ 	MECHANISM(PKCS11_CKM_ECDSA_SHA256, CKFM_AUTH_NO_RECOVER, ANY_PART),
+ 	MECHANISM(PKCS11_CKM_ECDSA_SHA384, CKFM_AUTH_NO_RECOVER, ANY_PART),
+ 	MECHANISM(PKCS11_CKM_ECDSA_SHA512, CKFM_AUTH_NO_RECOVER, ANY_PART),
++	MECHANISM(PKCS11_CKM_ECDH1_DERIVE, PKCS11_CKFM_DERIVE, ANY_PART),
++	MECHANISM(PKCS11_CKM_ECDH1_COFACTOR_DERIVE, PKCS11_CKFM_DERIVE,
++		  ANY_PART),
++	MECHANISM(PKCS11_CKM_ECMQV_DERIVE, PKCS11_CKFM_DERIVE, ANY_PART),
++	MECHANISM(PKCS11_CKM_ECDH_AES_KEY_WRAP, CKFM_WRAP_UNWRAP, ANY_PART),
+ 	/* RSA */
+ 	MECHANISM(PKCS11_CKM_RSA_PKCS_KEY_PAIR_GEN,
+ 		  PKCS11_CKFM_GENERATE_KEY_PAIR, ANY_PART),
+@@ -236,6 +241,10 @@ const struct pkcs11_mechachism_modes token_mechanism[] = {
+ 	TA_MECHANISM(PKCS11_CKM_ECDSA_SHA256, CKFM_AUTH_NO_RECOVER),
+ 	TA_MECHANISM(PKCS11_CKM_ECDSA_SHA384, CKFM_AUTH_NO_RECOVER),
+ 	TA_MECHANISM(PKCS11_CKM_ECDSA_SHA512, CKFM_AUTH_NO_RECOVER),
++	TA_MECHANISM(PKCS11_CKM_ECDH1_DERIVE, PKCS11_CKFM_DERIVE),
++	TA_MECHANISM(PKCS11_CKM_ECDH1_COFACTOR_DERIVE, PKCS11_CKFM_DERIVE),
++	TA_MECHANISM(PKCS11_CKM_ECMQV_DERIVE, 0),
++	TA_MECHANISM(PKCS11_CKM_ECDH_AES_KEY_WRAP, 0),
+ 	TA_MECHANISM(PKCS11_CKM_RSA_PKCS_KEY_PAIR_GEN,
+ 		     PKCS11_CKFM_GENERATE_KEY_PAIR),
+ 	TA_MECHANISM(PKCS11_CKM_RSA_PKCS, CKFM_CIPHER | CKFM_AUTH_NO_RECOVER),
+@@ -358,6 +367,10 @@ void pkcs11_mechanism_supported_key_sizes(uint32_t proc_id,
+ 	case PKCS11_CKM_ECDSA_SHA256:
+ 	case PKCS11_CKM_ECDSA_SHA384:
+ 	case PKCS11_CKM_ECDSA_SHA512:
++	case PKCS11_CKM_ECDH1_DERIVE:
++	case PKCS11_CKM_ECDH1_COFACTOR_DERIVE:
++	case PKCS11_CKM_ECMQV_DERIVE:
++	case PKCS11_CKM_ECDH_AES_KEY_WRAP:
+ 		*min_key_size = 160;	/* in bits */
+ 		*max_key_size = 521;	/* in bits */
+ 		break;
+-- 
+2.25.1
+

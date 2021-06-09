@@ -1,0 +1,476 @@
+From b6ce04bac1f9f71369fec4ee43f6c3453b272e58 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Vesa=20J=C3=A4=C3=A4skel=C3=A4inen?=
+ <vesa.jaaskelainen@vaisala.com>
+Date: Mon, 4 Jan 2021 14:10:30 +0200
+Subject: [PATCH 02/10] ta: pkcs11: Add support for RSA signing & verification
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Add support for performing RSA signing & verification operations for:
+
+- PKCS #1 v1.5 RSA with supplied hash value
+- Multi stage MD5
+- Multi stage SHA-1
+- Multi stage SHA-224
+- Multi stage SHA-256
+- Multi stage SHA-384
+- Multi stage SHA-512
+
+Specified in:
+PKCS #11 Cryptographic Token Interface Current Mechanisms Specification
+Version 2.40 Plus Errata 01
+2.1 RSA
+
+Signed-off-by: Vesa Jääskeläinen <vesa.jaaskelainen@vaisala.com>
+---
+ ta/pkcs11/include/pkcs11_ta.h      |   7 ++
+ ta/pkcs11/src/pkcs11_attributes.c  |  22 ++++++
+ ta/pkcs11/src/processing.c         |   5 ++
+ ta/pkcs11/src/processing.h         |   5 ++
+ ta/pkcs11/src/processing_asymm.c   |  95 ++++++++++++++++++++++++
+ ta/pkcs11/src/processing_rsa.c     | 112 +++++++++++++++++++++++++++++
+ ta/pkcs11/src/token_capabilities.c |  22 ++++++
+ 7 files changed, 268 insertions(+)
+
+diff --git a/ta/pkcs11/include/pkcs11_ta.h b/ta/pkcs11/include/pkcs11_ta.h
+index 4c5ea467..4c47420f 100644
+--- a/ta/pkcs11/include/pkcs11_ta.h
++++ b/ta/pkcs11/include/pkcs11_ta.h
+@@ -1144,6 +1144,13 @@ enum pkcs11_key_type {
+  */
+ enum pkcs11_mechanism_id {
+ 	PKCS11_CKM_RSA_PKCS_KEY_PAIR_GEN	= 0x00000,
++	PKCS11_CKM_RSA_PKCS			= 0x00001,
++	PKCS11_CKM_MD5_RSA_PKCS			= 0x00005,
++	PKCS11_CKM_SHA1_RSA_PKCS		= 0x00006,
++	PKCS11_CKM_SHA256_RSA_PKCS		= 0x00040,
++	PKCS11_CKM_SHA384_RSA_PKCS		= 0x00041,
++	PKCS11_CKM_SHA512_RSA_PKCS		= 0x00042,
++	PKCS11_CKM_SHA224_RSA_PKCS		= 0x00046,
+ 	PKCS11_CKM_MD5				= 0x00210,
+ 	PKCS11_CKM_MD5_HMAC			= 0x00211,
+ 	PKCS11_CKM_SHA_1			= 0x00220,
+diff --git a/ta/pkcs11/src/pkcs11_attributes.c b/ta/pkcs11/src/pkcs11_attributes.c
+index 9fba02b1..e19bffee 100644
+--- a/ta/pkcs11/src/pkcs11_attributes.c
++++ b/ta/pkcs11/src/pkcs11_attributes.c
+@@ -1513,6 +1513,28 @@ check_parent_attrs_against_processing(enum pkcs11_mechanism_id proc_id,
+ 			return PKCS11_CKR_KEY_FUNCTION_NOT_PERMITTED;
+ 		}
+ 		break;
++	case PKCS11_CKM_RSA_PKCS:
++	case PKCS11_CKM_MD5_RSA_PKCS:
++	case PKCS11_CKM_SHA1_RSA_PKCS:
++	case PKCS11_CKM_SHA256_RSA_PKCS:
++	case PKCS11_CKM_SHA384_RSA_PKCS:
++	case PKCS11_CKM_SHA512_RSA_PKCS:
++	case PKCS11_CKM_SHA224_RSA_PKCS:
++		if (key_type != PKCS11_CKK_RSA) {
++			EMSG("Invalid key %s for mechanism %s",
++			     id2str_type(key_type, key_class),
++			     id2str_proc(proc_id));
++
++			return PKCS11_CKR_KEY_TYPE_INCONSISTENT;
++		}
++		if (key_class != PKCS11_CKO_PUBLIC_KEY &&
++		    key_class != PKCS11_CKO_PRIVATE_KEY) {
++			EMSG("Invalid key class for mechanism %s",
++			     id2str_proc(proc_id));
++
++			return PKCS11_CKR_KEY_FUNCTION_NOT_PERMITTED;
++		}
++		break;
+ 	default:
+ 		DMSG("Invalid processing %#"PRIx32"/%s", proc_id,
+ 		     id2str_proc(proc_id));
+diff --git a/ta/pkcs11/src/processing.c b/ta/pkcs11/src/processing.c
+index 807e6e11..e9197e25 100644
+--- a/ta/pkcs11/src/processing.c
++++ b/ta/pkcs11/src/processing.c
+@@ -139,6 +139,11 @@ size_t get_object_key_bit_size(struct pkcs11_object *obj)
+ 		if (get_attribute_ptr(attrs, PKCS11_CKA_VALUE, NULL, &a_size))
+ 			return 0;
+ 
++		return a_size * 8;
++	case PKCS11_CKK_RSA:
++		if (get_attribute_ptr(attrs, PKCS11_CKA_MODULUS, NULL, &a_size))
++			return 0;
++
+ 		return a_size * 8;
+ 	case PKCS11_CKK_EC:
+ 		if (get_attribute_ptr(attrs, PKCS11_CKA_EC_PARAMS,
+diff --git a/ta/pkcs11/src/processing.h b/ta/pkcs11/src/processing.h
+index ab1c3abe..99af9e8f 100644
+--- a/ta/pkcs11/src/processing.h
++++ b/ta/pkcs11/src/processing.h
+@@ -127,9 +127,14 @@ size_t ecdsa_get_input_max_byte_size(TEE_OperationHandle op);
+ /*
+  * RSA crypto algorithm specific functions
+  */
++enum pkcs11_rc load_tee_rsa_key_attrs(TEE_Attribute **tee_attrs,
++				      size_t *tee_count,
++				      struct pkcs11_object *obj);
+ 
+ enum pkcs11_rc generate_rsa_keys(struct pkcs11_attribute_head *proc_params,
+ 				 struct obj_attrs **pub_head,
+ 				 struct obj_attrs **priv_head);
+ 
++size_t rsa_get_input_max_byte_size(TEE_OperationHandle op);
++
+ #endif /*PKCS11_TA_PROCESSING_H*/
+diff --git a/ta/pkcs11/src/processing_asymm.c b/ta/pkcs11/src/processing_asymm.c
+index e53bc485..09ea2fb3 100644
+--- a/ta/pkcs11/src/processing_asymm.c
++++ b/ta/pkcs11/src/processing_asymm.c
+@@ -18,6 +18,14 @@
+ bool processing_is_tee_asymm(uint32_t proc_id)
+ {
+ 	switch (proc_id) {
++	/* RSA flavors */
++	case PKCS11_CKM_RSA_PKCS:
++	case PKCS11_CKM_MD5_RSA_PKCS:
++	case PKCS11_CKM_SHA1_RSA_PKCS:
++	case PKCS11_CKM_SHA224_RSA_PKCS:
++	case PKCS11_CKM_SHA256_RSA_PKCS:
++	case PKCS11_CKM_SHA384_RSA_PKCS:
++	case PKCS11_CKM_SHA512_RSA_PKCS:
+ 	/* EC flavors */
+ 	case PKCS11_CKM_ECDSA:
+ 	case PKCS11_CKM_ECDSA_SHA1:
+@@ -42,6 +50,20 @@ pkcs2tee_algorithm(uint32_t *tee_id, uint32_t *tee_hash_id,
+ 		uint32_t tee_id;
+ 		uint32_t tee_hash_id;
+ 	} pkcs2tee_algo[] = {
++		/* RSA flavors */
++		{ PKCS11_CKM_RSA_PKCS, TEE_ALG_RSAES_PKCS1_V1_5, 0 },
++		{ PKCS11_CKM_MD5_RSA_PKCS, TEE_ALG_RSASSA_PKCS1_V1_5_MD5,
++		  TEE_ALG_MD5 },
++		{ PKCS11_CKM_SHA1_RSA_PKCS, TEE_ALG_RSASSA_PKCS1_V1_5_SHA1,
++		  TEE_ALG_SHA1 },
++		{ PKCS11_CKM_SHA224_RSA_PKCS, TEE_ALG_RSASSA_PKCS1_V1_5_SHA224,
++		  TEE_ALG_SHA224 },
++		{ PKCS11_CKM_SHA256_RSA_PKCS, TEE_ALG_RSASSA_PKCS1_V1_5_SHA256,
++		  TEE_ALG_SHA256 },
++		{ PKCS11_CKM_SHA384_RSA_PKCS, TEE_ALG_RSASSA_PKCS1_V1_5_SHA384,
++		  TEE_ALG_SHA384 },
++		{ PKCS11_CKM_SHA512_RSA_PKCS, TEE_ALG_RSASSA_PKCS1_V1_5_SHA512,
++		  TEE_ALG_SHA512 },
+ 		/* EC flavors (Must find key size from the object) */
+ 		{ PKCS11_CKM_ECDSA, 1, 0 },
+ 		{ PKCS11_CKM_ECDSA_SHA1, 1, TEE_ALG_SHA1 },
+@@ -78,6 +100,11 @@ pkcs2tee_algorithm(uint32_t *tee_id, uint32_t *tee_hash_id,
+ 		break;
+ 	}
+ 
++	if (*tee_id == TEE_ALG_RSAES_PKCS1_V1_5 &&
++	    (function == PKCS11_FUNCTION_SIGN ||
++	     function == PKCS11_FUNCTION_VERIFY))
++		*tee_id = TEE_ALG_RSASSA_PKCS1_V1_5;
++
+ 	return rc;
+ }
+ 
+@@ -106,6 +133,12 @@ static enum pkcs11_rc pkcs2tee_key_type(uint32_t *tee_type,
+ 		else
+ 			*tee_type = TEE_TYPE_ECDSA_PUBLIC_KEY;
+ 		break;
++	case PKCS11_CKK_RSA:
++		if (class == PKCS11_CKO_PRIVATE_KEY)
++			*tee_type = TEE_TYPE_RSA_KEYPAIR;
++		else
++			*tee_type = TEE_TYPE_RSA_PUBLIC_KEY;
++		break;
+ 	default:
+ 		TEE_Panic(type);
+ 		break;
+@@ -188,6 +221,13 @@ static enum pkcs11_rc load_tee_key(struct pkcs11_session *session,
+ 
+ 	if (obj->key_handle != TEE_HANDLE_NULL) {
+ 		switch (type) {
++		case PKCS11_CKK_RSA:
++			/* RSA loaded keys can be reused */
++			assert((obj->key_type == TEE_TYPE_RSA_PUBLIC_KEY &&
++				class == PKCS11_CKO_PUBLIC_KEY) ||
++			       (obj->key_type == TEE_TYPE_RSA_KEYPAIR &&
++				class == PKCS11_CKO_PRIVATE_KEY));
++			goto key_ready;
+ 		case PKCS11_CKK_EC:
+ 			/* Reuse EC TEE key only if already DSA or DH */
+ 			switch (obj->key_type) {
+@@ -219,6 +259,9 @@ static enum pkcs11_rc load_tee_key(struct pkcs11_session *session,
+ 		return PKCS11_CKR_GENERAL_ERROR;
+ 
+ 	switch (type) {
++	case PKCS11_CKK_RSA:
++		rc = load_tee_rsa_key_attrs(&tee_attrs, &tee_attrs_count, obj);
++		break;
+ 	case PKCS11_CKK_EC:
+ 		rc = load_tee_ec_key_attrs(&tee_attrs, &tee_attrs_count, obj);
+ 		break;
+@@ -362,6 +405,12 @@ enum pkcs11_rc step_asymm_operation(struct pkcs11_session *session,
+ 		case PKCS11_CKM_ECDSA_SHA256:
+ 		case PKCS11_CKM_ECDSA_SHA384:
+ 		case PKCS11_CKM_ECDSA_SHA512:
++		case PKCS11_CKM_MD5_RSA_PKCS:
++		case PKCS11_CKM_SHA1_RSA_PKCS:
++		case PKCS11_CKM_SHA224_RSA_PKCS:
++		case PKCS11_CKM_SHA256_RSA_PKCS:
++		case PKCS11_CKM_SHA384_RSA_PKCS:
++		case PKCS11_CKM_SHA512_RSA_PKCS:
+ 			assert(proc->tee_hash_op_handle != TEE_HANDLE_NULL);
+ 
+ 			TEE_DigestUpdate(proc->tee_hash_op_handle, in_buf,
+@@ -389,6 +438,12 @@ enum pkcs11_rc step_asymm_operation(struct pkcs11_session *session,
+ 	case PKCS11_CKM_ECDSA_SHA256:
+ 	case PKCS11_CKM_ECDSA_SHA384:
+ 	case PKCS11_CKM_ECDSA_SHA512:
++	case PKCS11_CKM_MD5_RSA_PKCS:
++	case PKCS11_CKM_SHA1_RSA_PKCS:
++	case PKCS11_CKM_SHA224_RSA_PKCS:
++	case PKCS11_CKM_SHA256_RSA_PKCS:
++	case PKCS11_CKM_SHA384_RSA_PKCS:
++	case PKCS11_CKM_SHA512_RSA_PKCS:
+ 		assert(proc->tee_hash_op_handle != TEE_HANDLE_NULL);
+ 
+ 		hash_size = TEE_ALG_GET_DIGEST_SIZE(proc->tee_hash_algo);
+@@ -453,6 +508,39 @@ enum pkcs11_rc step_asymm_operation(struct pkcs11_session *session,
+ 			goto out;
+ 		}
+ 		break;
++
++	case PKCS11_CKM_RSA_PKCS:
++	case PKCS11_CKM_MD5_RSA_PKCS:
++	case PKCS11_CKM_SHA1_RSA_PKCS:
++	case PKCS11_CKM_SHA224_RSA_PKCS:
++	case PKCS11_CKM_SHA256_RSA_PKCS:
++	case PKCS11_CKM_SHA384_RSA_PKCS:
++	case PKCS11_CKM_SHA512_RSA_PKCS:
++		/*
++		 * Constraints on key types and the length of the data for
++		 * these mechanisms are summarized in the following table.
++		 * In the table, k is the length in bytes of the RSA modulus.
++		 * For the PKCS #1 v1.5 RSA signature with MD2 and PKCS #1 v1.5
++		 * RSA signature with MD5 mechanisms, k must be at least 27;
++		 * for the PKCS #1 v1.5 RSA signature with SHA-1 mechanism, k
++		 * must be at least 31, and so on for other underlying hash
++		 * functions, where the minimum is always 11 bytes more than
++		 * the length of the hash value.
++		 */
++
++		/* get key size in bytes */
++		sz = rsa_get_input_max_byte_size(proc->tee_op_handle);
++		if (!sz) {
++			rc = PKCS11_CKR_FUNCTION_FAILED;
++			goto out;
++		}
++
++		if (function == PKCS11_FUNCTION_VERIFY &&
++		    in2_size != sz) {
++			rc = PKCS11_CKR_SIGNATURE_LEN_RANGE;
++			goto out;
++		}
++		break;
+ 	default:
+ 		break;
+ 	}
+@@ -460,6 +548,7 @@ enum pkcs11_rc step_asymm_operation(struct pkcs11_session *session,
+ 	/* Next perform actual signing operation */
+ 	switch (proc->mecha_type) {
+ 	case PKCS11_CKM_ECDSA:
++	case PKCS11_CKM_RSA_PKCS:
+ 		/* For operations using provided input data */
+ 		switch (function) {
+ 		case PKCS11_FUNCTION_ENCRYPT:
+@@ -509,6 +598,12 @@ enum pkcs11_rc step_asymm_operation(struct pkcs11_session *session,
+ 	case PKCS11_CKM_ECDSA_SHA256:
+ 	case PKCS11_CKM_ECDSA_SHA384:
+ 	case PKCS11_CKM_ECDSA_SHA512:
++	case PKCS11_CKM_MD5_RSA_PKCS:
++	case PKCS11_CKM_SHA1_RSA_PKCS:
++	case PKCS11_CKM_SHA224_RSA_PKCS:
++	case PKCS11_CKM_SHA256_RSA_PKCS:
++	case PKCS11_CKM_SHA384_RSA_PKCS:
++	case PKCS11_CKM_SHA512_RSA_PKCS:
+ 		/* For operations having hash operation use calculated hash */
+ 		switch (function) {
+ 		case PKCS11_FUNCTION_SIGN:
+diff --git a/ta/pkcs11/src/processing_rsa.c b/ta/pkcs11/src/processing_rsa.c
+index d381c5d7..967ef12a 100644
+--- a/ta/pkcs11/src/processing_rsa.c
++++ b/ta/pkcs11/src/processing_rsa.c
+@@ -10,8 +10,111 @@
+ #include <tee_internal_api_extensions.h>
+ 
+ #include "attributes.h"
++#include "object.h"
+ #include "processing.h"
+ 
++enum pkcs11_rc load_tee_rsa_key_attrs(TEE_Attribute **tee_attrs,
++				      size_t *tee_count,
++				      struct pkcs11_object *obj)
++{
++	TEE_Attribute *attrs = NULL;
++	size_t count = 0;
++	enum pkcs11_rc rc = PKCS11_CKR_GENERAL_ERROR;
++	void *a_ptr = NULL;
++
++	assert(get_key_type(obj->attributes) == PKCS11_CKK_RSA);
++
++	switch (get_class(obj->attributes)) {
++	case PKCS11_CKO_PUBLIC_KEY:
++		attrs = TEE_Malloc(3 * sizeof(TEE_Attribute),
++				   TEE_USER_MEM_HINT_NO_FILL_ZERO);
++		if (!attrs)
++			return PKCS11_CKR_DEVICE_MEMORY;
++
++		if (pkcs2tee_load_attr(&attrs[count], TEE_ATTR_RSA_MODULUS,
++				       obj, PKCS11_CKA_MODULUS))
++			count++;
++
++		if (pkcs2tee_load_attr(&attrs[count],
++				       TEE_ATTR_RSA_PUBLIC_EXPONENT, obj,
++				       PKCS11_CKA_PUBLIC_EXPONENT))
++			count++;
++
++		if (count == 2)
++			rc = PKCS11_CKR_OK;
++
++		break;
++
++	case PKCS11_CKO_PRIVATE_KEY:
++		attrs = TEE_Malloc(8 * sizeof(TEE_Attribute),
++				   TEE_USER_MEM_HINT_NO_FILL_ZERO);
++		if (!attrs)
++			return PKCS11_CKR_DEVICE_MEMORY;
++
++		if (pkcs2tee_load_attr(&attrs[count], TEE_ATTR_RSA_MODULUS,
++				       obj, PKCS11_CKA_MODULUS))
++			count++;
++
++		if (pkcs2tee_load_attr(&attrs[count],
++				       TEE_ATTR_RSA_PUBLIC_EXPONENT, obj,
++				       PKCS11_CKA_PUBLIC_EXPONENT))
++			count++;
++
++		if (pkcs2tee_load_attr(&attrs[count],
++				       TEE_ATTR_RSA_PRIVATE_EXPONENT, obj,
++				       PKCS11_CKA_PRIVATE_EXPONENT))
++			count++;
++
++		if (count != 3)
++			break;
++
++		/* FIXME: check PRIME_2, EXPONENT_*, COEFFICIENT are found? */
++		if (get_attribute(obj->attributes, PKCS11_CKA_PRIME_1, NULL,
++				  NULL) || !a_ptr) {
++			rc = PKCS11_CKR_OK;
++			break;
++		}
++
++		if (pkcs2tee_load_attr(&attrs[count], TEE_ATTR_RSA_PRIME1, obj,
++				       PKCS11_CKA_PRIME_1))
++			count++;
++
++		if (pkcs2tee_load_attr(&attrs[count], TEE_ATTR_RSA_PRIME2, obj,
++				       PKCS11_CKA_PRIME_2))
++			count++;
++
++		if (pkcs2tee_load_attr(&attrs[count], TEE_ATTR_RSA_EXPONENT1,
++				       obj, PKCS11_CKA_EXPONENT_1))
++			count++;
++
++		if (pkcs2tee_load_attr(&attrs[count], TEE_ATTR_RSA_EXPONENT2,
++				       obj, PKCS11_CKA_EXPONENT_2))
++			count++;
++
++		if (pkcs2tee_load_attr(&attrs[count], TEE_ATTR_RSA_COEFFICIENT,
++				       obj, PKCS11_CKA_COEFFICIENT))
++			count++;
++
++		if (count == 8)
++			rc = PKCS11_CKR_OK;
++
++		break;
++
++	default:
++		assert(0);
++		break;
++	}
++
++	if (rc == PKCS11_CKR_OK) {
++		*tee_attrs = attrs;
++		*tee_count = count;
++	} else {
++		TEE_Free(attrs);
++	}
++
++	return rc;
++}
++
+ static enum pkcs11_rc tee2pkcs_rsa_attributes(struct obj_attrs **pub_head,
+ 					      struct obj_attrs **priv_head,
+ 					      TEE_ObjectHandle tee_obj)
+@@ -171,3 +274,12 @@ out:
+ 	TEE_Free(public_exponent);
+ 	return rc;
+ }
++
++size_t rsa_get_input_max_byte_size(TEE_OperationHandle op)
++{
++	TEE_OperationInfo info = { };
++
++	TEE_GetOperationInfo(op, &info);
++
++	return info.maxKeySize / 8;
++}
+diff --git a/ta/pkcs11/src/token_capabilities.c b/ta/pkcs11/src/token_capabilities.c
+index 97f82de3..03593506 100644
+--- a/ta/pkcs11/src/token_capabilities.c
++++ b/ta/pkcs11/src/token_capabilities.c
+@@ -106,6 +106,14 @@ static const struct pkcs11_mechachism_modes pkcs11_modes[] = {
+ 	/* RSA */
+ 	MECHANISM(PKCS11_CKM_RSA_PKCS_KEY_PAIR_GEN,
+ 		  PKCS11_CKFM_GENERATE_KEY_PAIR, ANY_PART),
++	MECHANISM(PKCS11_CKM_RSA_PKCS, CKFM_CIPHER_WRAP | CKFM_AUTH_NO_RECOVER |
++		  CKFM_AUTH_WITH_RECOVER, SINGLE_PART_ONLY),
++	MECHANISM(PKCS11_CKM_MD5_RSA_PKCS, CKFM_AUTH_NO_RECOVER, ANY_PART),
++	MECHANISM(PKCS11_CKM_SHA1_RSA_PKCS, CKFM_AUTH_NO_RECOVER, ANY_PART),
++	MECHANISM(PKCS11_CKM_SHA256_RSA_PKCS, CKFM_AUTH_NO_RECOVER, ANY_PART),
++	MECHANISM(PKCS11_CKM_SHA384_RSA_PKCS, CKFM_AUTH_NO_RECOVER, ANY_PART),
++	MECHANISM(PKCS11_CKM_SHA512_RSA_PKCS, CKFM_AUTH_NO_RECOVER, ANY_PART),
++	MECHANISM(PKCS11_CKM_SHA224_RSA_PKCS, CKFM_AUTH_NO_RECOVER, ANY_PART),
+ };
+ 
+ #if CFG_TEE_TA_LOG_LEVEL > 0
+@@ -217,6 +225,13 @@ const struct pkcs11_mechachism_modes token_mechanism[] = {
+ 	TA_MECHANISM(PKCS11_CKM_ECDSA_SHA512, CKFM_AUTH_NO_RECOVER),
+ 	TA_MECHANISM(PKCS11_CKM_RSA_PKCS_KEY_PAIR_GEN,
+ 		     PKCS11_CKFM_GENERATE_KEY_PAIR),
++	TA_MECHANISM(PKCS11_CKM_RSA_PKCS, CKFM_CIPHER | CKFM_AUTH_NO_RECOVER),
++	TA_MECHANISM(PKCS11_CKM_MD5_RSA_PKCS, CKFM_AUTH_NO_RECOVER),
++	TA_MECHANISM(PKCS11_CKM_SHA1_RSA_PKCS, CKFM_AUTH_NO_RECOVER),
++	TA_MECHANISM(PKCS11_CKM_SHA256_RSA_PKCS, CKFM_AUTH_NO_RECOVER),
++	TA_MECHANISM(PKCS11_CKM_SHA384_RSA_PKCS, CKFM_AUTH_NO_RECOVER),
++	TA_MECHANISM(PKCS11_CKM_SHA512_RSA_PKCS, CKFM_AUTH_NO_RECOVER),
++	TA_MECHANISM(PKCS11_CKM_SHA224_RSA_PKCS, CKFM_AUTH_NO_RECOVER),
+ };
+ 
+ /*
+@@ -327,6 +342,13 @@ void pkcs11_mechanism_supported_key_sizes(uint32_t proc_id,
+ 		*max_key_size = 521;	/* in bits */
+ 		break;
+ 	case PKCS11_CKM_RSA_PKCS_KEY_PAIR_GEN:
++	case PKCS11_CKM_RSA_PKCS:
++	case PKCS11_CKM_MD5_RSA_PKCS:
++	case PKCS11_CKM_SHA1_RSA_PKCS:
++	case PKCS11_CKM_SHA256_RSA_PKCS:
++	case PKCS11_CKM_SHA384_RSA_PKCS:
++	case PKCS11_CKM_SHA512_RSA_PKCS:
++	case PKCS11_CKM_SHA224_RSA_PKCS:
+ 		*min_key_size = 256;	/* in bits */
+ 		*max_key_size = 4096;	/* in bits */
+ 		break;
+-- 
+2.25.1
+
