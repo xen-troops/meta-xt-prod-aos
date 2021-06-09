@@ -82,6 +82,6 @@ pkg_postinst_${PN}() {
 
     # Add aosiam to /etc/hosts
     if ! grep -q 'aosiam' $D${sysconfdir}/hosts ; then
-        echo '192.168.0.1	aosiam' >> $D${sysconfdir}/hosts
+        echo '192.168.0.3	aosiam' >> $D${sysconfdir}/hosts
     fi
 }
