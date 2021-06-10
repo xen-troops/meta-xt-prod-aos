@@ -23,6 +23,7 @@ SCRIPT_NAME="start_guest.sh"
 SCRIPT_PATH="/xt/scripts"
 GUEST="domf"
 GUEST_DEPENDENCIES="bridge"
+WATCHER_SCRIPT="dom_watcher.sh"
 STOP_TIMEOUT=100
 
 # not running in Xen dom0 or domU
@@ -44,12 +45,20 @@ do_start () {
         exit 0
     fi
 
-    ${SCRIPT_PATH}/${SCRIPT_NAME} ${GUEST} ${GUEST_DEPENDENCIES} &
+    ( ${SCRIPT_PATH}/${SCRIPT_NAME} ${GUEST} ${GUEST_DEPENDENCIES} ; ${SCRIPT_PATH}/${WATCHER_SCRIPT} ${DOMAIN_NAME} ) &
     echo "${DOMAIN_NAME} is scheduled to run"
 }
 
 do_stop () {
     echo "Stopping ${DOMAIN_NAME}"
+
+    PID=`ps -ef | grep ${WATCHER_SCRIPT} | grep ${DOMAIN_NAME} | awk '{print $1;}'`
+
+    if [ ! -z $PID ] ; then
+        kill $PID
+    fi
+
+    rm -rf /tmp/$DOM_ID-reboot
 
     PID=`ps -ef | grep ${SCRIPT_NAME} | grep ${GUEST} | awk '{print $1;}' `
 
