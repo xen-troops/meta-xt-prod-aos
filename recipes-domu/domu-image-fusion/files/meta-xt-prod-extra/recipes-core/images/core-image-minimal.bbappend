@@ -1,6 +1,7 @@
 require inc/xt_shared_env.inc
 
 IMAGE_INSTALL_append = " \
+    xen-tools \
     tzdata \
     aos-iamanager \
     aos-servicemanager \
