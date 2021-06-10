@@ -50,6 +50,8 @@ do_stop () {
         kill $PID
     fi
 
+    rm -rf /tmp/$DOM_ID-reboot
+
     if ! xl domid ${DOMAIN_NAME} &> /dev/null ; then
         echo "${DOMAIN_NAME} is not running"
         exit 0
