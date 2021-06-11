@@ -1,0 +1,25 @@
+From 31cc0cd8df11220b69a280efeb82f53a271c4ab9 Mon Sep 17 00:00:00 2001
+From: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+Date: Fri, 7 May 2021 21:16:14 +0300
+Subject: [PATCH] r8a7795_ulcb_defconfig: Disable CONFIG_MMC_HS400_SUPPORT
+
+Signed-off-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+---
+ configs/r8a7795_ulcb_defconfig | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/configs/r8a7795_ulcb_defconfig b/configs/r8a7795_ulcb_defconfig
+index 8af4f56..bdd5ef5 100644
+--- a/configs/r8a7795_ulcb_defconfig
++++ b/configs/r8a7795_ulcb_defconfig
+@@ -42,7 +42,6 @@ CONFIG_DM_MMC=y
+ CONFIG_MMC_IO_VOLTAGE=y
+ CONFIG_MMC_UHS_SUPPORT=y
+ CONFIG_MMC_HS200_SUPPORT=y
+-CONFIG_MMC_HS400_SUPPORT=y
+ CONFIG_RENESAS_SDHI=y
+ CONFIG_PHY_MICREL=y
+ CONFIG_PHY_MICREL_KSZ90X1=y
+-- 
+2.7.4
+
