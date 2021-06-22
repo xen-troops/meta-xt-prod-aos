@@ -11,6 +11,7 @@ SRC_URI += " \
     file://0008-wip-checkpatch.patch \
     file://0009-ta-pkcs11-Add-support-to-generate-optional-attribute.patch \
     file://0010-wip-key-size-check-for-rsa-pss.patch \
+    file://0011-ta-pkcs11-Increate-data-size-from-64k-to-256k.patch \
 "
 
 SRCREV = "bc9618c0b6e6585ada3efcab4ce5ba155507d777"
