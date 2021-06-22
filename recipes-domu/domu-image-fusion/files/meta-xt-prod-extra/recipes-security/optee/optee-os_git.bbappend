@@ -39,6 +39,11 @@ FILES_${PN} = " \
 
 do_deploy[noexec] = "1"
 
+do_compile() {
+    unset LDFLAGS
+    oe_runmake all
+}
+
 do_install() {
     install -d ${D}${nonarch_base_libdir}/optee_armtz/
 
