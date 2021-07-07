@@ -1,0 +1,26 @@
+From 2604ce04a91c93d4005f4c3bb336081a07ec3f8b Mon Sep 17 00:00:00 2001
+From: Ihor Usyk <ihor_usyk@epam.com>
+Date: Tue, 27 Apr 2021 16:01:07 +0000
+Subject: [PATCH] use oe.utils.conditional instead of deprecated
+ base_conditional
+
+Signed-off-by: Ihor Usyk <ihor_usyk@epam.com>
+---
+ recipes-bsp/arm-trusted-firmware/arm-trusted-firmware_git.bbappend | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/recipes-bsp/arm-trusted-firmware/arm-trusted-firmware_git.bbappend b/recipes-bsp/arm-trusted-firmware/arm-trusted-firmware_git.bbappend
+index b2aaa0d..8bf46e8 100644
+--- a/recipes-bsp/arm-trusted-firmware/arm-trusted-firmware_git.bbappend
++++ b/recipes-bsp/arm-trusted-firmware/arm-trusted-firmware_git.bbappend
+@@ -1,6 +1,6 @@
+ FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+ 
+-ATFW_OPT_append = " ${@base_conditional("CA57CA53BOOT", "1", " PSCI_DISABLE_BIGLITTLE_IN_CA57BOOT=0", "", d)}"
++ATFW_OPT_append = " ${@oe.utils.conditional("CA57CA53BOOT", "1", " PSCI_DISABLE_BIGLITTLE_IN_CA57BOOT=0", "", d)}"
+ ATFW_OPT_append += " RCAR_DISABLE_NONSECURE_RPC_ACCESS=0"
+ ATFW_OPT_append += " LIFEC_DBSC_PROTECT_ENABLE=0"
+ 
+-- 
+2.7.4
+
