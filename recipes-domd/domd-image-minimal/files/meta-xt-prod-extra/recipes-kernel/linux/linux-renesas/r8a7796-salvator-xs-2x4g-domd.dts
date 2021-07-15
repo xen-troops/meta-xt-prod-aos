@@ -1,13 +1,12 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
- * Device Tree Source for the H3ULCB Kingfisher board
+ * Device Tree Source for the Salvator-X 2nd version board with R-Car M3 ES3.0+
  * running XEN hypervisor
  *
- * Copyright (C) 2016-2018 Renesas Electronics Corp.
- * Copyright (C) 2016 Cogent Embedded, Inc.
+ * Copyright (C) 2018-2019 Renesas Electronics Corp.
  */
 
-#include "r8a77951-ulcb-kf.dts"
+#include "r8a77961-salvator-xs.dts"
 
 /*
  * The device tree compiler (DTC) is allocating the phandle from 1 to
@@ -17,7 +16,7 @@
 
 / {
 	soc {
-		/* This must point to Xen interrupt-parent */
+		//this must point to Xen interrupt-parent
 		interrupt-parent = <PHANDLE_GIC>;
 	};
 
@@ -50,21 +49,6 @@
 
 /delete-node/&adsp;
 
-&sdhi0 {
-	/delete-property/iommus;
-};
-
-&sdhi1 {
-	/delete-property/iommus;
-};
-
-&sdhi2 {
-	/delete-property/iommus;
-};
-
-&sdhi3 {
-	/delete-property/iommus;
-};
 
 /* Xen will provide its own GIC, mask ours */
 &gic {
@@ -75,8 +59,6 @@
 	status = "disabled";
 };
 
-&sata {
-	status = "disabled";
+&sound_card {
+	dais = <&rsnd_port0>; /* ak4613 */
 };
-
-

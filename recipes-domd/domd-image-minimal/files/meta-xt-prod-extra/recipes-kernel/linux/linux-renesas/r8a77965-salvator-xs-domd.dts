@@ -48,13 +48,25 @@
 	/delete-node/thermal-zones;
 	/delete-node/pmu_a57;
 
-	/delete-node/reserved-memory;
+	/* Reduce CMA pool to from 384MB to 256MB */
+	reserved-memory {
+		/delete-node/linux,cma@58000000;
 
-	/delete-node/mmngr;
-	/delete-node/mmngrbuf;
+		/* global autoconfigured region for contiguous allocations */
+		linux,cma@60000000 {
+			compatible = "shared-dma-pool";
+			reusable;
+			reg = <0x00000000 0x60000000 0x0 0x10000000>;
+			linux,cma-default;
+		};
+	};
 };
 
 /delete-node/&adsp;
+
+&sdhi2 {
+	/delete-property/iommus;
+};
 
 &pciec1 {
 	/* Please use exclusively to sata node */
@@ -64,26 +76,6 @@
 &sata {
 	/* Please use exclusively to pciec1 node */
 	status = "okay";
-};
-
-&dmac0 {
-	/delete-property/iommus;
-};
-
-&dmac1 {
-	/delete-property/iommus;
-};
-
-&dmac2 {
-	/delete-property/iommus;
-};
-
-&audma0 {
-	/delete-property/iommus;
-};
-
-&audma1 {
-	/delete-property/iommus;
 };
 
 /* Xen will provide its own GIC, mask ours */

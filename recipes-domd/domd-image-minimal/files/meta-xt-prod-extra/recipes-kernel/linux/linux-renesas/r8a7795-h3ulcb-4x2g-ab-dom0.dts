@@ -1,22 +1,22 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
- * Device Tree Source for the Salvator-X 2nd version board with R-Car H3 ES3.0
+ * Device Tree Source for the H3ULCB Aos box (CCPF Starter kit) board
  * running XEN hypervisor
  *
- * Copyright (C) 2018 Renesas Electronics Corp.
+ * Copyright (C) 2021 Renesas Electronics Corp.
+ * Copyright (C) 2021 EPAM Systems, Inc.
  */
 
-#include "r8a77951-salvator-xs.dts"
+#include "r8a77951-ulcb.dts"
 #include "xen-chosen.dtsi"
+#include "ulcb-ab.dtsi"
 
 / {
-
-	model = "Renesas Salvator-X 2nd version board based on r8a77951, running XEN hypervisor";
-	compatible = "renesas,salvator-xs", "renesas,r8a7795";
+	model = "Renesas H3ULCB Aosbox board based on H3ULCB + with 8GiB (4 x 2 GiB), running XEN hypervisor";
+	compatible = "renesas,h3ulcb", "renesas,r8a7795";
 
 	reserved-memory {
-		/delete-node/linux,adsp@57000000;
-		/delete-node/linux,cma@58000000;
+		/delete-node/linux,cma@57000000;
 		/delete-node/linux,multimedia@70000000;
 	};
 
@@ -49,8 +49,8 @@
 
 /delete-node/&adsp;
 
-
 /* ============================ Enabled IPMMUs ===============================*/
+
 &ipmmu_mm {
 	status = "okay";
 };
@@ -128,6 +128,20 @@
 	status = "okay";
 };
 
+&rt_dmac0 {
+	iommus = <&ipmmu_rt 4>, <&ipmmu_rt 5>,
+			 <&ipmmu_rt 6>, <&ipmmu_rt 7>,
+			 <&ipmmu_rt 8>, <&ipmmu_rt 9>,
+			 <&ipmmu_rt 10>, <&ipmmu_rt 11>;
+};
+
+&rt_dmac1 {
+	iommus = <&ipmmu_rt 12>, <&ipmmu_rt 13>,
+			 <&ipmmu_rt 14>, <&ipmmu_rt 15>,
+			 <&ipmmu_rt 16>, <&ipmmu_rt 17>,
+			 <&ipmmu_rt 18>, <&ipmmu_rt 19>;
+};
+
 /*=========================== Bus masters linked to IPMMUS ===================*/
 
 &dmac0 {
@@ -185,20 +199,20 @@
 			 <&ipmmu_mp0 30>, <&ipmmu_mp0 31>;
 };
 
-&vin0 {
-	iommus = <&ipmmu_vi0 0>;
+&ehci0 {
+	iommus = <&ipmmu_hc 4>;
 };
 
-&vin1 {
-	iommus = <&ipmmu_vi0 0>;
+&ohci0 {
+	iommus = <&ipmmu_hc 4>;
 };
 
-&vin2 {
-	iommus = <&ipmmu_vi0 0>;
+&xhci0 {
+    iommus = <&ipmmu_hc 12>;
 };
 
-&vin3 {
-	iommus = <&ipmmu_vi0 0>;
+&usb3_peri0 {
+    iommus = <&ipmmu_hc 13>;
 };
 
 &fcpvd0 {
@@ -207,22 +221,6 @@
 
 &fcpvd1 {
 	iommus = <&ipmmu_vi0 9>;
-};
-
-&vin4 {
-	iommus = <&ipmmu_vi1 1>;
-};
-
-&vin5 {
-	iommus = <&ipmmu_vi1 1>;
-};
-
-&vin6 {
-	iommus = <&ipmmu_vi1 1>;
-};
-
-&vin7 {
-	iommus = <&ipmmu_vi1 1>;
 };
 
 &fcpvd2 {
@@ -261,22 +259,6 @@
 	iommus = <&ipmmu_vp1 9>;
 };
 
-&pciec0 {
-	iommus = <&ipmmu_hc 0>;
-};
-
-&pciec1 {
-	iommus = <&ipmmu_hc 1>;
-};
-
-&ehci0 {
-	iommus = <&ipmmu_hc 4>;
-};
-
-&ohci0 {
-	iommus = <&ipmmu_hc 4>;
-};
-
 &ehci1 {
 	iommus = <&ipmmu_hc 5>;
 };
@@ -285,36 +267,12 @@
 	iommus = <&ipmmu_hc 5>;
 };
 
-&ehci2 {
-	iommus = <&ipmmu_hc 6>;
-};
-
-&ohci2 {
-	iommus = <&ipmmu_hc 6>;
-};
-
-&ehci3 {
-	iommus = <&ipmmu_hc 7>;
-};
-
-&ohci3 {
-	iommus = <&ipmmu_hc 7>;
-};
-
 &usb_dmac0 {
 	iommus = <&ipmmu_hc 9>;
 };
 
 &usb_dmac1 {
 	iommus = <&ipmmu_hc 10>;
-};
-
-&xhci0 {
-	iommus = <&ipmmu_hc 12>;
-};
-
-&usb3_peri0 {
-	iommus = <&ipmmu_hc 13>;
 };
 
 &usb_dmac2 {
@@ -337,29 +295,9 @@
 	iommus = <&ipmmu_ds1 34>;
 };
 
-&sdhi3 {
-	iommus = <&ipmmu_ds1 35>;
-};
-
-&rt_dmac0 {
-	iommus = <&ipmmu_rt 4>, <&ipmmu_rt 5>,
-			 <&ipmmu_rt 6>, <&ipmmu_rt 7>,
-			 <&ipmmu_rt 8>, <&ipmmu_rt 9>,
-			 <&ipmmu_rt 10>, <&ipmmu_rt 11>;
-};
-
-&rt_dmac1 {
-	iommus = <&ipmmu_rt 12>, <&ipmmu_rt 13>,
-			 <&ipmmu_rt 14>, <&ipmmu_rt 15>,
-			 <&ipmmu_rt 16>, <&ipmmu_rt 17>,
-			 <&ipmmu_rt 18>, <&ipmmu_rt 19>;
-};
-
 /* ============================ Xen pass through section =====================*/
-/*&adsp			{ xen,passthrough; };*/
+
 &arm_cc630p		{ xen,passthrough; };
-&csi20			{ xen,passthrough; };
-&csi40			{ xen,passthrough; };
 &du			{ xen,passthrough; };
 &usb_dmac2		{ xen,passthrough; };
 &usb_dmac3		{ xen,passthrough; };
@@ -392,7 +330,7 @@
 		imr-lx4@fe860000 {
 			xen,passthrough;
 			iommus = <&ipmmu_vc1 0>;
-		 };
+		};
 
 		imr-lx4@fe870000 {
 			xen,passthrough;
@@ -485,16 +423,14 @@
 	};
 };
 
+&can0			{ xen,passthrough; };
+&can1			{ xen,passthrough; };
+&canfd			{ xen,passthrough; };
 &intc_ex		{ xen,passthrough; };
 &mfis_as		{ xen,passthrough; };
-&pciec1			{ xen,passthrough; };
-&pciec0			{ xen,passthrough; };
 &rpc0			{ xen,passthrough; };
-&hscif1			{ xen,passthrough; };
 &sdhi0			{ xen,passthrough; };
 &sdhi2			{ xen,passthrough; };
-&sdhi3			{ xen,passthrough; };
-&scif1			{ xen,passthrough; };
 &src0			{ xen,passthrough; };
 &src1			{ xen,passthrough; };
 &src2			{ xen,passthrough; };
@@ -516,30 +452,16 @@
 &ssi8			{ xen,passthrough; };
 &ssi9			{ xen,passthrough; };
 &usb2_phy0		{ xen,passthrough; };
-&usb2_phy3		{ xen,passthrough; };
 &hsusb			{ xen,passthrough; };
-&hsusb3			{ xen,passthrough; };
 &xhci0			{ xen,passthrough; };
 &usb3_peri0		{ xen,passthrough; };
 &ohci0			{ xen,passthrough; };
 &ehci0			{ xen,passthrough; };
 &ohci1			{ xen,passthrough; };
 &ehci1			{ xen,passthrough; };
-&ohci2			{ xen,passthrough; };
-&ehci2			{ xen,passthrough; };
-&ohci3			{ xen,passthrough; };
-&ehci3			{ xen,passthrough; };
 &ivdp1c			{ xen,passthrough; };
 &vdpb			{ xen,passthrough; };
 &vcplf			{ xen,passthrough; };
-&vin0			{ xen,passthrough; };
-&vin1			{ xen,passthrough; };
-&vin2			{ xen,passthrough; };
-&vin3			{ xen,passthrough; };
-&vin4			{ xen,passthrough; };
-&vin5			{ xen,passthrough; };
-&vin6			{ xen,passthrough; };
-&vin7			{ xen,passthrough; };
 &vspd0			{ xen,passthrough; };
 &vspd1			{ xen,passthrough; };
 &vspd2			{ xen,passthrough; };
