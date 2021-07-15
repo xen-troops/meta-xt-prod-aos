@@ -3,7 +3,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/optee-os:"
 LICENSE = "BSD-2-Clause"
 LIC_FILES_CHKSUM = "file://${S}/LICENSE;md5=c1f21c4f72f372ef38a5a4aee55ec173"
 
-SRCREV = ""824d30853c440b6e4e80ae07d20c85376f68b85b""
+SRCREV = "dcec4b70f34a387ec0445728295873f19fab6e35"
 
 PV = "git${SRCPV}"
 
