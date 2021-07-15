@@ -179,6 +179,8 @@ SRC_URI_append_cetibox = " \
     file://r8a7795-h3ulcb-cetibox-dom0.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
     file://r8a7795-h3ulcb-cetibox-domd.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
     file://0001-r8a7795-cetibox-h3ulcb-gweb-v2.dts-Remove-dvfs-node.patch \
+    file://r8a7795-cetibox-h3ulcb-gweb-v2.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
+    file://r8a7795.dtsi;subdir=git/arch/${ARCH}/boot/dts/renesas \
   "
 
 KERNEL_DEVICETREE_h3ulcb-cb-xt = " \
