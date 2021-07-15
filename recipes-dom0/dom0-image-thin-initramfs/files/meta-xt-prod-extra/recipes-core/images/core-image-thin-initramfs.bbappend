@@ -6,9 +6,7 @@ require inc/xt_shared_env.inc
 
 #Add Xen and additional packages to build
 IMAGE_INSTALL_append = " \
-    xen-xencommons \
-    xen-xenstat \
-    xen-misc \
+    xen-tools \
     dom0 \
     dom0-run-vcpu_pin \
     dom0-run-set_root_dev \

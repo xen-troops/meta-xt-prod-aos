@@ -1,35 +1,23 @@
+// SPDX-License-Identifier: GPL-2.0
 /*
  * Device Tree Source for the H3ULCB (R-Car Starter Kit Premier) board
  * running XEN hypervisor
  *
- * Copyright (C) 2016-2018 Renesas Electronics Corp.
- * Copyright (C) 2016 Cogent Embedded, Inc.
- *
- * This file is licensed under the terms of the GNU General Public License
- * version 2.  This program is licensed "as is" without any warranty of any
- * kind, whether express or implied.
+ * Copyright (C) 2018 Renesas Electronics Corp.
  */
 
-#include "r8a7795-h3ulcb-4x2g.dts"
+#include "r8a77951-ulcb.dts"
 #include "xen-chosen.dtsi"
 
 / {
-	model = "Renesas H3ULCB board based on r8a7795 ES3.0+ with 8GiB (4 x 2 GiB), running XEN hypervisor";
+	model = "Renesas H3ULCB board based on r8a77951, running XEN hypervisor";
 	compatible = "renesas,h3ulcb", "renesas,r8a7795";
 
-	memory@48000000 {
-		device_type = "memory";
-		/* first 128MB is reserved for secure area. */
-		reg = <0x0 0x48000000 0x0 0x78000000>,
-		      <0x5 0x00000000 0x0 0x80000000>,
-		      <0x6 0x00000000 0x0 0x80000000>,
-		      <0x7 0x00000000 0x0 0x80000000>;
+	reserved-memory {
+		/delete-node/linux,cma@57000000;
+		/delete-node/linux,multimedia@70000000;
 	};
 
-	/delete-node/memory@500000000;
-	/delete-node/memory@600000000;
-	/delete-node/memory@700000000;
-	/delete-node/reserved-memory;
 	/delete-node/mmngr;
 	/delete-node/mmngrbuf;
 
@@ -74,6 +62,11 @@
 };
 
 &ipmmu_vp0 {
+	/*
+	 * The "renesas,ipmmu-mmu-r8a7795" string is known for mmngr, but is not
+	 * known for the Xen's IPMMU driver. Overwrite compatible string as these
+	 * IPMMU devices need to be picked up by Xen.
+	 */
 	compatible = "renesas,ipmmu-r8a7795";
 	status = "okay";
 };
@@ -125,7 +118,84 @@
 	status = "okay";
 };
 
+&ipmmu_ir {
+	status = "okay";
+};
+
+&ipmmu_rt {
+	status = "okay";
+};
+
+&rt_dmac0 {
+	iommus = <&ipmmu_rt 4>, <&ipmmu_rt 5>,
+			 <&ipmmu_rt 6>, <&ipmmu_rt 7>,
+			 <&ipmmu_rt 8>, <&ipmmu_rt 9>,
+			 <&ipmmu_rt 10>, <&ipmmu_rt 11>;
+};
+
+&rt_dmac1 {
+	iommus = <&ipmmu_rt 12>, <&ipmmu_rt 13>,
+			 <&ipmmu_rt 14>, <&ipmmu_rt 15>,
+			 <&ipmmu_rt 16>, <&ipmmu_rt 17>,
+			 <&ipmmu_rt 18>, <&ipmmu_rt 19>;
+};
+
 /*=========================== Bus masters linked to IPMMUS ===================*/
+
+&dmac0 {
+	iommus = <&ipmmu_ds0 0>, <&ipmmu_ds0 1>,
+			 <&ipmmu_ds0 2>, <&ipmmu_ds0 3>,
+			 <&ipmmu_ds0 4>, <&ipmmu_ds0 5>,
+			 <&ipmmu_ds0 6>, <&ipmmu_ds0 7>,
+			 <&ipmmu_ds0 8>, <&ipmmu_ds0 9>,
+			 <&ipmmu_ds0 10>, <&ipmmu_ds0 11>,
+			 <&ipmmu_ds0 12>, <&ipmmu_ds0 13>,
+			 <&ipmmu_ds0 14>, <&ipmmu_ds0 15>;
+};
+
+&dmac1 {
+	iommus = <&ipmmu_ds1 0>, <&ipmmu_ds1 1>,
+			 <&ipmmu_ds1 2>, <&ipmmu_ds1 3>,
+			 <&ipmmu_ds1 4>, <&ipmmu_ds1 5>,
+			 <&ipmmu_ds1 6>, <&ipmmu_ds1 7>,
+			 <&ipmmu_ds1 8>, <&ipmmu_ds1 9>,
+			 <&ipmmu_ds1 10>, <&ipmmu_ds1 11>,
+			 <&ipmmu_ds1 12>, <&ipmmu_ds1 13>,
+			 <&ipmmu_ds1 14>, <&ipmmu_ds1 15>;
+};
+
+&dmac2 {
+	iommus = <&ipmmu_ds1 16>, <&ipmmu_ds1 17>,
+			 <&ipmmu_ds1 18>, <&ipmmu_ds1 19>,
+			 <&ipmmu_ds1 20>, <&ipmmu_ds1 21>,
+			 <&ipmmu_ds1 22>, <&ipmmu_ds1 23>,
+			 <&ipmmu_ds1 24>, <&ipmmu_ds1 25>,
+			 <&ipmmu_ds1 26>, <&ipmmu_ds1 27>,
+			 <&ipmmu_ds1 28>, <&ipmmu_ds1 29>,
+			 <&ipmmu_ds1 30>, <&ipmmu_ds1 31>;
+};
+
+&audma0 {
+	iommus = <&ipmmu_mp0 0>, <&ipmmu_mp0 1>,
+			 <&ipmmu_mp0 2>, <&ipmmu_mp0 3>,
+			 <&ipmmu_mp0 4>, <&ipmmu_mp0 5>,
+			 <&ipmmu_mp0 6>, <&ipmmu_mp0 7>,
+			 <&ipmmu_mp0 8>, <&ipmmu_mp0 9>,
+			 <&ipmmu_mp0 10>, <&ipmmu_mp0 11>,
+			 <&ipmmu_mp0 12>, <&ipmmu_mp0 13>,
+			 <&ipmmu_mp0 14>, <&ipmmu_mp0 15>;
+};
+
+&audma1 {
+	iommus = <&ipmmu_mp0 16>, <&ipmmu_mp0 17>,
+			 <&ipmmu_mp0 18>, <&ipmmu_mp0 19>,
+			 <&ipmmu_mp0 20>, <&ipmmu_mp0 21>,
+			 <&ipmmu_mp0 22>, <&ipmmu_mp0 23>,
+			 <&ipmmu_mp0 24>, <&ipmmu_mp0 25>,
+			 <&ipmmu_mp0 26>, <&ipmmu_mp0 27>,
+			 <&ipmmu_mp0 28>, <&ipmmu_mp0 29>,
+			 <&ipmmu_mp0 30>, <&ipmmu_mp0 31>;
+};
 
 &fcpvd0 {
 	iommus = <&ipmmu_vi0 8>;
@@ -167,53 +237,6 @@
 	iommus = <&ipmmu_vp1 9>;
 };
 
-&fcpcs {
-	iommus = <&ipmmu_vc0 8>,
-			 <&ipmmu_vc1 8>,
-			 <&ipmmu_vc0 12>,
-			 <&ipmmu_vc1 12>;
-};
-
-/ {
-	soc {
-		imr-lx4@fe860000 {
-			xen,passthrough;
-			iommus = <&ipmmu_vc1 0>;
-		};
-
-		imr-lx4@fe870000 {
-			xen,passthrough;
-			iommus = <&ipmmu_vc1 0>;
-		};
-
-		imr-lx4@fe880000 {
-			xen,passthrough;
-			iommus = <&ipmmu_vc0 1>;
-		};
-
-		imr-lx4@fe890000 {
-			xen,passthrough;
-			iommus = <&ipmmu_vc0 1>;
-		};
-
-		gsx_domd {
-			xen,passthrough;
-			iommus = <&ipmmu_pv0 0>,
-				 <&ipmmu_pv1 0>,
-				 <&ipmmu_pv2 0>,
-				 <&ipmmu_pv3 0>;
-		};
-
-		gsx_domu {
-			xen,passthrough;
-			iommus = <&ipmmu_pv0 1>,
-				 <&ipmmu_pv1 1>,
-				 <&ipmmu_pv2 1>,
-				 <&ipmmu_pv3 1>;
-		};
-	};
-};
-
 &ehci1 {
 	iommus = <&ipmmu_hc 5>;
 };
@@ -252,7 +275,9 @@
 
 /* ============================ Xen pass through section =====================*/
 
-&du				{ xen,passthrough; };
+/*&adsp			{ xen,passthrough; };*/
+&arm_cc630p		{ xen,passthrough; };
+&du			{ xen,passthrough; };
 &usb_dmac2		{ xen,passthrough; };
 &usb_dmac3		{ xen,passthrough; };
 &usb_dmac0		{ xen,passthrough; };
@@ -277,9 +302,108 @@
 &hdmi0			{ xen,passthrough; };
 &i2c2			{ xen,passthrough; };
 &i2c4			{ xen,passthrough; };
-&i2c_dvfs		{ xen,passthrough; };
+
+/ {
+	soc {
+		imr-lx4@fe860000 {
+			xen,passthrough;
+			iommus = <&ipmmu_vc1 0>;
+		};
+
+		imr-lx4@fe870000 {
+			xen,passthrough;
+			iommus = <&ipmmu_vc1 0>;
+		};
+
+		imr-lx4@fe880000 {
+			xen,passthrough;
+			iommus = <&ipmmu_vc0 1>;
+		};
+
+		imr-lx4@fe890000 {
+			xen,passthrough;
+			iommus = <&ipmmu_vc0 1>;
+		};
+
+		gsx_pv0_domd {
+			xen,passthrough;
+			iommus = <&ipmmu_pv0 0>;
+		};
+
+		gsx_pv1_domd {
+			xen,passthrough;
+			iommus = <&ipmmu_pv1 0>;
+		};
+
+		gsx_pv2_domd {
+			xen,passthrough;
+			iommus = <&ipmmu_pv2 0>;
+		};
+
+		gsx_pv3_domd {
+			xen,passthrough;
+			iommus = <&ipmmu_pv3 0>;
+		};
+
+		gsx_pv0_domu {
+			xen,passthrough;
+			iommus = <&ipmmu_pv0 1>;
+		};
+
+		gsx_pv1_domu {
+			xen,passthrough;
+			iommus = <&ipmmu_pv1 1>;
+		};
+
+		gsx_pv2_domu {
+			xen,passthrough;
+			iommus = <&ipmmu_pv2 1>;
+		};
+
+		gsx_pv3_domu {
+			xen,passthrough;
+			iommus = <&ipmmu_pv3 1>;
+		};
+
+		fcpcs_vc0 {
+			xen,passthrough;
+			iommus = <&ipmmu_vc0 8>,
+					 <&ipmmu_vc0 12>;
+		};
+
+		fcpcs_vc1 {
+			xen,passthrough;
+			iommus = <&ipmmu_vc1 8>,
+					 <&ipmmu_vc1 12>;
+		};
+
+		impdm0 {
+			xen,passthrough;
+			iommus = <&ipmmu_ir 0>,
+					 <&ipmmu_ir 1>;
+		};
+
+		imp0 {
+			xen,passthrough;
+		};
+
+		impdes0 {
+			xen,passthrough;
+		};
+
+		imprtt {
+			xen,passthrough;
+		};
+
+		lossy_shmem {
+			reg = <0 0x47fd7000 0 0x1000>;
+		};
+	};
+};
+
 &intc_ex		{ xen,passthrough; };
 &mfis_as		{ xen,passthrough; };
+&rpc0			{ xen,passthrough; };
 &sdhi0			{ xen,passthrough; };
 &sdhi2			{ xen,passthrough; };
 &src0			{ xen,passthrough; };
@@ -302,10 +426,8 @@
 &ssi7			{ xen,passthrough; };
 &ssi8			{ xen,passthrough; };
 &ssi9			{ xen,passthrough; };
-&tsc			{ xen,passthrough; };
 &ohci1			{ xen,passthrough; };
 &ehci1			{ xen,passthrough; };
-&pmic			{ xen,passthrough; };
 &ivdp1c			{ xen,passthrough; };
 &vdpb			{ xen,passthrough; };
 &vcplf			{ xen,passthrough; };
@@ -316,7 +438,13 @@
 &vspbd			{ xen,passthrough; };
 &vspi0			{ xen,passthrough; };
 &vspi1			{ xen,passthrough; };
+
 &fcpvd0			{ xen,passthrough; };
 &fcpvd1			{ xen,passthrough; };
 &fcpvd2			{ xen,passthrough; };
-&fcpcs			{ xen,passthrough; };
+&tsc			{ xen,passthrough; };
+&i2c_dvfs		{ xen,passthrough; };
+&pmic			{ xen,passthrough; };
+&rt_dmac0		{ xen,passthrough; };
+&rt_dmac1		{ xen,passthrough; };
+

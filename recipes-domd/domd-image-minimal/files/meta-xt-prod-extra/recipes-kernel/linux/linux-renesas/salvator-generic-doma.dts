@@ -26,17 +26,12 @@
 		android {
 			compatible = "android,firmware";
 
-			fstab {
-				compatible = "android,fstab";
-
-				vendor {
-					compatible = "android,vendor";
-					dev = "/dev/block/xvda2";
-					type = "ext4";
-					mnt_flags = "ro,barrier=1";
-					fsmgr_flags = "wait,avb";
-				};
-			};
+			vbmeta {
+                                compatible = "android,vbmeta";
+                                /* partitions witch can be mount in the first stage */
+                                parts = "vbmeta,boot";
+                                by_name_prefix="/dev/block/by-name";
+                        };
 		};
 	};
 

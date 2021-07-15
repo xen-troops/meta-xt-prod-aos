@@ -10,7 +10,7 @@
  * kind, whether express or implied.
  */
 
-#include "r8a7795-h3ulcb.dts"
+#include "r8a77951-ulcb.dts"
 
 /*
  * The device tree compiler (DTC) is allocating the phandle from 1 to
@@ -49,33 +49,9 @@
 	/delete-node/thermal-zones;
 	/delete-node/pmu_a57;
 	/delete-node/pmu_a53;
-
-	/delete-node/reserved-memory;
-	/delete-node/mmngr;
-	/delete-node/mmngrbuf;
 };
 
 /delete-node/&adsp;
-
-&dmac0 {
-	/delete-property/iommus;
-};
-
-&dmac1 {
-	/delete-property/iommus;
-};
-
-&dmac2 {
-	/delete-property/iommus;
-};
-
-&audma0 {
-	/delete-property/iommus;
-};
-
-&audma1 {
-	/delete-property/iommus;
-};
 
 /* Xen will provide its own GIC, mask ours */
 &gic {

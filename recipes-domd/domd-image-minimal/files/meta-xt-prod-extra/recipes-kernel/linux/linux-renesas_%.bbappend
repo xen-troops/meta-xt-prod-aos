@@ -5,13 +5,15 @@ require inc/xt_shared_env.inc
 
 RENESAS_BSP_URL = "git://github.com/xen-troops/linux.git"
 
-BRANCH = "master"
-BRANCH_cetibox = "v4.14/rcar-3.7-ctc"
+BRANCH = "v5.10/rcar-5.0.0.rc4-xt0.1"
 SRCREV = "${AUTOREV}"
-LINUX_VERSION = "4.14.75"
+LINUX_VERSION = "5.10.0"
+
+KBUILD_DEFCONFIG_rcar = ""
 SRC_URI_append = " \
     file://defconfig \
 "
+KERNEL_FEATURES_remove = "cfg/virtio.scc"
 
 SRC_URI_append_rcar = " \
     file://salvator-generic-doma.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
@@ -177,6 +179,8 @@ SRC_URI_append_cetibox = " \
     file://r8a7795-h3ulcb-cetibox-dom0.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
     file://r8a7795-h3ulcb-cetibox-domd.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
     file://0001-r8a7795-cetibox-h3ulcb-gweb-v2.dts-Remove-dvfs-node.patch \
+    file://r8a7795-cetibox-h3ulcb-gweb-v2.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
+    file://r8a7795.dtsi;subdir=git/arch/${ARCH}/boot/dts/renesas \
   "
 
 KERNEL_DEVICETREE_h3ulcb-cb-xt = " \
