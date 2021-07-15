@@ -12,6 +12,7 @@ LINUX_VERSION = "5.4.72"
 SRC_URI_append = " \
     file://defconfig \
 "
+KERNEL_FEATURES_remove = "cfg/virtio.scc"
 
 SRC_URI_append_rcar = " \
     file://salvator-generic-doma.dts;subdir=git/arch/${ARCH}/boot/dts/renesas \
