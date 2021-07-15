@@ -122,6 +122,10 @@ configure_versions_rcar() {
         base_add_conf_value ${local_conf} DISTRO_FEATURES_remove "wifi bluetooth"
     fi
 
+    base_add_conf_value ${local_conf} DISTRO_FEATURES_append " systemd"
+    base_add_conf_value ${local_conf} BBMASK "meta-arm/meta-arm/recipes-security/optee/optee-os"
+    base_add_conf_value ${local_conf} BBMASK "meta-renesas/meta-rcar-gen3/recipes-bsp/optee/optee-os"
+
     # set update variables
     base_update_conf_value ${local_conf} DOMD_IMAGE_VERSION "${DOMD_IMAGE_VERSION}"
     base_update_conf_value ${local_conf} BOARD_MODEL "${BOARD_MODEL}"
