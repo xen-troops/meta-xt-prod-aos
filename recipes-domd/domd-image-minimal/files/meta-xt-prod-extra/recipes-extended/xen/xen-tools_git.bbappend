@@ -3,6 +3,8 @@
 ################################################################################
 require inc/xen-version.inc
 
+LIC_FILES_CHKSUM = "file://COPYING;md5=bbb4b1bdc2c3b6743da3c39d03249095"
+
 RDEPENDS_${PN} += "${PN}-devd"
 
 FLASK_POLICY_FILE = "xenpolicy-${XEN_REL}*"
