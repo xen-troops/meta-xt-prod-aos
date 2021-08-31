@@ -1,8 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 FILESEXTRAPATHS_prepend_cetibox := "${THISDIR}/files/cetibox:"
 
-BRANCH = "master"
-
 SRC_URI_append = "\
     file://aos-updatemanager.service \
     file://aos_updatemanager.cfg \
