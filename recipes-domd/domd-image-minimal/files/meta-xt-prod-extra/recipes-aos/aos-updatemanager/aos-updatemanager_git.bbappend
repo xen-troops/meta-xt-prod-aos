@@ -59,8 +59,8 @@ do_install_append() {
 
 pkg_postinst_${PN}() {
     # Add aossm to /etc/hosts
-    if ! grep -q 'aossm' $D${sysconfdir}/hosts ; then
-        echo '192.168.0.3	aossm' >> $D${sysconfdir}/hosts
+    if ! grep -q 'aoscm' $D${sysconfdir}/hosts ; then
+        echo '192.168.0.3	aoscm' >> $D${sysconfdir}/hosts
     fi
 
     # Add aosiam to /etc/hosts
