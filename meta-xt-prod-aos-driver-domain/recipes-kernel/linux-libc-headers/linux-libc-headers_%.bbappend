@@ -1,0 +1,5 @@
+RENESAS_BSP_URL_cetibox = "git://github.com/xen-troops/linux.git;protocol=https"
+#SRC_URI = "git://github.com/xen-troops/linux.git;protocol=https"
+BRANCH_cetibox = "master"
+SRCREV_cetibox = "${AUTOREV}"
+LINUX_VERSION = "4.14.75"

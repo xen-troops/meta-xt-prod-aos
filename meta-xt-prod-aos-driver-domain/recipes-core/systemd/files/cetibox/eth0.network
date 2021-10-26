@@ -1,0 +1,10 @@
+[Match]
+Name=eth0
+KernelCommandLine=!nfsroot
+
+[Network]
+VLAN=eth0.1
+VLAN=eth0.2
+
+[Link]
+MACAddress=02:01:02:03:04:08
