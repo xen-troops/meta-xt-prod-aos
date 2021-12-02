@@ -57,27 +57,31 @@ XT_DIR_ABS_SHARED_ROOTFS_DOMF = "${XT_SHARED_ROOTFS_DIR}/${XT_DIR_REL_DOMF}/root
 BOARD_MODEL ?= "h3ulcb;1.0"
 BOARD_MODEL_cetibox ?= "cetibox;1.0"
 
-# Bundle image version used as suffix in the bundle name
+# Bundle image version used as suffix in the bundle name and default version for
+# other components
 BUNDLE_IMAGE_VERSION ?= "1.0.0"
+# Bundle previous version used as default reference version for incremenral
+# updates
+BUNDLE_PREVIOUS_VERSION ?= "1.0.0"
 
 # Dom0 image type. Dom0 supports only "full". Empty value means dom0 update image
-# will not be included into the bunle.
+# will not be included into the bundle.
 BUNDLE_DOM0_TYPE ?= "full"
 # DomD image type. DomD supports "full" and "incremental" update. Empty value
-# means DomD update image will not be included into the bunle.
+# means DomD update image will not be included into the bundle.
 BUNDLE_DOMD_TYPE ?= "full"
 # DomF image type. DomF supports "full" and "incremental" update. Empty value
-# means DomF update image will not be included into the bunle.
+# means DomF update image will not be included into the bundle.
 BUNDLE_DOMF_TYPE ?= "full"
 
 # Dom0 image version
-DOM0_IMAGE_VERSION ?= "1.0.0"
+DOM0_IMAGE_VERSION ?= "${BUNDLE_IMAGE_VERSION}"
 # DomD image version
-DOMD_IMAGE_VERSION ?= "1.0.0"
+DOMD_IMAGE_VERSION ?= "${BUNDLE_IMAGE_VERSION}"
 # DomF image version
-DOMF_IMAGE_VERSION ?= "1.0.0"
+DOMF_IMAGE_VERSION ?= "${BUNDLE_IMAGE_VERSION}"
 
 # DomD reference version, used for incremental update.
-DOMD_REF_VERSION ?= "1.0.0"
+DOMD_REF_VERSION ?= "${BUNDLE_PREVIOUS_VERSION}"
 # DomF reference version, used for incremental update.
-DOMF_REF_VERSION ?= "1.0.0"
+DOMF_REF_VERSION ?= "${BUNDLE_PREVIOUS_VERSION}"
