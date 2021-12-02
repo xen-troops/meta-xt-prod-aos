@@ -53,8 +53,8 @@ pkg_postinst_${PN}() {
         echo '192.168.0.1	wwwivi' >> $D${sysconfdir}/hosts
     fi
 
-    # Add aossm to /etc/hosts
-    if ! grep -q 'aossm' $D${sysconfdir}/hosts ; then
-        echo '192.168.0.3	aossm' >> $D${sysconfdir}/hosts
+    # Add aosiam to /etc/hosts
+    if ! grep -q 'aosiam' $D${sysconfdir}/hosts ; then
+        echo '192.168.0.3	aosiam' >> $D${sysconfdir}/hosts
     fi
 }
