@@ -4,8 +4,9 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/../../recipes-domx:"
 do_configure[depends] += "domd-image-weston:do_domd_install_machine_overrides"
 do_compile[depends] += "domd-image-weston:do_${BB_DEFAULT_TASK}"
 
+PROD_AOS_MANIFEST_BRANCH ?= "master"
 SRC_URI = " \
-    repo://github.com/xen-troops/manifests;protocol=https;branch=master;manifest=prod_devel/dom0.xml;scmdata=keep \
+    repo://github.com/xen-troops/manifests;protocol=https;branch=${PROD_AOS_MANIFEST_BRANCH};manifest=prod_devel/dom0.xml;scmdata=keep \
 "
 
 ###############################################################################

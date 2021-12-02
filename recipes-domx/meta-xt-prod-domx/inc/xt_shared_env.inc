@@ -81,3 +81,6 @@ DOMF_IMAGE_VERSION ?= "1.0.0"
 DOMD_REF_VERSION ?= "1.0.0"
 # DomF reference version, used for incremental update.
 DOMF_REF_VERSION ?= "1.0.0"
+
+# prod-aos manifest branch
+PROD_AOS_MANIFEST_BRANCH ?= "prod_aos-v2.0.0"
