@@ -227,6 +227,11 @@ DISTRO_FEATURES_BACKFILL_CONSIDERED += "sysvinit"
 VIRTUAL-RUNTIME_init_manager = "systemd"
 VIRTUAL-RUNTIME_initscripts = "systemd-compat-units"
 
+# Define which runner will be used to run AoS services.
+# Currently supported: runc and crun.
+# Default is crun.
+AOS_RUNNER = "crun"
+
 PREFERRED_PROVIDER_virtual/runc = "runc-opencontainers"
 
 include ${@d.getVar('XT_SHARED_ROOTFS_DIR', True) or ''}/local.conf.domd_machine.inc

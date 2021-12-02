@@ -36,6 +36,6 @@ do_install_append() {
 pkg_postinst_${PN}() {
     # Add aoscm to /etc/hosts
     if ! grep -q 'aoscm' $D${sysconfdir}/hosts ; then
-        echo '127.0.0.1	aoscm' >> $D${sysconfdir}/hosts
+        echo '192.168.0.3	aoscm' >> $D${sysconfdir}/hosts
     fi
 }

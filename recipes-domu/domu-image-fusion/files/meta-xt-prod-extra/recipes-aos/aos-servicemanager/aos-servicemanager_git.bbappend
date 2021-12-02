@@ -28,9 +28,10 @@ RDEPENDS_${PN} += "\
 
 MIGRATION_SCRIPTS_PATH = "/usr/share/servicemanager/migration"
 
+AOS_RUNNER ?= "crun"
+
 FILES_${PN} += " \
     ${sysconfdir}/aos/aos_servicemanager.cfg \
-    ${sysconfdir}/sysctl.d/*.conf \
     ${sysconfdir}/ssl/certs/*.pem \
     ${systemd_system_unitdir}/*.service \
     ${systemd_system_unitdir}/*.target \
@@ -47,6 +48,8 @@ do_install_append() {
 
     install -d ${D}${sysconfdir}/aos
     install -m 0644 ${WORKDIR}/aos_servicemanager.cfg ${D}${sysconfdir}/aos
+
+    sed -i 's/"runner": "runc",/"runner": "${AOS_RUNNER}",/g' ${D}${sysconfdir}/aos/aos_servicemanager.cfg
 
     install -d ${D}${sysconfdir}/ssl/certs
     install -m 0644 ${WORKDIR}/rootCA.pem ${D}${sysconfdir}/ssl/certs/
@@ -69,10 +72,5 @@ pkg_postinst_${PN}() {
     # Add aossm to /etc/hosts
     if ! grep -q 'aossm' $D${sysconfdir}/hosts ; then
         echo '192.168.0.3	aossm' >> $D${sysconfdir}/hosts
-    fi
-
-    # Add aosiam to /etc/hosts
-    if ! grep -q 'aosiam' $D${sysconfdir}/hosts ; then
-        echo '192.168.0.3	aosiam' >> $D${sysconfdir}/hosts
     fi
 }
