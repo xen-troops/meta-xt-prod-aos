@@ -59,7 +59,7 @@ BOARD_MODEL_cetibox ?= "cetibox;1.0"
 
 # Bundle image version used as suffix in the bundle name and default version for
 # other components
-BUNDLE_IMAGE_VERSION ?= "1.0.0"
+BUNDLE_IMAGE_VERSION ?= "2.0.0"
 # Bundle previous version used as default reference version for incremenral
 # updates
 BUNDLE_PREVIOUS_VERSION ?= "1.0.0"
