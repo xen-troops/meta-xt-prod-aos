@@ -58,7 +58,7 @@ BOARD_MODEL ?= "h3ulcb;1.0"
 BOARD_MODEL_cetibox ?= "cetibox;1.0"
 
 # Bundle image version used as suffix in the bundle name
-BUNDLE_IMAGE_VERSION ?= "1.0.0"
+BUNDLE_IMAGE_VERSION ?= "2.0.0"
 
 # Dom0 image type. Dom0 supports only "full". Empty value means dom0 update image
 # will not be included into the bunle.
@@ -71,11 +71,11 @@ BUNDLE_DOMD_TYPE ?= "full"
 BUNDLE_DOMF_TYPE ?= "full"
 
 # Dom0 image version
-DOM0_IMAGE_VERSION ?= "1.0.0"
+DOM0_IMAGE_VERSION ?= "2.0.0"
 # DomD image version
-DOMD_IMAGE_VERSION ?= "1.0.0"
+DOMD_IMAGE_VERSION ?= "2.0.0"
 # DomF image version
-DOMF_IMAGE_VERSION ?= "1.0.0"
+DOMF_IMAGE_VERSION ?= "2.0.0"
 
 # DomD reference version, used for incremental update.
 DOMD_REF_VERSION ?= "1.0.0"
