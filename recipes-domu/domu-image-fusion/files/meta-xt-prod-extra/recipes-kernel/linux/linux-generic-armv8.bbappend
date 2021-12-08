@@ -4,7 +4,8 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 BRANCH = "master"
 SRCREV = "${AUTOREV}"
-LINUX_VERSION = "4.14.75"
+LINUX_VERSION = "5.10.0"
+LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
 
 SRC_URI = " \
     git://github.com/xen-troops/linux.git;branch=${BRANCH} \

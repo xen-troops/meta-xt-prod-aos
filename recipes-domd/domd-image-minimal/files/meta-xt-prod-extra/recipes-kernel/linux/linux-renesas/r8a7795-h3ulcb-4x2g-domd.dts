@@ -1,16 +1,12 @@
+// SPDX-License-Identifier: GPL-2.0
 /*
  * Device Tree Source for the H3ULCB (R-Car Starter Kit Premier) board
  * running XEN hypervisor
  *
- * Copyright (C) 2016-2018 Renesas Electronics Corp.
- * Copyright (C) 2016 Cogent Embedded, Inc.
- *
- * This file is licensed under the terms of the GNU General Public License
- * version 2.  This program is licensed "as is" without any warranty of any
- * kind, whether express or implied.
+ * Copyright (C) 2018 Renesas Electronics Corp.
  */
 
-#include "r8a7795-h3ulcb-4x2g.dts"
+#include "r8a77951-ulcb.dts"
 
 /*
  * The device tree compiler (DTC) is allocating the phandle from 1 to
@@ -49,31 +45,23 @@
 	/delete-node/thermal-zones;
 	/delete-node/pmu_a57;
 	/delete-node/pmu_a53;
-
-	/delete-node/reserved-memory;
-	/delete-node/mmngr;
-	/delete-node/mmngrbuf;
 };
 
 /delete-node/&adsp;
 
-&dmac0 {
+&sdhi0 {
 	/delete-property/iommus;
 };
 
-&dmac1 {
+&sdhi1 {
 	/delete-property/iommus;
 };
 
-&dmac2 {
+&sdhi2 {
 	/delete-property/iommus;
 };
 
-&audma0 {
-	/delete-property/iommus;
-};
-
-&audma1 {
+&sdhi3 {
 	/delete-property/iommus;
 };
 
@@ -86,6 +74,6 @@
 	status = "disabled";
 };
 
-&sata {
-	status = "disabled";
+&sound_card {
+	dais = <&rsnd_port0>; /* ak4613 */
 };

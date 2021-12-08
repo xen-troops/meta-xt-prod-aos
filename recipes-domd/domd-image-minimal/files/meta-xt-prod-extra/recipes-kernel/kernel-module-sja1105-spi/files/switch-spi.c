@@ -705,8 +705,7 @@ static int spidev_message(struct sja1105_spi *sja,
 				goto done;
 			}
 			k_tmp->rx_buf = rx_buf;
-			if (!access_ok(VERIFY_WRITE,
-			               (u8 __user *) (uintptr_t) u_tmp->rx_buf,
+			if (!access_ok((u8 __user *) (uintptr_t) u_tmp->rx_buf,
 			               u_tmp->len)) {
 				goto done;
 			}

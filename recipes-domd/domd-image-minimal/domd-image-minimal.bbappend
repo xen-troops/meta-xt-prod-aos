@@ -14,7 +14,7 @@ python __anonymous () {
 }
 
 SRC_URI = " \
-    repo://github.com/xen-troops/manifests;protocol=https;branch=master;manifest=${XT_MANIFEST_FOLDER}/domd.xml;scmdata=keep \
+    repo://github.com/iusyk/manifests;protocol=https;branch=feature/aos-rel-7.0;manifest=${XT_MANIFEST_FOLDER}/domd.xml;scmdata=keep \
 "
 
 XT_QUIRK_UNPACK_SRC_URI += " \
@@ -69,22 +69,22 @@ python do_domd_install_machine_overrides() {
 ################################################################################
 # Renesas R-Car
 ################################################################################
-
-XT_QUIRK_PATCH_SRC_URI_rcar = "\
-    file://${S}/meta-renesas/meta-rcar-gen3/docs/sample/patch/patch-for-linaro-gcc/0001-rcar-gen3-add-readme-for-building-with-Linaro-Gcc.patch;patchdir=meta-renesas \
+XT_QUIRK_PATCH_SRC_URI_rcar = " \
     file://0001-rcar-gen3-arm-trusted-firmware-Allow-to-add-more-bui.patch;patchdir=meta-renesas \
-    file://0001-Force-RCAR_LOSSY_ENABLE-to-0-until-Xen-is-fixed-to-p.patch;patchdir=meta-renesas \
+    file://0001-copyscript-Set-GFX-Library-List-to-empty-string.patch;patchdir=meta-renesas \
+    file://0001-recipes-kernel-Load-multimedia-related-modules-autom.patch;patchdir=meta-renesas \
+    file://0001-armtf-Clarify-check-for-the-h3ulcb-based-machines-in.patch;patchdir=meta-renesas \
+    file://0001-Update-meta-rcar-for-Yv510.patch;patchdir=meta-renesas \
 "
 
-XT_BB_LOCAL_CONF_FILE_rcar = "meta-xt-prod-extra/doc/local.conf.rcar-domd-image-minimal"
 XT_BB_LAYERS_FILE_rcar = "meta-xt-prod-extra/doc/bblayers.conf.rcar-domd-image-minimal"
 
 configure_versions_rcar() {
     local local_conf="${S}/build/conf/local.conf"
 
     cd ${S}
-    base_update_conf_value ${local_conf} PREFERRED_VERSION_xen "4.12.0+git\%"
-    base_update_conf_value ${local_conf} PREFERRED_VERSION_u-boot_rcar "v2018.09\%"
+    base_update_conf_value ${local_conf} PREFERRED_VERSION_xen "4.16.0+git\%"
+    base_update_conf_value ${local_conf} PREFERRED_VERSION_u-boot_rcar "v2020.10\%"
 
     # HACK: force ipk instead of rpm b/c it makes troubles to PVR UM build otherwise
     base_update_conf_value ${local_conf} PACKAGE_CLASSES "package_ipk"
@@ -121,6 +121,10 @@ configure_versions_rcar() {
     if echo "${MACHINEOVERRIDES}" | grep -qiv "kingfisher"; then
         base_add_conf_value ${local_conf} DISTRO_FEATURES_remove "wifi bluetooth"
     fi
+
+    base_add_conf_value ${local_conf} DISTRO_FEATURES_append " systemd"
+    base_add_conf_value ${local_conf} BBMASK "meta-arm/meta-arm/recipes-security/optee/optee-os"
+    base_add_conf_value ${local_conf} BBMASK "meta-renesas/meta-rcar-gen3/recipes-bsp/optee/optee-os"
 
     # set update variables
     base_update_conf_value ${local_conf} DOMD_IMAGE_VERSION "${DOMD_IMAGE_VERSION}"

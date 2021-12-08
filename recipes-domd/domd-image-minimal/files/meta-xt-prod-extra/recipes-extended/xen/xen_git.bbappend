@@ -23,11 +23,6 @@ SRC_URI_append_r8a7796 = " \
 # Generic
 ################################################################################
 
-FLASK_POLICY_FILE = "xenpolicy-${XEN_REL}*"
-FILES_${PN}-flask = " \
-    /boot/${FLASK_POLICY_FILE} \
-"
-
 do_configure_append() {
     export XEN_CONFIG_EXPERT=y
 
