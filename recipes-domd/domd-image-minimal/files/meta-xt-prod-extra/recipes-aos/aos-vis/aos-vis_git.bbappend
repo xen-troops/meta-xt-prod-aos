@@ -37,7 +37,7 @@ do_install_append() {
         fi
 
         if ! grep -q 'ExecStartPre=/bin/sleep 1' ${WORKDIR}/aos-vis.service ; then
-            sed -i -e '/ExecStart/i ExecStartPre=/bin/sleep 1' ${WORKDIR}/aos-vis.service
+            sed -i -e '/ExecStart=/i ExecStartPre=/bin/sleep 1' ${WORKDIR}/aos-vis.service
         fi
     fi
 
