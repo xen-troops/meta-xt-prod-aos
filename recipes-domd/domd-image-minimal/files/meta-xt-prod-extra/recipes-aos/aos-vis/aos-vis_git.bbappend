@@ -1,11 +1,11 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-SRC_URI_append = "\
+SRC_URI_append = " \
     file://aos-vis.service \
     file://aos_vis.cfg \
 "
 
-AOS_VIS_PLUGINS ?= "\
+AOS_VIS_PLUGINS ?= " \
     plugins/vinadapter \
     plugins/boardmodeladapter \
     plugins/usersadapter \
@@ -23,9 +23,10 @@ FILES_${PN} += " \
     /etc/aos/vis/data/*.pem \
 "
 
-RDEPENDS_${PN} += "\
+RDEPENDS_${PN} += " \
     ${@bb.utils.contains('AOS_VIS_PLUGINS', 'plugins/telemetryemulatoradapter', 'telemetry-emulator', '', d)} \
 "
+
 do_compile_prepend(){
     export GOCACHE=${WORKDIR}/cache
 }

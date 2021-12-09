@@ -1,11 +1,11 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-SRC_URI_append = "\
+SRC_URI_append = " \
     file://aos-updatemanager.service \
     file://aos_updatemanager.cfg \
 "
 
-AOS_UM_UPDATE_MODULES ?= "\
+AOS_UM_UPDATE_MODULES ?= " \
     updatemodules/overlaysystemd \
 "
 
@@ -14,7 +14,7 @@ inherit systemd
 SYSTEMD_SERVICE_${PN} = "aos-updatemanager.service"
 MIGRATION_SCRIPTS_PATH = "/usr/share/updatemanager/migration"
 
-DEPENDS_append = "\
+DEPENDS_append = " \
     pkgconfig-native \
     systemd \
     efivar \
