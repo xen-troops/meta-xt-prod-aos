@@ -12,7 +12,7 @@ inherit systemd
 
 SYSTEMD_SERVICE_${PN} = "aos-servicemanager.service aos.target"
 
-RDEPENDS_${PN} += "\
+RDEPENDS_${PN} += " \
     libvis \
     python3 \
     python3-compression \

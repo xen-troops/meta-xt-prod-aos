@@ -1,17 +1,17 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-SRC_URI_append = "\
+SRC_URI_append = " \
     file://aos-iamanager.service \
     file://aos_iamanager.cfg \
     file://finish.sh \
 "
 
-AOS_IAM_CERT_MODULES = "\
+AOS_IAM_CERT_MODULES = " \
     certhandler/modules/swmodule \
     certhandler/modules/pkcs11module \
 "
 
-AOS_IAM_IDENT_MODULES = "\
+AOS_IAM_IDENT_MODULES = " \
     identhandler/modules/visidentifier \
 "
 
@@ -25,7 +25,7 @@ FILES_${PN} += " \
     /usr/bin/finish.sh \
 "
 
-RDEPENDS_${PN} += "\
+RDEPENDS_${PN} += " \
     opensc \
     optee-os \
     optee-client \
