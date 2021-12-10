@@ -96,6 +96,10 @@ python do_create_metadata() {
 }
 
 do_create_dom0_image() {
+    if [ -z ${BUNDLE_DOM0_TYPE} ] || [ ${BUNDLE_DOM0_TYPE} = "none" ]; then
+        exit 0
+    fi
+
     dom0_name=`ls ${DEPLOY_DIR} | grep dom0`
     dom0_root="${DEPLOY_DIR}/${dom0_name}"
 
