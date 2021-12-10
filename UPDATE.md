@@ -222,28 +222,10 @@ After that, the device should be provisioned and connected to the cloud.
     cd ${workspace_base_dir}
     ```
 
-    and perform following commanfs:
+    and perform following commands:
 
     ```bash
     source xt-distro/oe-init-build-env
-    ```
-
-    apply and build DomF image:
-
-    ```bash
-    bitbake domu-image-fusion -C unpack_xt_extras
-    ```
-
-    apply and build DomD image:
-
-    ```bash
-    bitbake domd-image-minimal -C unpack_xt_extras
-    ```
-
-    apply and build Dom0 image:
-
-    ```bash
-    bitbake dom0-image-thin-initramfs -C unpack_xt_extras
     ```
 
 6. Generate the new update bundle manually:
