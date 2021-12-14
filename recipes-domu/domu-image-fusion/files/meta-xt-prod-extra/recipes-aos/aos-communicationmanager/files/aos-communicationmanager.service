@@ -3,6 +3,8 @@ Description=AOS Communication Manager
 Wants=network-online.target aos-iamanager.service aos-servicemanager.service
 After=network-online.target aos-iamanager.service aos-servicemanager.service
 PartOf=aos.target
+StartLimitInterval=60
+StartLimitBurst=3
 
 [Service]
 Type=notify
