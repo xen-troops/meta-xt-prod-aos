@@ -8,7 +8,7 @@ StartLimitBurst=3
 
 [Service]
 Type=notify
-ExecStartPre=/bin/mkdir -p /var/aos/vis -j
+ExecStartPre=/bin/mkdir -p /var/aos/vis
 ExecStart=/usr/bin/aos_vis -c /etc/aos/aos_vis.cfg
 Restart=always
 RestartSec=30
