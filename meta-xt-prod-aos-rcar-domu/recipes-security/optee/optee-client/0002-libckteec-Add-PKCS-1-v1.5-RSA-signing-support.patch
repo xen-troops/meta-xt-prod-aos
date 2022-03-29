@@ -1,0 +1,92 @@
+From 3daf2ceda40585112a41b340e1fe891cf7a68461 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Vesa=20J=C3=A4=C3=A4skel=C3=A4inen?=
+ <vesa.jaaskelainen@vaisala.com>
+Date: Mon, 4 Jan 2021 13:26:48 +0200
+Subject: [PATCH 2/9] libckteec: Add PKCS #1 v1.5 RSA signing support
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Add support for performing RSA signing & verification operations for:
+
+- PKCS #1 v1.5 RSA with supplied hash value
+- Multi stage MD5
+- Multi stage SHA-1
+- Multi stage SHA-224
+- Multi stage SHA-256
+- Multi stage SHA-384
+- Multi stage SHA-512
+
+Specified in:
+PKCS #11 Cryptographic Token Interface Current Mechanisms Specification
+Version 2.40 Plus Errata 01
+2.1.6 PKCS #1 v1.5 RSA
+
+Signed-off-by: Vesa Jääskeläinen <vesa.jaaskelainen@vaisala.com>
+---
+ libckteec/include/pkcs11.h    | 2 ++
+ libckteec/include/pkcs11_ta.h | 2 ++
+ libckteec/src/ck_debug.c      | 1 +
+ libckteec/src/serialize_ck.c  | 7 +++++++
+ 4 files changed, 12 insertions(+)
+
+diff --git a/libckteec/include/pkcs11.h b/libckteec/include/pkcs11.h
+index 543a6b8..3cfa396 100644
+--- a/libckteec/include/pkcs11.h
++++ b/libckteec/include/pkcs11.h
+@@ -262,6 +262,8 @@ typedef CK_MECHANISM_TYPE *CK_MECHANISM_TYPE_PTR;
+ #define CKM_RSA_PKCS			0x00001
+ #define CKM_RSA_9796			0x00002
+ #define CKM_RSA_X_509			0x00003
++#define CKM_MD5_RSA_PKCS		0x00005
++#define CKM_SHA1_RSA_PKCS		0x00006
+ #define CKM_RSA_PKCS_OAEP		0x00009
+ #define CKM_SHA256_RSA_PKCS		0x00040
+ #define CKM_SHA384_RSA_PKCS		0x00041
+diff --git a/libckteec/include/pkcs11_ta.h b/libckteec/include/pkcs11_ta.h
+index 0e6d6b5..75311a4 100644
+--- a/libckteec/include/pkcs11_ta.h
++++ b/libckteec/include/pkcs11_ta.h
+@@ -1146,6 +1146,8 @@ enum pkcs11_mechanism_id {
+ 	PKCS11_CKM_RSA_PKCS			= 0x00001,
+ 	PKCS11_CKM_RSA_9796			= 0x00002,
+ 	PKCS11_CKM_RSA_X_509			= 0x00003,
++	PKCS11_CKM_MD5_RSA_PKCS			= 0x00005,
++	PKCS11_CKM_SHA1_RSA_PKCS		= 0x00006,
+ 	PKCS11_CKM_RSA_PKCS_OAEP		= 0x00009,
+ 	PKCS11_CKM_SHA256_RSA_PKCS		= 0x00040,
+ 	PKCS11_CKM_SHA384_RSA_PKCS		= 0x00041,
+diff --git a/libckteec/src/ck_debug.c b/libckteec/src/ck_debug.c
+index 65ddca2..c7c7d96 100644
+--- a/libckteec/src/ck_debug.c
++++ b/libckteec/src/ck_debug.c
+@@ -125,6 +125,7 @@ const char *ckm2str(CK_MECHANISM_TYPE id)
+ 	CK2STR_ENTRY(CKM_RSA_PKCS);
+ 	CK2STR_ENTRY(CKM_RSA_9796);
+ 	CK2STR_ENTRY(CKM_RSA_X_509);
++	CK2STR_ENTRY(CKM_SHA1_RSA_PKCS);
+ 	CK2STR_ENTRY(CKM_RSA_PKCS_OAEP);
+ 	CK2STR_ENTRY(CKM_SHA256_RSA_PKCS);
+ 	CK2STR_ENTRY(CKM_SHA384_RSA_PKCS);
+diff --git a/libckteec/src/serialize_ck.c b/libckteec/src/serialize_ck.c
+index cf2a63d..326a947 100644
+--- a/libckteec/src/serialize_ck.c
++++ b/libckteec/src/serialize_ck.c
+@@ -515,7 +515,14 @@ CK_RV serialize_ck_mecha_params(struct serializer *obj,
+ 	case CKM_ECDSA_SHA256:
+ 	case CKM_ECDSA_SHA384:
+ 	case CKM_ECDSA_SHA512:
++	case CKM_RSA_PKCS:
+ 	case CKM_RSA_PKCS_KEY_PAIR_GEN:
++	case CKM_MD5_RSA_PKCS:
++	case CKM_SHA1_RSA_PKCS:
++	case CKM_SHA224_RSA_PKCS:
++	case CKM_SHA256_RSA_PKCS:
++	case CKM_SHA384_RSA_PKCS:
++	case CKM_SHA512_RSA_PKCS:
+ 		/* No parameter expected, size shall be 0 */
+ 		if (mechanism->ulParameterLen)
+ 			return CKR_MECHANISM_PARAM_INVALID;
+-- 
+2.25.1
+

@@ -1,0 +1,38 @@
+From 5e3560dd50ff8c154b8dd000c4849748545caab6 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Vesa=20J=C3=A4=C3=A4skel=C3=A4inen?=
+ <vesa.jaaskelainen@vaisala.com>
+Date: Sat, 9 Jan 2021 12:29:14 +0200
+Subject: [PATCH 5/9] libckteec: Add 64 bit sign extension support for
+ deserialization
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Adds support to sign extend 32bit values to 64 bit values as otherwise
+matching with the defines with values ~0UL would not work.
+
+Note: this expects that ALL values will fit in 32 bits as TA interface has
+32 bits defined for transport for CK_ULONG and ~0UL for
+CK_UNAVAILABLE_INFORMATION is only special case that needs to be handled.
+
+Signed-off-by: Vesa Jääskeläinen <vesa.jaaskelainen@vaisala.com>
+---
+ libckteec/src/serialize_ck.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/libckteec/src/serialize_ck.c b/libckteec/src/serialize_ck.c
+index 0901fc3..e1cfa13 100644
+--- a/libckteec/src/serialize_ck.c
++++ b/libckteec/src/serialize_ck.c
+@@ -293,6 +293,8 @@ static CK_RV deserialize_ck_attribute(struct pkcs11_attribute_head *in,
+ 
+ 		memcpy(&pkcs11_data32, data, sizeof(uint32_t));
+ 		ck_ulong = pkcs11_data32;
++		if (ck_ulong == (uint32_t)~0UL)
++			ck_ulong = (CK_ULONG)~0UL;
+ 		memcpy(out->pValue, &ck_ulong, sizeof(CK_ULONG));
+ 		out->ulValueLen = sizeof(CK_ULONG);
+ 		return CKR_OK;
+-- 
+2.25.1
+

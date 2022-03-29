@@ -1,0 +1,36 @@
+From 5891e771461f4c419dcedf094931737e4ef51090 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Vesa=20J=C3=A4=C3=A4skel=C3=A4inen?=
+ <vesa.jaaskelainen@vaisala.com>
+Date: Mon, 4 Jan 2021 11:52:18 +0200
+Subject: [PATCH 1/9] libckteec: Add RSA support for C_GenerateKeyPair()
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Add support to generate PKCS #1 RSA keys when issuing C_GenerateKeyPair().
+
+Specified in:
+PKCS #11 Cryptographic Token Interface Current Mechanisms Specification
+Version 2.40 Plus Errata 01
+2.1.4 PKCS #1 RSA key pair generation
+
+Signed-off-by: Vesa Jääskeläinen <vesa.jaaskelainen@vaisala.com>
+---
+ libckteec/src/serialize_ck.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/libckteec/src/serialize_ck.c b/libckteec/src/serialize_ck.c
+index edd7e35..cf2a63d 100644
+--- a/libckteec/src/serialize_ck.c
++++ b/libckteec/src/serialize_ck.c
+@@ -515,6 +515,7 @@ CK_RV serialize_ck_mecha_params(struct serializer *obj,
+ 	case CKM_ECDSA_SHA256:
+ 	case CKM_ECDSA_SHA384:
+ 	case CKM_ECDSA_SHA512:
++	case CKM_RSA_PKCS_KEY_PAIR_GEN:
+ 		/* No parameter expected, size shall be 0 */
+ 		if (mechanism->ulParameterLen)
+ 			return CKR_MECHANISM_PARAM_INVALID;
+-- 
+2.25.1
+
