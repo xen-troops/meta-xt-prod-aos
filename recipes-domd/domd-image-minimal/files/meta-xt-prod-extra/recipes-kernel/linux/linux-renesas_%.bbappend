@@ -5,6 +5,8 @@ require inc/xt_shared_env.inc
 
 RENESAS_BSP_URL = "git://github.com/xen-troops/linux.git"
 
+SRC_URI = "${RENESAS_BSP_URL};protocol=https;nocheckout=1;branch=${BRANCH}"
+
 BRANCH = "master"
 BRANCH_cetibox = "v4.14/rcar-3.7-ctc"
 SRCREV = "${AUTOREV}"
