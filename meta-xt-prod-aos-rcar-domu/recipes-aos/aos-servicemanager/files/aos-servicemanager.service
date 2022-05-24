@@ -12,6 +12,7 @@ ExecStart=/usr/bin/aos_servicemanager -c /etc/aos/aos_servicemanager.cfg -v debu
 ExecStop=/bin/sh -c "/bin/kill -s TERM $MAINPID; while [ -d /proc/$MAINPID ]; do sleep 1; done"
 Restart=always
 RestartSec=10
+Environment="CKTEEC_LOGIN_TYPE=user"
 
 [Install]
 WantedBy=multi-user.target
