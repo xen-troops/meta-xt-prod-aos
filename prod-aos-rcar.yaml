@@ -309,6 +309,7 @@ components:
         - "../meta-xt-prod-aos/meta-xt-prod-aos-rcar-domu"
         - "../meta-linaro/meta-optee"
         - "../meta-xt-common/meta-xt-domx"
+        - "../meta-xt-common/meta-xt-domu"
 
       target_images:
         - "tmp/deploy/images/generic-armv8-xt/Image"
