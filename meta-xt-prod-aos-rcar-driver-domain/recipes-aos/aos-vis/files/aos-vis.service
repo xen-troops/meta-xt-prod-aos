@@ -1,0 +1,17 @@
+[Unit]
+Description=AOS VIS
+Wants=network-online.target
+After=network-online.target
+PartOf=aos.target
+StartLimitInterval=60
+StartLimitBurst=3
+
+[Service]
+Type=notify
+ExecStartPre=/bin/mkdir -p /var/aos/vis
+ExecStart=/usr/bin/aos_vis -c /etc/aos/aos_vis.cfg -j
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
