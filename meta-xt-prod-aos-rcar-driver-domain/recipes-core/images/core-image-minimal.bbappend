@@ -1,7 +1,11 @@
 
 IMAGE_INSTALL_append = " \
-    xen-tools \
     xen \
+    xen-network \
+    xen-tools-devd \
+    xen-tools-scripts-network \
+    xen-tools-scripts-block \
+    xen-tools-xenstore \
     kernel-modules \
     optee-os \
     libxenbe \
@@ -9,8 +13,23 @@ IMAGE_INSTALL_append = " \
     openssh-ssh \
     openssh-scp \
     volatile-binds \
+    dnsmasq \
 "
+#    packagegroup-xt-core-guest-addons 
+#    packagegroup-xt-core-xen 
+#    packagegroup-xt-core-pv 
+#    packagegroup-xt-core-network 
 
+#xen-tools
+
+#    xen-tools-devd 
+#    xen-tools-scripts-network 
+#    xen-tools-scripts-block 
+#    xen-tools-xenstore 
+
+#    xen-tools-scripts-network 
+#    xen-tools-xenstore 
+#    xen-network 
 # Add python3 and modules required for provisioning
 IMAGE_INSTALL_append = " \
     python3 \
