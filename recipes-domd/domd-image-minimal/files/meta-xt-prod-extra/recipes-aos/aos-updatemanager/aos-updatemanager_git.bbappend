@@ -1,5 +1,4 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
-FILESEXTRAPATHS_prepend_cetibox := "${THISDIR}/files/cetibox:"
 
 SRC_URI_append = " \
     file://aos-updatemanager.service \
@@ -9,11 +8,6 @@ SRC_URI_append = " \
 "
 
 AOS_UM_UPDATE_MODULES ?= " \
-    updatemodules/overlayxenstore \
-    updatemodules/ubootdualpart \
-"
-
-AOS_UM_UPDATE_MODULES_cetibox ?= " \
     updatemodules/overlayxenstore \
     updatemodules/ubootdualpart \
     updatemodules/sshmodule \
