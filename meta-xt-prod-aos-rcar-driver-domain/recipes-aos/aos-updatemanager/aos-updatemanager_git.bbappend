@@ -59,7 +59,7 @@ do_install_append() {
     install -d ${D}/var/aos/updatemanager
 
     install -d ${D}${MIGRATION_SCRIPTS_PATH}
-    source_migration_path="src/aos_updatemanager/database/migration"
+    source_migration_path="src/${GO_OMPORT}/database/migration"
     if [ -d ${S}/${source_migration_path} ]; then
         install -m 0644 ${S}/${source_migration_path}/* ${D}${MIGRATION_SCRIPTS_PATH}
     fi
