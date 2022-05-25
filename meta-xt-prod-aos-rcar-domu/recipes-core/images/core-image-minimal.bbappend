@@ -14,6 +14,7 @@ IMAGE_INSTALL_append = " \
     openssh-ssh \
     openssh-scp \
     volatile-binds \
+    domu-network \
 "
 
 populate_vmlinux () {
