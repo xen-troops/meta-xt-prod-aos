@@ -1,5 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 FILESEXTRAPATHS_prepend := "${THISDIR}/../../recipes-domx:"
+FILESEXTRAPATHS_prepend := "${THISDIR}/../../..:"
 
 require recipes-domx/meta-xt-prod-domx/inc/xt_shared_env.inc
 
@@ -10,11 +11,13 @@ require recipes-domx/meta-xt-prod-domx/inc/xt_shared_env.inc
 XT_QUIRK_UNPACK_SRC_URI += " \
     file://meta-xt-prod-extra;subdir=repo \
     file://meta-xt-prod-domx;subdir=repo \
+    file://meta-aos;subdir=repo \
 "
 
 XT_QUIRK_BB_ADD_LAYER_append = " \
     meta-xt-prod-extra \
     meta-xt-prod-domx \
+    meta-aos \
 "
 
 ################################################################################
