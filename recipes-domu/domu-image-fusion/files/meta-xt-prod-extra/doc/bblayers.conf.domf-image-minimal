@@ -15,7 +15,6 @@ BBLAYERS ?= " \
   ${TOPDIR}/../meta-openembedded/meta-filesystems \
   ${TOPDIR}/../meta-virtualization \
   ${TOPDIR}/../meta-linaro/meta-optee \
-  ${TOPDIR}/../meta-aos \
 "
 
 BBLAYERS_NON_REMOVABLE ?= " \
