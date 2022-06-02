@@ -15,7 +15,6 @@ XT_QUIRK_UNPACK_SRC_URI += " \
 XT_QUIRK_BB_ADD_LAYER_append = " \
     meta-xt-prod-extra \
     meta-xt-prod-domx \
-    meta-linaro/meta-optee \
 "
 
 ################################################################################
