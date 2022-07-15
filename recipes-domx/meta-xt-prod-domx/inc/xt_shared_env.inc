@@ -59,10 +59,10 @@ BOARD_MODEL_cetibox ?= "cetibox;1.0"
 
 # Bundle image version used as suffix in the bundle name and default version for
 # other components
-BUNDLE_IMAGE_VERSION ?= "2.1.2"
+BUNDLE_IMAGE_VERSION ?= "2.1.3"
 # Bundle previous version used as default reference version for incremenral
 # updates
-BUNDLE_PREVIOUS_VERSION ?= "2.1.1"
+BUNDLE_PREVIOUS_VERSION ?= "2.1.2"
 
 # Dom0 image type. Dom0 supports only "full". Empty value means dom0 update image
 # will not be included into the bundle.
