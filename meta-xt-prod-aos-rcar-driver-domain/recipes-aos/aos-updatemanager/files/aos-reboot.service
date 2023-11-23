@@ -1,0 +1,9 @@
+[Unit]
+Description=AOS Reboot service
+ConditionPathExists=/var/update/rootfs/updated
+
+[Service]
+ExecStart=xenstore-write control/user-reboot 2
+
+[Install]
+WantedBy=multi-user.target

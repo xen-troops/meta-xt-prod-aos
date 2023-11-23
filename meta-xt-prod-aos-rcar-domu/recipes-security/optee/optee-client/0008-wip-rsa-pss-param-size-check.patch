@@ -1,0 +1,31 @@
+From 40f25806be8998eef90f197d3d25f2b4f403f106 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Vesa=20J=C3=A4=C3=A4skel=C3=A4inen?=
+ <vesa.jaaskelainen@vaisala.com>
+Date: Sun, 9 May 2021 11:09:06 +0300
+Subject: [PATCH 8/9] wip: rsa pss param size check
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Vesa Jääskeläinen <vesa.jaaskelainen@vaisala.com>
+---
+ libckteec/src/serialize_ck.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/libckteec/src/serialize_ck.c b/libckteec/src/serialize_ck.c
+index f114550..0d892c1 100644
+--- a/libckteec/src/serialize_ck.c
++++ b/libckteec/src/serialize_ck.c
+@@ -471,6 +471,9 @@ static CK_RV serialize_mecha_rsa_pss_param(struct serializer *obj,
+ 	CK_RV rv = CKR_GENERAL_ERROR;
+ 	uint32_t params_size = 3 * sizeof(uint32_t);
+ 
++	if (mecha->ulParameterLen != sizeof(*params))
++		return CKR_ARGUMENTS_BAD;
++
+ 	rv = serialize_32b(obj, obj->type);
+ 	if (rv)
+ 		return rv;
+-- 
+2.25.1
+
